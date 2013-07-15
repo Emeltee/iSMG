@@ -20,8 +20,10 @@ public class MyGdxGame implements ApplicationListener {
      * practice, but convenient.
      */
     public static MyGdxGame currentGame = null;
-    /** Minimum width and height of the screen in windowed mode.*/
-    public static final int MIN_SCREEN_SIZE = 500;
+    /** Width of the screen.*/
+    public static final int SCREEN_WIDTH = 700;
+    /** Height of the screen.*/
+    public static final int SCREEN_HEIGHT = 376;
     /** Initial number of player lives. */
     public static final int MAX_LIVES = 3;
 
@@ -89,16 +91,9 @@ public class MyGdxGame implements ApplicationListener {
     @Override
     public void resize(int width, int height) {
 
-        // Check that new size is at least MIN_SCREEN_SIZE. If not, set size to
-        // minimum.
-        if (width < MyGdxGame.MIN_SCREEN_SIZE) {
-            Gdx.graphics.setDisplayMode(MyGdxGame.MIN_SCREEN_SIZE, height,
-                    Gdx.graphics.isFullscreen());
-        }
-        if (height < MyGdxGame.MIN_SCREEN_SIZE) {
-            Gdx.graphics.setDisplayMode(Gdx.graphics.getWidth(),
-                    MyGdxGame.MIN_SCREEN_SIZE, Gdx.graphics.isFullscreen());
-        }
+        // Enforce a constant screen size.
+        Gdx.graphics.setDisplayMode(MyGdxGame.SCREEN_WIDTH, MyGdxGame.SCREEN_HEIGHT,
+                Gdx.graphics.isFullscreen());
 
         // Update cameras.
         this.orthoCamera.viewportWidth = Gdx.graphics.getWidth();
