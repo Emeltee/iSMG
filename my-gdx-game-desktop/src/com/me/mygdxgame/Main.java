@@ -8,10 +8,11 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "my-gdx-game";
 		cfg.useGL20 = true;
-		cfg.width = 500;
-		cfg.height = 500;
+		cfg.width = MyGdxGame.SCREEN_WIDTH;
+		cfg.height = MyGdxGame.SCREEN_HEIGHT;
 		cfg.foregroundFPS = 60;
 		cfg.backgroundFPS = 60;
+		cfg.resizable = false;
 		
 		new LwjglApplication(new MyGdxGame(), cfg);
 	}
