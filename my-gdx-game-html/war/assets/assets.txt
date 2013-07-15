@@ -1,0 +1,9 @@
+d:war/:0:application/unknown
+d:img:0:application/unknown
+i:img/playerM.png:1079:image/png
+d:sound:0:application/unknown
+a:sound/footstep2.ogg:8174:application/unknown
+t:com/badlogic/gdx/graphics/g3d/shaders/default.fragment.glsl:3032:application/unknown
+t:com/badlogic/gdx/graphics/g3d/shaders/default.vertex.glsl:7973:application/unknown
+t:com/badlogic/gdx/utils/arial-15.fnt:21743:application/unknown
+i:com/badlogic/gdx/utils/arial-15.png:21814:image/png
