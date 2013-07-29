@@ -8,7 +8,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.me.mygdxgame.screens.GameScreen;
-import com.me.mygdxgame.screens.DebugScreen.DebugScreen;
+import com.me.mygdxgame.screens.debugscreen.DebugScreen;
+import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
 
 /**
  * Some game. Uses libGDX.
@@ -61,8 +62,10 @@ public class MyGdxGame implements ApplicationListener {
 
             // Load GameScreens and all resources.
             // TODO May want to load resources lazily, and pull out common
-            // resources for storage in a public place.
+            // resources for storage in a public place. Also, can do this with
+            // reflection.
             this.games.add(new DebugScreen());
+            //this.games.add(new MapTestScreen(null));
             
             for (GameScreen game : this.games) {
                 game.load();
@@ -76,8 +79,10 @@ public class MyGdxGame implements ApplicationListener {
             this.orthoCamera = new OrthographicCamera(Gdx.graphics.getWidth(),
                     Gdx.graphics.getHeight());
             this.orthoCamera.update();
-            this.perspectiveCamera = new PerspectiveCamera(45,
+            this.perspectiveCamera = new PerspectiveCamera(60,
                     Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            this.perspectiveCamera.far = 5000.0f;
+            this.perspectiveCamera.position.z = 256.0f;
             this.perspectiveCamera.update();
 
             // Set up SpriteBatch.
