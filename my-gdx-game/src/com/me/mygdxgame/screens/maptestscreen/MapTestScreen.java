@@ -35,22 +35,23 @@ public class MapTestScreen implements GameScreen {
     public void render(float deltaTime, int difficulty) {
         
         // Camera controls. Moves at 180 units a second.
+     // Camera controls. Moves at 180 units a second.
         if (Gdx.input.isKeyPressed(Keys.A)) {
             MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.D)) {
             MyGdxGame.currentGame.perspectiveCamera.position.x += (180 * deltaTime);
         }
-        if (Gdx.input.isKeyPressed(Keys.W)) {
+        if (Gdx.input.isKeyPressed(Keys.S)) {
             MyGdxGame.currentGame.perspectiveCamera.position.y -= (180 * deltaTime);
         }
-        if (Gdx.input.isKeyPressed(Keys.S)) {
+        if (Gdx.input.isKeyPressed(Keys.W)) {
             MyGdxGame.currentGame.perspectiveCamera.position.y += (180 * deltaTime);
         }
-        if (Gdx.input.isKeyPressed(Keys.Q)) {
+        if (Gdx.input.isKeyPressed(Keys.E)) {
             MyGdxGame.currentGame.perspectiveCamera.position.z -= (180 * deltaTime);
         }
-        if (Gdx.input.isKeyPressed(Keys.E)) {
+        if (Gdx.input.isKeyPressed(Keys.Q)) {
             MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
         }
         MyGdxGame.currentGame.perspectiveCamera.update();
