@@ -144,9 +144,13 @@ public class SamplePlayer {
             this.prevFrame = frame;
 
         } else {
+            // Reset the values for run frame so when running animation resumes
+            // it'll be at the beginning of the animation.
+            this.animationTimer = 0;
+            this.prevFrame = 0;
+            
             // SamplePlayer is standing still. Ensure the standing frame is
-            // facing the
-            // right way and draw it.
+            // facing the right way and draw it.
             if (this.isFlipped != this.standFrame.isFlipX()) {
                 this.standFrame.flip(true, false);
             }
