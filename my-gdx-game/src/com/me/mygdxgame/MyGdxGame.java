@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.me.mygdxgame.maps.FirstMap;
 import com.me.mygdxgame.screens.GameScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
@@ -31,6 +32,8 @@ public class MyGdxGame implements ApplicationListener {
     // Public communal resources. Probably bad practice, but works for now.
     /** Communal SpriteBatch for drawing. */
     public SpriteBatch spriteBatch;
+    /** Communal ShapeRenderer for primitives.*/
+    public ShapeRenderer shapeRenderer;
     /** Communal OrthographicCamera for adjusting view. */
     public OrthographicCamera orthoCamera;
     /** Communal PerspectiveCamera for adjusting view. */
@@ -85,8 +88,9 @@ public class MyGdxGame implements ApplicationListener {
             this.perspectiveCamera.position.z = 256.0f;
             this.perspectiveCamera.update();
 
-            // Set up SpriteBatch.
+            // Set up SpriteBatch and shapeRenderer.
             this.spriteBatch = new SpriteBatch();
+            this.shapeRenderer = new ShapeRenderer();
 
         } catch (Exception e) {
             e.printStackTrace();
