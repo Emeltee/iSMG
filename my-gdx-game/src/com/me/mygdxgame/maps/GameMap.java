@@ -1,7 +1,9 @@
 package com.me.mygdxgame.maps;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -11,6 +13,12 @@ import com.me.mygdxgame.MyGdxGame;
  * static obstacles. Also contains utility methods.
  */
 public abstract class GameMap {
+    
+    /**
+     * Flag indicating whether or not obstacles should be drawn onto screen as
+     * an overlay.
+     */
+    protected boolean debugMode = false;
 
     /**
      * Loads all resources (textures and sounds) specific to this game. Does
@@ -49,14 +57,40 @@ public abstract class GameMap {
      *            previous render call.
      */
     public abstract void render(float deltaTime);
-
-    /** Utility method that draws all Rectangles returned by getObstacles to the screen in the given color.
+    
+    /**
+     * Sets the debug flag. In debug mode, obstacles should be drawn to the
+     * screen as translucent overlays on calls to render.
      * 
-     * @param obstacles Array of Rectangles to draw.
-     * @param obstacleColor Color to fill Rectangles with.
+     * @param debugMode
+     *            The value to set the debug mode flag to.
      */
-    protected static void drawObstacles(Rectangle[] obstacles, Color obstacleColor) {
-        // TODO
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+
+    /**
+     * Utility method that draws all Rectangles returned by getObstacles to the
+     * screen in the given color.
+     * 
+     * @param camera
+     *            The Camera to use for drawing. Camera will not be updated or
+     *            otherwise modified; caller should prepare the camera prior to
+     *            calling this method.
+     * @param obstacles
+     *            Array of Rectangles to draw.
+     * @param obstacleColor
+     *            Color to fill Rectangles with.
+     */
+    protected static void drawObstacles(Camera camera, Rectangle[] obstacles, Color obstacleColor) {
+        
+        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
+        MyGdxGame.currentGame.shapeRenderer.setColor(obstacleColor);
+        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(camera.combined);
+        
+        for (Rectangle rect : obstacles) {
+            MyGdxGame.currentGame.shapeRenderer.box(rect.x, rect.y, 0, rect.width, rect.height, 0);
+        }
     }
 
     protected static void diagonalRight(TextureRegion pattern, int x, int y, int count) {
