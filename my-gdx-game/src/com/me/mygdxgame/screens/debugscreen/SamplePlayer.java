@@ -18,6 +18,7 @@ public class SamplePlayer {
     public static final float ACCELERATION = 120.0f;
     public static final float DECELERATION = 30.0f;
     public static final short RUN_FRAMERATE = 3;
+    public static final short MAX_RUN_FRAMES = 6;
 
     /** Flag indicating if resources are currently loaded. */
     private boolean areResourcesLoaded = false;
@@ -28,11 +29,11 @@ public class SamplePlayer {
      */
     private boolean isFlipped = false;
     /** TextureRegions representing the individual walking frames. */
-    private TextureRegion[] runFrames = new TextureRegion[6];
+    private TextureRegion[] runFrames = new TextureRegion[SamplePlayer.MAX_RUN_FRAMES];
     /** TextureRegion representing the idle frame. */
     private TextureRegion standFrame;
     /** Tracks animation frame. */
-    private short prevFrame = 0;
+    private int prevFrame = 0;
     /** Tracks the number of frames that have passed. Used to time animation. */
     private short animationTimer = 0;
     /** Footstep sound effect. */
@@ -101,9 +102,6 @@ public class SamplePlayer {
      */
     public void draw() {
 
-        // Every call, increment the animationTimer.
-        this.animationTimer++;
-
         // Prepare the game's spriteBatch for drawing.
         MyGdxGame.currentGame.spriteBatch
                 .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
@@ -113,9 +111,16 @@ public class SamplePlayer {
         // managed.
         if (this.isRunning) {
 
+            // Every call, increment the animationTimer.
+            this.animationTimer++;
+            
             // Determine current frame based on the animationTimer and
-            // RUN_FRAMERATE.
-            short frame = (short) ((this.animationTimer / SamplePlayer.RUN_FRAMERATE) % 6);
+            // RUN_FRAMERATE. Reset animationTimer if needed.
+            int frame = this.prevFrame;
+            if (this.animationTimer >= SamplePlayer.RUN_FRAMERATE) {
+                frame = (frame + 1) % SamplePlayer.MAX_RUN_FRAMES;
+                this.animationTimer = 0;
+            }
 
             // Flip sprite if needed.
             if (this.isFlipped != this.runFrames[frame].isFlipX()) {
