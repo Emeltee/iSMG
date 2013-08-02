@@ -1,12 +1,12 @@
 package com.me.mygdxgame.screens.debugscreen;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.Input.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 
 /**
@@ -104,7 +104,7 @@ public class SamplePlayer {
 
         // Prepare the game's spriteBatch for drawing.
         MyGdxGame.currentGame.spriteBatch
-                .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
         MyGdxGame.currentGame.spriteBatch.begin();
 
         // If player is running, current frame and sound effects need to be
@@ -113,7 +113,7 @@ public class SamplePlayer {
 
             // Every call, increment the animationTimer.
             this.animationTimer++;
-            
+
             // Determine current frame based on the animationTimer and
             // RUN_FRAMERATE. Reset animationTimer if needed.
             int frame = this.prevFrame;
@@ -148,7 +148,7 @@ public class SamplePlayer {
             // it'll be at the beginning of the animation.
             this.animationTimer = 0;
             this.prevFrame = 0;
-            
+
             // SamplePlayer is standing still. Ensure the standing frame is
             // facing the right way and draw it.
             if (this.isFlipped != this.standFrame.isFlipX()) {

@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.me.mygdxgame.maps.FirstMap;
 import com.me.mygdxgame.screens.GameScreen;
-import com.me.mygdxgame.screens.debugscreen.DebugScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
 
 /**
@@ -67,11 +66,11 @@ public class MyGdxGame implements ApplicationListener {
             // reflection.
             this.games.add(new MapTestScreen(new FirstMap()));
             //this.games.add(new MapTestScreen(null));
-            
+
             for (GameScreen game : this.games) {
                 game.load();
             }
-            
+
             // Set and initialize first screen.
             this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
 
@@ -112,32 +111,32 @@ public class MyGdxGame implements ApplicationListener {
 
     @Override
     public void render() {
-        
-//        // TODO Should choose boss/miniboss screens as appropriate.
-//        // TODO Need to to proper screen transitions.
-//        //TODO If lives == 0, transition to Game Over.
-//        
-//        // If current screen has not reached a win or lose state, keep running.
-//        if (this.currentGameScreen.getState() == GameState.Running) {
-//            this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
-//        } else {
-//            // If current screen has reached either the win or lose state, time to pick a new screen.
-//            
-//            // If screen has reached the lose state, reduce lives by one.
-//            if (this.currentGameScreen.getState() == GameState.Lose) {
-//                this.lives--;
-//            }
-//            
-//            // Pick the next screen. Ensure that it is not the same as the current screen.
-//            GameScreen lastScreen = this.currentGameScreen;
-//            while (lastScreen == this.currentGameScreen) {
-//                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
-//            }
-//            
-//            // Initialize new screen. 
-//            this.currentGameScreen.initialize();
-//        }
-        
+
+        //        // TODO Should choose boss/miniboss screens as appropriate.
+        //        // TODO Need to to proper screen transitions.
+        //        //TODO If lives == 0, transition to Game Over.
+        //
+        //        // If current screen has not reached a win or lose state, keep running.
+        //        if (this.currentGameScreen.getState() == GameState.Running) {
+        //            this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        //        } else {
+        //            // If current screen has reached either the win or lose state, time to pick a new screen.
+        //
+        //            // If screen has reached the lose state, reduce lives by one.
+        //            if (this.currentGameScreen.getState() == GameState.Lose) {
+        //                this.lives--;
+        //            }
+        //
+        //            // Pick the next screen. Ensure that it is not the same as the current screen.
+        //            GameScreen lastScreen = this.currentGameScreen;
+        //            while (lastScreen == this.currentGameScreen) {
+        //                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
+        //            }
+        //
+        //            // Initialize new screen.
+        //            this.currentGameScreen.initialize();
+        //        }
+
         // TEMP. Just run current screen. Change once we have enough to rotate between.
         this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }

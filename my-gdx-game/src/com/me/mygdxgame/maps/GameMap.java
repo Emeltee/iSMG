@@ -1,0 +1,156 @@
+package com.me.mygdxgame.maps;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.MyGdxGame;
+
+/**
+ * Manages static elements of a "level". This includes background cosmetics and
+ * static obstacles. Also contains utility methods.
+ */
+public abstract class GameMap {
+
+    /**
+     * Loads all resources (textures and sounds) specific to this game. Does
+     * nothing if resources have already been loaded. TODO Probably a good idea
+     * to pull out common resources and place them into some separate pool to
+     * avoid having multiple copies of resources in memory at once.
+     */
+    public abstract void load();
+
+    /**
+     * Unloads all resources (textures and sounds) that have been previously
+     * loaded by this game through load(). Does nothing if no resources are
+     * currently loaded.
+     */
+    public abstract void unload();
+
+    /** Retrieves the initial position of the player.
+     * 
+     * @return A Vector3 containing the desired initial player position.
+     */
+    public abstract Vector3 getInitialPosition();
+
+    /**
+     * Creates and returns an array of the static obstacles in this map.
+     * 
+     * @return A new array of static obstacles associated with this map.
+     */
+    public abstract Rectangle[] getObstacles();
+
+    /**
+     * Updates any logic and draws all entities to the screen. TODO, some
+     * (enforced) form of frustum culling would eventually be nice.
+     * 
+     * @param deltaTime
+     *            The amount of time in seconds that has passed since the
+     *            previous render call.
+     */
+    public abstract void render(float deltaTime);
+
+    /** Utility method that draws all Rectangles returned by getObstacles to the screen in the given color.
+     * 
+     * @param obstacles Array of Rectangles to draw.
+     * @param obstacleColor Color to fill Rectangles with.
+     */
+    protected static void drawObstacles(Rectangle[] obstacles, Color obstacleColor) {
+        // TODO
+    }
+
+    protected static void diagonalRight(TextureRegion pattern, int x, int y, int count) {
+        for (int i = 0; i < count; i++) {
+            MyGdxGame.currentGame.spriteBatch.draw(pattern,
+                    x + (i * pattern.getRegionWidth()),
+                    y + (i * pattern.getRegionHeight()));
+        }
+    }
+
+    protected static void diagonalLeft(TextureRegion pattern, int x, int y, int count) {
+        for (int i = 0; i < count; i++) {
+            MyGdxGame.currentGame.spriteBatch.draw(pattern,
+                    x - (i * pattern.getRegionWidth()),
+                    y + (i * pattern.getRegionHeight()));
+        }
+    }
+
+    /** Automatically tile a Texture region horizontally
+     * @param pattern Region to be tiled
+     * @param x initial X coordinate (tiles to the right)
+     * @param y initial Y coordinate (fixed)
+     * @param count number of iterations for tile
+     */
+    protected static void tileX(TextureRegion pattern, int x, int y, int count) {
+        for (int i = 0; i < count; i++) {
+            MyGdxGame.currentGame.spriteBatch.draw(pattern, x + (i * pattern.getRegionWidth()), y);
+        }
+    }
+
+    /** Automatically tile a TextureRegion vertically
+     * @param pattern Region to be tiled
+     * @param x initial X coordinate (fixed)
+     * @param y initial Y coordinate (tiles upward)
+     * @param count number of iterations for tile
+     */
+    protected static void tileY(TextureRegion pattern, int x, int y, int count) {
+        for (int i = 0; i < count; i++) {
+            MyGdxGame.currentGame.spriteBatch.draw(pattern, x, y + (i * pattern.getRegionHeight()));
+        }
+    }
+
+    /** Automatically tile a TextureRegion horizontally and vertically
+     * @param pattern Region to be tiled
+     * @param x initial X coordinate (tiles to the right)
+     * @param y initial Y coordinate (tiles upward)
+     * @param columns number of columns (Xs to repeat pattern)
+     * @param rows number of rows (Ys to repeat pattern)
+     */
+    protected static void tileXY(TextureRegion pattern, int x, int y, int columns, int rows) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                MyGdxGame.currentGame.spriteBatch.draw(
+                        pattern,
+                        (x + j * pattern.getRegionWidth()),
+                        (y + i * pattern.getRegionHeight())
+                        );
+            }
+        }
+    }
+
+    /** Tiles horizontally, alternating between pattern and same-width nothing
+     * TODO maybe have a double pattern checkerer
+     * @param pattern Pattern to be checkered
+     * @param x initial X coordinate (tiles to the right, skipping one tile each iteration)
+     * @param y initial Y coordinate (fixed, or tiles upward based on rows)
+     * @param count number of iterations pattern appears per row, not including blank spaces
+     * @param rows number of rows to apply the pattern
+     */
+    protected static void checkerX(TextureRegion pattern, int x, int y, int count, int rows) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = (i % 2 == 0) ? 0 : 1; j < 2*count; j+=2) {
+                MyGdxGame.currentGame.spriteBatch.draw(pattern, x
+                        + (j * pattern.getRegionWidth()),
+                        (y + i * pattern.getRegionHeight()));
+            }
+        }
+    }
+
+    /** Tiles vertically, alternating between pattern and same-height nothing
+     * TODO again, make a double checkerer
+     * @param pattern Pattern to be checkered
+     * @param x initial X coordinate (fixed, or tiles right based on columns)
+     * @param y initial Y coordinate (tiles upward, skipping one tile each iteration)
+     * @param count number of iterations pattern appears per column, not including blank spaces
+     * @param columns number of columns to apply the pattern
+     */
+    protected static void checkerY(TextureRegion pattern, int x, int y, int count, int columns) {
+        for (int i = 0; i < columns; i++) {
+            for (int j = (i % 2 == 0) ? 0 : 1; j < 2*count; j+=2) {
+                MyGdxGame.currentGame.spriteBatch.draw(pattern, x
+                        + (i * pattern.getRegionWidth()),
+                        y + (j * pattern.getRegionHeight()));
+            }
+        }
+    }
+}
