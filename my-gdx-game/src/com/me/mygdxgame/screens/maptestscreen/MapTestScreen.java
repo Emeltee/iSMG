@@ -5,15 +5,15 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.me.mygdxgame.GameState;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.maps.GameMap;
 import com.me.mygdxgame.screens.GameScreen;
-import com.me.mygdxgame.utilities.GameMap;
 
 /** Just loads some GameMap and lets you view it.*/
 public class MapTestScreen implements GameScreen {
 
     /** GameMap to display.*/
     private GameMap map = null;
-    
+
     /** Constructor.
      * 
      * @param map The GameMap to display.
@@ -21,7 +21,7 @@ public class MapTestScreen implements GameScreen {
     public MapTestScreen(GameMap map) {
         this.map = map;
     }
-    
+
     @Override
     public void load() {
         this.map.load();
@@ -34,9 +34,9 @@ public class MapTestScreen implements GameScreen {
 
     @Override
     public void render(float deltaTime, int difficulty) {
-        
+
         // Camera controls. Moves at 180 units a second.
-     // Camera controls. Moves at 180 units a second.
+        // Camera controls. Moves at 180 units a second.
         if (Gdx.input.isKeyPressed(Keys.A)) {
             MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
         }
@@ -56,14 +56,13 @@ public class MapTestScreen implements GameScreen {
             MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
         }
         MyGdxGame.currentGame.perspectiveCamera.update();
-        
-        // Set screen clear color. Cornflower Blue, just because.
-        Gdx.gl.glClearColor((100.0f / 256.0f), (149.0f / 256.0f),
-                (237.0f / 256.0f), 0.0f);
+
+        // Set screen clear color. Black, like a proper 8-bit game.
+        Gdx.gl.glClearColor(0, 0, 0, 0);
 
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        
+
         this.map.render(deltaTime);
     }
 
