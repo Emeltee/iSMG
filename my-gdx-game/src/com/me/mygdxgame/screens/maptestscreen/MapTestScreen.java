@@ -2,6 +2,7 @@ package com.me.mygdxgame.screens.maptestscreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.GL10;
 import com.me.mygdxgame.GameState;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.screens.GameScreen;
@@ -55,6 +56,13 @@ public class MapTestScreen implements GameScreen {
             MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
         }
         MyGdxGame.currentGame.perspectiveCamera.update();
+        
+        // Set screen clear color. Cornflower Blue, just because.
+        Gdx.gl.glClearColor((100.0f / 256.0f), (149.0f / 256.0f),
+                (237.0f / 256.0f), 0.0f);
+
+        // Clear screen.
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
         this.map.render(deltaTime);
     }
