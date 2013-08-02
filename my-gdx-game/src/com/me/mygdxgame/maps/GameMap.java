@@ -91,6 +91,8 @@ public abstract class GameMap {
         for (Rectangle rect : obstacles) {
             MyGdxGame.currentGame.shapeRenderer.box(rect.x, rect.y, 0, rect.width, rect.height, 0);
         }
+        
+        MyGdxGame.currentGame.shapeRenderer.end();
     }
 
     protected static void diagonalRight(TextureRegion pattern, int x, int y, int count) {
