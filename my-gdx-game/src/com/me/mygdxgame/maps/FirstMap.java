@@ -41,10 +41,10 @@ public class FirstMap extends GameMap {
     // the camera in the right spot, and you can kind of get it to look the way you want..
 
     private final int GROUND_DIM = 44; // Width of ground tile
-    private final int OFFSET = 5 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
+    private final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
     private final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
             GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2) - OFFSET, // Origin Y point, off-screen below
-            GROUND_HEIGHT = 7, // Rows of ground tile
+            GROUND_HEIGHT = 1, // Rows of ground tile
             GROUND_WIDTH = 20; // Columns of ground tile
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
@@ -121,9 +121,9 @@ public class FirstMap extends GameMap {
             new Rectangle(PLATFORM_START_X, GROUND_START_Y, GROUND_DIM * 3, GROUND_DIM * 1), // Platform
             new Rectangle(PLATFORM_START_X + GROUND_DIM - 5, GROUND_START_Y + GROUND_DIM, this.goalSprite.getRegionWidth(), (int)this.goalSprite.getRegionHeight() / 2.0f), // Goal
             new Rectangle(PLATFORM_START_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM + (int) (this.goalSprite.getRegionHeight() / 2.0f), (this.goalSprite.getRegionWidth()-20), (int) (this.goalSprite.getRegionHeight() / 2.0f)),
-            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - 26, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * 2), // Ceiling
-            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - 2*GROUND_DIM, GROUND_DIM, GROUND_DIM * 9), // Left boundary
-            new Rectangle(GROUND_END_X, GROUND_START_Y - 2*GROUND_DIM, GROUND_DIM, GROUND_DIM * 9) // Right boundary
+            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
+            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * 7), // Left boundary
+            new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * 7) // Right boundary
         };
         return result;
     }
@@ -136,16 +136,16 @@ public class FirstMap extends GameMap {
         MyGdxGame.currentGame.spriteBatch.begin();
 
         // Draw the lower wall in columns, alternating between decorative tiles by refractor
-        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH, 5);
+        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH, 6);
         // for (int i = 0; i < 5; i++) { checkerX(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * GROUND_DIM), (int)Math.ceil(GROUND_WIDTH / 2), 1); }
-        checkerX(this.pillarTopBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y + (4 * GROUND_DIM) - this.pillarTopBaseSprite.getRegionHeight() + 26, (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarTopBaseSprite.getRegionWidth()) / 2, 1);
         checkerX(this.pillarBottomBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y, (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1);
-        for (int i=0; i < 5; i++) { checkerX(this.pillarSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * this.pillarSprite.getRegionHeight()) + this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1); }
-        
-        tileXY(this.smallMazeSprite, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 9, 5);
+        for (int i=0; i < 6; i++) { checkerX(this.pillarSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * this.pillarSprite.getRegionHeight()) + this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1); }
+        checkerX(this.pillarTopBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarTopBaseSprite.getRegionWidth()) / 2, 1);
+
+        tileXY(this.smallMazeSprite, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 9, 6);
         diagonalRight(this.idkSprite, PLATFORM_START_X - (2 * GROUND_DIM), GROUND_START_Y, 4);
         diagonalLeft(this.idkSprite, PLATFORM_START_X + (4 * GROUND_DIM), GROUND_START_Y, 3);
-        tileXY(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - 26, GROUND_WIDTH, 2);
+        tileXY(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_WIDTH, 1);
 
         // Draw the upper wall, using one repeating pattern
         // tileX(this.borderFrames[animationFrame / 3 % 5], GROUND_ORIGIN_X, GROUND_START_Y + (6 * GROUND_DIM), 132);
@@ -155,7 +155,6 @@ public class FirstMap extends GameMap {
         tileX(this.rockSprite, PLATFORM_START_X, GROUND_START_Y, 3);
         MyGdxGame.currentGame.spriteBatch.draw(this.idkSprite, PLATFORM_START_X + (1 * GROUND_DIM), GROUND_START_Y + (1 * GROUND_DIM));
         MyGdxGame.currentGame.spriteBatch.draw(this.goalSprite, PLATFORM_START_X + (1 * GROUND_DIM - 5), GROUND_START_Y + (1* GROUND_DIM));
-        MyGdxGame.currentGame.spriteBatch.draw(this.nadiaSprite, PLATFORM_START_X - (4 * GROUND_DIM), GROUND_START_Y);
 
         // Draw the Waterfall
         MyGdxGame.currentGame.spriteBatch.draw(this.grate, PLATFORM_START_X - (3 * GROUND_DIM) + 12, GROUND_START_Y + 64);
@@ -166,8 +165,8 @@ public class FirstMap extends GameMap {
 
         // Draw the ground (last so it goes on top of everything.
         tileXY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, GROUND_HEIGHT);
-        tileY(this.wallSprite, GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - 2*GROUND_DIM, 9);
-        tileY(this.wallSprite, GROUND_END_X, GROUND_START_Y - 2*GROUND_DIM, 9);
+        tileY(this.wallSprite, GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, 7);
+        tileY(this.wallSprite, GROUND_END_X, GROUND_START_Y - GROUND_DIM, 7);
 
         // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
