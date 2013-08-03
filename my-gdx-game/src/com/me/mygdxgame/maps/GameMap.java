@@ -21,6 +21,9 @@ public abstract class GameMap {
      * an overlay.
      */
     protected boolean debugMode = false;
+    
+    /** A semi-transparent red GameMaps can pass to drawObstacles.*/
+    public static final Color DEFAULT_OBSTACLE_COLOR = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
     /**
      * Loads all resources (textures and sounds) specific to this game. Does
