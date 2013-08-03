@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.me.mygdxgame.maps.FirstMap;
+import com.me.mygdxgame.maps.SecondMap;
 import com.me.mygdxgame.screens.GameScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
 
@@ -67,7 +68,7 @@ public class MyGdxGame implements ApplicationListener {
             // TODO May want to load resources lazily, and pull out common
             // resources for storage in a public place. Also, can do this with
             // reflection.
-            this.games.add(new MapTestScreen(new FirstMap(true)));
+            this.games.add(new MapTestScreen(new SecondMap(15, true)));
             //this.games.add(new MapTestScreen(null));
 
             for (GameScreen game : this.games) {
