@@ -129,7 +129,7 @@ public class SecondMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), Color.RED);
+            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 
