@@ -3,10 +3,10 @@ package com.me.mygdxgame.screens.maptestscreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
-import com.me.mygdxgame.GameState;
 import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.maps.GameMap;
-import com.me.mygdxgame.screens.GameScreen;
+import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.GameScreen;
+import com.me.mygdxgame.utilities.GameState;
 
 /** Just loads some GameMap and lets you view it.*/
 public class MapTestScreen implements GameScreen {
