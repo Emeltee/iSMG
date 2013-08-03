@@ -1,7 +1,9 @@
 package com.me.mygdxgame.maps;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -84,15 +86,22 @@ public abstract class GameMap {
      */
     protected static void drawObstacles(Camera camera, Rectangle[] obstacles, Color obstacleColor) {
         
-        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Line);
+        // They seem to require you to call this RIGHT before drawing.
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        
+        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
         MyGdxGame.currentGame.shapeRenderer.setColor(obstacleColor);
         MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(camera.combined);
         
         for (Rectangle rect : obstacles) {
-            MyGdxGame.currentGame.shapeRenderer.box(rect.x, rect.y, 0, rect.width, rect.height, 0);
+                    
+            MyGdxGame.currentGame.shapeRenderer.rect(rect.x, rect.y, rect.width, rect.height);
         }
         
         MyGdxGame.currentGame.shapeRenderer.end();
+        
+        
     }
 
     protected static void diagonalRight(TextureRegion pattern, int x, int y, int count) {
