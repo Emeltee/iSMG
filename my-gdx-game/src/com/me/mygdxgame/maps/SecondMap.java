@@ -115,7 +115,7 @@ public class SecondMap extends GameMap {
         .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
         MyGdxGame.currentGame.spriteBatch.begin();
 
-        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
+        //tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
         tileY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
         tileY(this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
         tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
