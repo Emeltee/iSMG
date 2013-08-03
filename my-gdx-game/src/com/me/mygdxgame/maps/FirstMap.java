@@ -1,6 +1,7 @@
 package com.me.mygdxgame.maps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,6 +23,9 @@ public class FirstMap extends GameMap {
     private TextureRegion idkSprite;
     private TextureRegion goalSprite;
     private TextureRegion nadiaSprite;
+    private TextureRegion pillarSprite;
+    private TextureRegion pillarTopBaseSprite;
+    private TextureRegion pillarBottomBaseSprite;
 
     private TextureRegion[] borderFrames;
 
@@ -49,6 +53,12 @@ public class FirstMap extends GameMap {
 
     private final int PLATFORM_START_X = GROUND_ORIGIN_X + (6 * GROUND_DIM);
 
+    public FirstMap() {}    
+    
+    public FirstMap(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+    
     @Override
     public void load() {
         if (!this.resourcesLoaded) {
@@ -76,6 +86,11 @@ public class FirstMap extends GameMap {
             this.waterfall[2] = new TextureRegion(spriteSheet, 64, 125, 31, 84);
             this.waterfall[3] = new TextureRegion(spriteSheet, 96, 125, 31, 84);
             this.waterfall[4] = new TextureRegion(spriteSheet, 128, 125, 31, 84);
+            
+            this.pillarSprite = new TextureRegion(spriteSheet, 224, 124, 19, 36);
+            this.pillarBottomBaseSprite = new TextureRegion(spriteSheet, 224, 160, 19, 15);
+            this.pillarTopBaseSprite = new TextureRegion(spriteSheet, 224, 160, 19, 15);
+            this.pillarTopBaseSprite.flip(false, true);
 
             this.animationFrame = 0;
 
@@ -101,7 +116,16 @@ public class FirstMap extends GameMap {
     @Override
     public Rectangle[] getObstacles() {
         // TODO Auto-generated method stub
-        return null;
+        Rectangle[] result = {
+            new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT), // Ground
+            new Rectangle(PLATFORM_START_X, GROUND_START_Y, GROUND_DIM * 3, GROUND_DIM * 1), // Platform
+            new Rectangle(PLATFORM_START_X + GROUND_DIM - 5, GROUND_START_Y + GROUND_DIM, this.goalSprite.getRegionWidth(), (int)this.goalSprite.getRegionHeight() / 2.0f), // Goal
+            new Rectangle(PLATFORM_START_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM + (int) (this.goalSprite.getRegionHeight() / 2.0f), (this.goalSprite.getRegionWidth()-20), (int) (this.goalSprite.getRegionHeight() / 2.0f)),
+            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - 26, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * 2), // Ceiling
+            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - 2*GROUND_DIM, GROUND_DIM, GROUND_DIM * 9), // Left boundary
+            new Rectangle(GROUND_END_X, GROUND_START_Y - 2*GROUND_DIM, GROUND_DIM, GROUND_DIM * 9) // Right boundary
+        };
+        return result;
     }
 
     @Override
@@ -112,16 +136,20 @@ public class FirstMap extends GameMap {
         MyGdxGame.currentGame.spriteBatch.begin();
 
         // Draw the lower wall in columns, alternating between decorative tiles by refractor
-        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y, 30, 6);
-        for (int i = 0; i < 5; i++) { checkerX(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * GROUND_DIM), 15, 1); }
-        tileXY(this.smallMazeSprite, PLATFORM_START_X - (2 * GROUND_DIM), GROUND_START_Y, 7, 5);
+        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH, 5);
+        // for (int i = 0; i < 5; i++) { checkerX(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * GROUND_DIM), (int)Math.ceil(GROUND_WIDTH / 2), 1); }
+        checkerX(this.pillarTopBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y + (4 * GROUND_DIM) - this.pillarTopBaseSprite.getRegionHeight() + 26, (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarTopBaseSprite.getRegionWidth()) / 2, 1);
+        checkerX(this.pillarBottomBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y, (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1);
+        for (int i=0; i < 5; i++) { checkerX(this.pillarSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * this.pillarSprite.getRegionHeight()) + this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1); }
+        
+        tileXY(this.smallMazeSprite, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 9, 5);
         diagonalRight(this.idkSprite, PLATFORM_START_X - (2 * GROUND_DIM), GROUND_START_Y, 4);
         diagonalLeft(this.idkSprite, PLATFORM_START_X + (4 * GROUND_DIM), GROUND_START_Y, 3);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), 30);
+        tileXY(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - 26, GROUND_WIDTH, 2);
 
         // Draw the upper wall, using one repeating pattern
-        tileX(this.borderFrames[animationFrame / 3 % 5], GROUND_ORIGIN_X, GROUND_START_Y + (6 * GROUND_DIM), 132);
-        tileXY(this.largeMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y + (GROUND_DIM * 6) + 10, (int) Math.ceil(30 * (this.rockSprite.getRegionWidth()/(double)this.largeMazeSprite.getRegionWidth())), 2);
+        // tileX(this.borderFrames[animationFrame / 3 % 5], GROUND_ORIGIN_X, GROUND_START_Y + (6 * GROUND_DIM), 132);
+        // tileXY(this.largeMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y + (GROUND_DIM * 6) + 10, (int) Math.ceil(30 * (this.rockSprite.getRegionWidth()/(double)this.largeMazeSprite.getRegionWidth())), 2);
 
         // Create the refractor platform
         tileX(this.rockSprite, PLATFORM_START_X, GROUND_START_Y, 3);
@@ -130,19 +158,27 @@ public class FirstMap extends GameMap {
         MyGdxGame.currentGame.spriteBatch.draw(this.nadiaSprite, PLATFORM_START_X - (4 * GROUND_DIM), GROUND_START_Y);
 
         // Draw the Waterfall
-        MyGdxGame.currentGame.spriteBatch.draw(this.grate, PLATFORM_START_X - (3 * GROUND_DIM) + 5, GROUND_START_Y + 64);
-        MyGdxGame.currentGame.spriteBatch.draw(this.grate, PLATFORM_START_X + (5 * GROUND_DIM) + 18, GROUND_START_Y + 64);
-        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y);
-        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (5 * GROUND_DIM) + 13, GROUND_START_Y);
+        MyGdxGame.currentGame.spriteBatch.draw(this.grate, PLATFORM_START_X - (3 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        MyGdxGame.currentGame.spriteBatch.draw(this.grate, PLATFORM_START_X + (5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (3 * GROUND_DIM) + 8, GROUND_START_Y);
+        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (5 * GROUND_DIM) + 8, GROUND_START_Y);
 
 
         // Draw the ground (last so it goes on top of everything.
-        tileXY(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 30, 7);
+        tileXY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, GROUND_HEIGHT);
+        tileY(this.wallSprite, GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - 2*GROUND_DIM, 9);
+        tileY(this.wallSprite, GROUND_END_X, GROUND_START_Y - 2*GROUND_DIM, 9);
 
+        // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
-
+        
         // Finalize drawing.
         MyGdxGame.currentGame.spriteBatch.end();
+        
+        // Debug
+        if (this.debugMode) {
+            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), Color.RED);
+        }
 
     }
 }
