@@ -84,7 +84,7 @@ public abstract class GameMap {
      */
     protected static void drawObstacles(Camera camera, Rectangle[] obstacles, Color obstacleColor) {
         
-        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
+        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Line);
         MyGdxGame.currentGame.shapeRenderer.setColor(obstacleColor);
         MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(camera.combined);
         

@@ -67,7 +67,7 @@ public class MyGdxGame implements ApplicationListener {
             // TODO May want to load resources lazily, and pull out common
             // resources for storage in a public place. Also, can do this with
             // reflection.
-            this.games.add(new MapTestScreen(new FirstMap()));
+            this.games.add(new MapTestScreen(new FirstMap(true)));
             //this.games.add(new MapTestScreen(null));
 
             for (GameScreen game : this.games) {
