@@ -1,4 +1,4 @@
-package com.me.mygdxgame.maps;
+package com.me.mygdxgame.utilities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;

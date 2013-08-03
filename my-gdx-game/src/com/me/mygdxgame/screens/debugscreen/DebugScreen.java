@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
-import com.me.mygdxgame.GameState;
 import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.screens.GameScreen;
+import com.me.mygdxgame.utilities.GameScreen;
+import com.me.mygdxgame.utilities.GameState;
 
 /**
  * Screen for testing. Roughly analogous to a game "level".

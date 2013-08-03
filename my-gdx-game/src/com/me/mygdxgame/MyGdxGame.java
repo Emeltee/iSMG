@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.me.mygdxgame.maps.FirstMap;
-import com.me.mygdxgame.maps.SecondMap;
-import com.me.mygdxgame.maps.ThirdMap;
-import com.me.mygdxgame.screens.GameScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
+import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
+import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
+import com.me.mygdxgame.screens.seeteufelscreen.maps.ThirdMap;
+import com.me.mygdxgame.utilities.GameScreen;
 
 /**
  * Some game. Uses libGDX.

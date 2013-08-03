@@ -77,7 +77,7 @@ public class SamplePlayer {
         if (this.areResourcesLoaded) {
             this.footstep.dispose();
             this.player.dispose();
-
+            
             this.areResourcesLoaded = false;
         }
     }
