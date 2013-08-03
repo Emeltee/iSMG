@@ -1,4 +1,4 @@
-package com.me.mygdxgame.screens.debugscreen;
+package com.me.mygdxgame.screens.samplescreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
