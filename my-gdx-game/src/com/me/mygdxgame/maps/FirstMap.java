@@ -52,6 +52,8 @@ public class FirstMap extends GameMap {
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
 
     private final int PLATFORM_START_X = GROUND_ORIGIN_X + (6 * GROUND_DIM);
+    
+    private final Color OBSTACLE_COLOR = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
     public FirstMap() {}    
     
@@ -176,7 +178,7 @@ public class FirstMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), Color.RED);
+            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), OBSTACLE_COLOR);
         }
 
     }
