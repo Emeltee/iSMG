@@ -2,12 +2,10 @@ package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.screens.samplescreen.SamplePlayer;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
@@ -15,26 +13,15 @@ public class BusterShot implements GameEntity {
     
     // Just controlling which way it goes.
     public static enum ShotDirection { LEFT, RIGHT };
-
-    // Various speed control constants
-    public static final float MAX_SPEED = 5.0f;
-    public static final float ACCELERATION = 120.0f;
-    public static final float DECELERATION = 0.0f;
-    public static final short SHOT_FRAMERATE = 3;
-    public static final short MAX_SHOT_FRAMES = 6; // 0 deg, 30 deg, 60 deg, 90 deg, 120 deg, 150 deg
     
     // Constants for extracting bullet from Texture
     private static final int BULLET_X = 226;
     private static final int BULLET_Y = 175;
     private static final int BULLET_W = 7;
     private static final int BULLET_H = 5;
-
-    /** Flag indicating if resources are currently loaded. */
-    private boolean areResourcesLoaded = false;    
+ 
     /** TextureRegion representing the idle frame. */
     private TextureRegion bullet;
-    /** Tracks animation frame. */
-    private int prevFrame = 0;
     /** Tracks the number of frames that have passed. Used to time animation. */
     private short animationTimer = 0;
     /** General-purpose sprite sheet. */
@@ -62,9 +49,9 @@ public class BusterShot implements GameEntity {
         
         // Assumes speed is always positive.
         if (this.dir == ShotDirection.LEFT) {
-            this.position.x -= this.speed;
+            this.position.x -= this.speed * deltaTime;
         } else {
-            this.position.x += this.speed;
+            this.position.x += this.speed * deltaTime;;
         }
         
     }

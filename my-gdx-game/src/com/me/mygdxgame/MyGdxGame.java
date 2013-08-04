@@ -155,7 +155,7 @@ public class MyGdxGame implements ApplicationListener {
         //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
         if (this.entityTestScreen.getEntityCount() == 0) {
             // Push something here.
-            this.entityTestScreen.addEntity(new BusterShot(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), 1, BusterShot.ShotDirection.LEFT));
+            this.entityTestScreen.addEntity(new BusterShot(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), 100, BusterShot.ShotDirection.LEFT));
         }
         this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
