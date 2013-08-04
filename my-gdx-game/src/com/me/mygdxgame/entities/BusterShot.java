@@ -96,7 +96,7 @@ public class BusterShot implements GameEntity {
     @Override
     public EntityState getState() {
         // TODO Auto-generated method stub
-        return null;
+        return this.status;
     }
 
     @Override

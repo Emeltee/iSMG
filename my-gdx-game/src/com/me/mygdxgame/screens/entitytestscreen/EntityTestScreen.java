@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.entities.Bomb;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
@@ -94,6 +95,11 @@ public class EntityTestScreen implements GameScreen {
             
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.push(e);
+                if (e instanceof Bomb && ((Bomb)e).hasCreatedEntities()){
+                    for (GameEntity f: e.getCreatedEntities()) {
+                        this.entities.add(f);
+                    }
+                }
             }
             if (e.hasCreatedEntities()) {
                 this.toAdd.push(e.getCreatedEntities());
