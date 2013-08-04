@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -50,6 +52,22 @@ public class EntityTestScreen implements GameScreen {
      */
     public int getEntityCount() {
         return this.entities.size();
+    }
+    
+    /**
+     * Retrieves the list of obstacles from the underlying {@link GameMap}.
+     * @return A list of Rectangles representing the obstacles in the Screen's GameMap.
+     */
+    public Rectangle[] getObstacles() {
+        return this.map.getObstacles();
+    }
+    
+    /**
+     * Retrieves the initial position from the underlying {@link GameMap}.
+     * @return A Vector3 containing the initial position in the Screen's GameMap.
+     */
+    public Vector3 getInitialPosition() {
+        return this.map.getInitialPosition();
     }
     
     @Override
