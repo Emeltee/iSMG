@@ -3,6 +3,8 @@ package com.me.mygdxgame.screens.entitytestscreen;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL10;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -63,6 +65,9 @@ public class EntityTestScreen implements GameScreen {
     @Override
     public void render(float deltaTime, int difficulty) {
         
+        // Clear screen.
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
         // Update and draw all current entities.
         for (GameEntity e : this.entities) {
             
@@ -86,7 +91,7 @@ public class EntityTestScreen implements GameScreen {
         }
         this.toAdd.clear();
         this.toRemove.clear();
-        
+
         // Render obstacles.
         this.map.render(deltaTime);
     }

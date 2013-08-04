@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.BusterShot;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
@@ -154,7 +155,7 @@ public class MyGdxGame implements ApplicationListener {
         //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
         if (this.entityTestScreen.getEntityCount() == 0) {
             // Push something here.
-            this.entityTestScreen.addEntity(new BusterShot(new Texture("img/seeTiles1.png"), 44 * 3, 44 * 3, BusterShot.ShotDirection.LEFT));
+            this.entityTestScreen.addEntity(new BusterShot(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), 1, BusterShot.ShotDirection.LEFT));
         }
         this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
