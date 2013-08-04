@@ -41,6 +41,8 @@ public class Bomb implements GameEntity {
     private Rectangle [] watchOut;
     /** */
     private EntityState status;
+    
+    private Explosion[] explosions;
   
     public Bomb(Texture spriteSheet, Vector3 position, Vector3 velocity, BombDirection dir, Rectangle [] watchOut) {
         this.spriteSheet = spriteSheet;
@@ -69,6 +71,7 @@ public class Bomb implements GameEntity {
             for (Rectangle r: this.watchOut) {
                 if (r.contains(this.position.x, this.position.y)) {
                     this.status = EntityState.Destroyed;
+                    explode();
                     return;
                 }
             }
@@ -97,19 +100,25 @@ public class Bomb implements GameEntity {
     @Override
     public EntityState getState() {
         // TODO Auto-generated method stub
-        return null;
+        return this.status;
     }
 
     @Override
     public boolean hasCreatedEntities() {
         // TODO Auto-generated method stub
-        return false;
+        return this.explosions != null;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         // TODO Auto-generated method stub
-        return null;
+        return this.explosions;
     }
 
+    private void explode() {
+        // TODO Make this look better.
+        this.explosions = new Explosion[2];
+        this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+2, this.position.y+2, this.position.z));
+        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-2, this.position.y-2, this.position.z));
+    }
 }
