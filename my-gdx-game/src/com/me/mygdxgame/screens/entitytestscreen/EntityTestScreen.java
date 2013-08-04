@@ -26,13 +26,30 @@ public class EntityTestScreen implements GameScreen {
      * 
      * @param width Test area width in pixels.
      * @param height Test area height in pixels.
-     * @param entity A class deriving GameEntity to test.
      */
-    public EntityTestScreen(int width, int height, GameEntity entity) {
+    public EntityTestScreen(int width, int height) {
         
         this.map = new EntityTestMap(width, height, EntityTestMap.DEFAULT_THICKNESS);
+    }
+    
+    /**
+     * Add a {@link GameEntity} to the Screen.
+     * 
+     * @param entity GameEntity to add.
+     */
+    public void addEntity(GameEntity entity) {
         this.entities.push(entity);
     }
+    
+    /**
+     * Retrieves the number of {@link GameEntity} objects in this Screen.
+     * 
+     * @return The number of GameEntity objects in this Screen;
+     */
+    public int getEntityCount() {
+        return this.entities.size();
+    }
+    
     @Override
     public void load() {
         // N/A
