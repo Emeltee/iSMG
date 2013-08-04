@@ -4,11 +4,13 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Bomb;
+import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
@@ -87,6 +89,14 @@ public class EntityTestScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+            for (GameEntity e: this.entities) {
+                if (e instanceof Refractor) {
+                    ((Refractor) e).onTake();
+                }
+            }
+        }
+        
         // Update and draw all current entities.
         for (GameEntity e : this.entities) {
             
@@ -94,12 +104,7 @@ public class EntityTestScreen implements GameScreen {
             e.draw();
             
             if (e.getState() == EntityState.Destroyed) {
-                this.toRemove.push(e);
-                if (e instanceof Bomb && ((Bomb)e).hasCreatedEntities()){
-                    for (GameEntity f: e.getCreatedEntities()) {
-                        this.entities.add(f);
-                    }
-                }
+                this.toRemove.push(e);              
             }
             if (e.hasCreatedEntities()) {
                 this.toAdd.push(e.getCreatedEntities());

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +13,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.BusterShot;
 import com.me.mygdxgame.entities.Bomb;
+import com.me.mygdxgame.entities.Refractor;
+import com.me.mygdxgame.entities.Rocket;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
@@ -156,12 +159,19 @@ public class MyGdxGame implements ApplicationListener {
         //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
         if (this.entityTestScreen.getEntityCount() == 0) {
             // Push something here.
-            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(100,100,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
-            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(100,50,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
-            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(50,50,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
-            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(50,25,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
-            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(25,25,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(100,100,50), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(100,50,25), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(50,50,0), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(50,25,-25), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(25,25,-50), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-100,100,50), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-100,50,25), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(-50,50,0), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-50,25,-25), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-25,25,-50), entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Refractor(new Texture("img/seeTiles1.png"), 0 - (int)(Refractor.REFRACTOR_W/2), 0-(int)(Refractor.REFRACTOR_H/2)));
         }
+        
         this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
 
