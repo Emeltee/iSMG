@@ -10,44 +10,44 @@ import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
-public class BusterShot implements GameEntity {
+public class Bomb implements GameEntity {
     
     // Just controlling which way it goes.
-    public static enum ShotDirection { LEFT, RIGHT };
+    public static enum BombDirection { LEFT, RIGHT };
     
     // Constants for extracting bullet from Texture
-    private static final int BULLET_X = 226;
-    private static final int BULLET_Y = 175;
-    private static final int BULLET_W = 7;
-    private static final int BULLET_H = 5;
- 
+    private static final int BOMB_X = 210;
+    private static final int BOMB_Y = 175;
+    private static final int BOMB_W = 16;
+    private static final int BOMB_H = 16;
+
+    private static final float GRAVITY = 4; 
+    
     /** TextureRegion representing the idle frame. */
-    private TextureRegion bullet;
+    private TextureRegion bomb;
     /** Tracks the number of frames that have passed. Used to time animation. */
     private short animationTimer = 0;
     /** General-purpose sprite sheet. */
     private Texture spriteSheet = null;
 
     /** Direction of bullet trajectory */
-    private ShotDirection dir;
+    private BombDirection dir;
 
     /** Current position in 3D space. */
     private Vector3 position = new Vector3(0, 0, 0);
     /** Current velocity. */
-    private int speed =  0;
-    
-    private EntityState status;
-    
-    /** Areas of the map to look out for. */
+    private Vector3 velocity = new Vector3(0, 0, 0);
+    /** */
     private Rectangle [] watchOut;
+    /** */
+    private EntityState status;
   
-    public BusterShot() {}
-    public BusterShot(Texture spriteSheet, Vector3 position, int speed, ShotDirection dir, Rectangle[] watchOut) {
+    public Bomb(Texture spriteSheet, Vector3 position, Vector3 velocity, BombDirection dir, Rectangle [] watchOut) {
         this.spriteSheet = spriteSheet;
         this.position.set(position);
-        this.speed = speed;
+        this.velocity = velocity;
         this.dir = dir;
-        this.bullet = new TextureRegion(this.spriteSheet, BULLET_X, BULLET_Y, BULLET_W, BULLET_H);
+        this.bomb = new TextureRegion(this.spriteSheet, BOMB_X, BOMB_Y, BOMB_W, BOMB_H);
         this.watchOut = watchOut;
         this.status = EntityState.Running;
     }
@@ -55,29 +55,30 @@ public class BusterShot implements GameEntity {
     
     @Override
     public void update(float deltaTime) {
-        
         if (this.status == EntityState.Running) {
             // Assumes speed is always positive.
-            if (this.dir == ShotDirection.LEFT) {
-                this.position.x -= this.speed * deltaTime;            
+            if (this.dir == BombDirection.LEFT) {
+                this.position.x -= this.velocity.x * deltaTime;
             } else {
-                this.position.x += this.speed * deltaTime;;
+                this.position.x += this.velocity.x * deltaTime;;
             }
             
-            for(Rectangle r: this.watchOut) {
+            this.position.y +=  this.velocity.y * deltaTime;
+            this.velocity.y -= GRAVITY;
+            
+            for (Rectangle r: this.watchOut) {
                 if (r.contains(this.position.x, this.position.y)) {
                     this.status = EntityState.Destroyed;
                     return;
                 }
             }
         }
-
+        
     }
 
     @Override
     public void draw() {
-        
-        if (this.status == EntityState.Running) {
+        if (this.status == EntityState.Running){
             // Every call, increment the animationTimer.
             this.animationTimer++;
             
@@ -87,7 +88,7 @@ public class BusterShot implements GameEntity {
             
             MyGdxGame.currentGame.spriteBatch.begin();
             
-            MyGdxGame.currentGame.spriteBatch.draw(bullet, this.position.x, this.position.y, this.bullet.getRegionWidth() / 2.0f, this.bullet.getRegionHeight() / 2.0f, BULLET_W, BULLET_H, 1, 1, 30 * this.animationTimer);
+            MyGdxGame.currentGame.spriteBatch.draw(bomb, this.position.x, this.position.y, this.bomb.getRegionWidth() / 2.0f, this.bomb.getRegionHeight() / 2.0f, BOMB_W, BOMB_H, 1, 1, 30 * this.animationTimer);
             
             MyGdxGame.currentGame.spriteBatch.end();
         }

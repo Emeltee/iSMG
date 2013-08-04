@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.BusterShot;
+import com.me.mygdxgame.entities.Bomb;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
@@ -155,7 +156,11 @@ public class MyGdxGame implements ApplicationListener {
         //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
         if (this.entityTestScreen.getEntityCount() == 0) {
             // Push something here.
-            this.entityTestScreen.addEntity(new BusterShot(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), 100, BusterShot.ShotDirection.LEFT));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(100,100,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(100,50,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(50,50,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(50,25,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
+            this.entityTestScreen.addEntity(new Bomb(new Texture("img/seeTiles1.png"), new Vector3(0, 0, 0), new Vector3(25,25,0), Bomb.BombDirection.LEFT, entityTestScreen.getObstacles()));
         }
         this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
