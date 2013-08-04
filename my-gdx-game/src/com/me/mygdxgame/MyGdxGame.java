@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
+import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
@@ -53,6 +54,8 @@ public class MyGdxGame implements ApplicationListener {
     private int lives = MyGdxGame.MAX_LIVES;
     /** Current difficulty level.*/
     private int difficulty = 0;
+    /** Screen used for testing GameEntities. Probably a cleaner way to do this.*/
+    private EntityTestScreen entityTestScreen = new EntityTestScreen(256, 256);
 
     /** Constructor */
     public MyGdxGame() {
@@ -146,7 +149,11 @@ public class MyGdxGame implements ApplicationListener {
         //        }
 
         // TEMP. Just run current screen. Change once we have enough to rotate between.
-        this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        if (this.entityTestScreen.getEntityCount() == 0) {
+            // Push something here.
+        }
+        this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
 
     @Override
