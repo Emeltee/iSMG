@@ -7,7 +7,7 @@ import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
-public class MegaPlayer implements GameEntity, Damageable {
+public class Seeteufel implements GameEntity, Damageable {
 
     @Override
     public void damage(int damage) {
@@ -62,5 +62,6 @@ public class MegaPlayer implements GameEntity, Damageable {
         // TODO Auto-generated method stub
         return null;
     }
+
 
 }
