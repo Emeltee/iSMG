@@ -21,7 +21,7 @@ public class FallingPlatform extends Platform {
         this.hasLanded = false;
     }
     
-    public void update() {
+    public void update(float deltaTime) {
         if (this.status == EntityState.Running) {
             if (this.health <= 0) {
                 this.explode();
