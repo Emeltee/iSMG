@@ -20,14 +20,16 @@ public class Platform implements GameEntity, Damageable {
     
     public static final int MAX_HEALTH = 1;
     
-    private Texture spriteSheet;
-    private TextureRegion platform;
-    private EntityState status;
-    private int x, y;
-    private int health;
-    private Rectangle hitbox;
-    private Rubble[] rubble;
-    private static final int RUBBLE_LIFE = 500;
+    protected Texture spriteSheet;
+    protected TextureRegion platform;
+    protected EntityState status;
+    protected int x, y;
+    protected int health;
+    protected Rectangle hitbox;
+    protected Rubble[] rubble;
+    protected static final int RUBBLE_LIFE = 500;
+    
+    public Platform() {}
     
     public Platform(Texture spriteSheet, int x, int y) {
         this.spriteSheet = spriteSheet;
