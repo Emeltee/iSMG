@@ -65,7 +65,7 @@ public class BusterShot implements GameEntity {
             }
             
             for(Rectangle r: this.watchOut) {
-                if (r.contains(this.position.x, this.position.y)) {
+                if (r.overlaps(new Rectangle(this.position.x, this.position.y, BULLET_W, BULLET_H))) {
                     this.status = EntityState.Destroyed;
                     return;
                 }

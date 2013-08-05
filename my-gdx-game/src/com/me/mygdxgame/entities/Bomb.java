@@ -13,10 +13,10 @@ import com.me.mygdxgame.utilities.GameEntity;
 public class Bomb implements GameEntity {
     
     // Constants for extracting bullet from Texture
-    private static final int BOMB_X = 210;
-    private static final int BOMB_Y = 175;
-    private static final int BOMB_W = 16;
-    private static final int BOMB_H = 16;
+    public static final int BOMB_X = 210;
+    public static final int BOMB_Y = 175;
+    public static final int BOMB_W = 16;
+    public static final int BOMB_H = 16;
 
     private static final float GRAVITY = 4; 
     
@@ -61,7 +61,7 @@ public class Bomb implements GameEntity {
             this.position.z += this.velocity.z * deltaTime;
             
             for (Rectangle r: this.watchOut) {
-                if (r.contains(this.position.x, this.position.y)
+                if (r.overlaps(new Rectangle(this.position.x, this.position.y, BOMB_W, BOMB_H))
                     && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
                          || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
                          || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
