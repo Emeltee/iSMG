@@ -63,7 +63,7 @@ public class Rocket implements GameEntity {
             this.position.z += this.velocity.z * deltaTime;
             
             for (Rectangle r: this.watchOut) {
-                if (r.contains(this.position.x, this.position.y)
+                if (r.overlaps(new Rectangle(this.position.x, this.position.y, ROCKET_W, ROCKET_H))
                     && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
                          || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
                          || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
