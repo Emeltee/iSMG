@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.BusterShot;
+import com.me.mygdxgame.entities.BusterShot.ShotDirection;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -25,7 +26,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 46;
-    private static final float MAX_BUSTER_COOLDOWN = 1.0f;
+    private static final float MAX_BUSTER_COOLDOWN = 0.3f;
     private static final float MAX_FLINCH_TIME = 1.0f;
     private static final float MAX_SPEED = 4.0f;
     private static final float MAX_JUMP_THRUST_TIME = 0.3f;
@@ -33,53 +34,59 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float DECELERATION = 40.0f;
     private static final short RUN_FRAMERATE = 3;
     private static final short MAX_RUN_FRAMES = 4;
-    private static final float JUMP_THRUST = 60.0f;
+    private static int BASE_SHOT_SPEED = 200;
+    private static int BASE_SHOT_POWER = 1;
     
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
     private int health = MegaPlayer.MAX_HEALTH;
     private Rectangle[] obstacles = null;
+    private Damageable[] targets = null;
     private Seeteufel seeteufel = null;
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
     private int animationFrame = 0;
     private boolean isInAir = false;
     private boolean isJumping = false;
     private boolean canJump = true;
-    private int busterCooldown = 0;
+    private float busterCooldown = 0;
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
+    private boolean isFacingRight = true;
     
     private TextureRegion[] runRight = new TextureRegion[4];
     private TextureRegion[] runLeft = new TextureRegion[4];
     private TextureRegion[] runShootRight = new TextureRegion[4];
     private TextureRegion[] runShootLeft = new TextureRegion[4];
-    private TextureRegion standRight = new TextureRegion();
-    private TextureRegion standLeft = new TextureRegion();
-    private TextureRegion standShootRight = new TextureRegion();
-    private TextureRegion standShootLeft = new TextureRegion();
+    private TextureRegion standRight = null;
+    private TextureRegion standLeft = null;
+    private TextureRegion standShootRight = null;
+    private TextureRegion standShootLeft = null;
     private TextureRegion[] damageRight = new TextureRegion[2];
     private TextureRegion[] damageLeft = new TextureRegion[2];
     private TextureRegion[] jumpLeft = new TextureRegion[2];
     private TextureRegion[] jumpRight = new TextureRegion[2];
     private TextureRegion[] jumpShootLeft = new TextureRegion[2];
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
+    private Texture busterTexture = null;
     
     private ArrayDeque<BusterShot> newShots = new ArrayDeque<BusterShot>();
     
-    public MegaPlayer(Texture texture, Seeteufel seeteufel, Vector3 initialPosition, Rectangle[] obstacles) {
+    public MegaPlayer(Texture playerTexture, Texture busterTexture, Seeteufel seeteufel, Vector3 initialPosition, Rectangle[] obstacles, Damageable[] targets) {
         this.seeteufel = seeteufel;
         this.position.set(initialPosition);
         this.obstacles = obstacles;
+        this.targets = targets;
+        this.busterTexture = busterTexture;
         
-        this.runRight[0] = new TextureRegion(texture, 0, 0,
+        this.runRight[0] = new TextureRegion(playerTexture, 0, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[1] = new TextureRegion(texture,
+        this.runRight[1] = new TextureRegion(playerTexture,
                 this.runRight[0].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[2] = new TextureRegion(texture,
+        this.runRight[2] = new TextureRegion(playerTexture,
                 this.runRight[1].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[3] = new TextureRegion(texture,
+        this.runRight[3] = new TextureRegion(playerTexture,
                 this.runRight[2].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -92,18 +99,18 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runLeft[3] = new TextureRegion(this.runRight[3]);
         this.runLeft[3].flip(true, false);
         
-        this.runShootRight[0] = new TextureRegion(texture, 0,
+        this.runShootRight[0] = new TextureRegion(playerTexture, 0,
                 MegaPlayer.SPRITE_HEIGHT + 1, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[1] = new TextureRegion(texture,
+        this.runShootRight[1] = new TextureRegion(playerTexture,
                 this.runRight[1].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[2] = new TextureRegion(texture,
+        this.runShootRight[2] = new TextureRegion(playerTexture,
                 this.runRight[2].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[3] = new TextureRegion(texture,
+        this.runShootRight[3] = new TextureRegion(playerTexture,
                 this.runRight[3].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
@@ -117,23 +124,23 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runShootLeft[3] = new TextureRegion(this.runShootRight[3]);
         this.runShootLeft[3].flip(true, false);
         
-        this.standRight = new TextureRegion(texture, 0,
+        this.standRight = new TextureRegion(playerTexture, 0,
                 this.runShootRight[0].getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.standLeft = new TextureRegion(this.standRight);
         this.standLeft.flip(true, false);
         
-        this.standShootRight = new TextureRegion(texture,
+        this.standShootRight = new TextureRegion(playerTexture,
                 this.runShootRight[1].getRegionX(),
                 this.standRight.getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
         this.standShootLeft = new TextureRegion(this.standShootRight);
         this.standShootLeft.flip(true, false);
 
-        this.damageRight[0] = new TextureRegion(texture, this.runShootRight[2].getRegionX(),
+        this.damageRight[0] = new TextureRegion(playerTexture, this.runShootRight[2].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.damageRight[1] = new TextureRegion(texture, this.runShootRight[3].getRegionX(),
+        this.damageRight[1] = new TextureRegion(playerTexture, this.runShootRight[3].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.damageLeft[0] = new TextureRegion(this.damageRight[0]);
@@ -141,11 +148,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.damageLeft[1] = new TextureRegion(this.damageRight[1]);
         this.damageLeft[1].flip(true, false);
         
-        this.jumpRight[0] = new TextureRegion(texture,
+        this.jumpRight[0] = new TextureRegion(playerTexture,
                 this.runRight[0].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpRight[1] = new TextureRegion(texture,
+        this.jumpRight[1] = new TextureRegion(playerTexture,
                 this.runRight[2].getRegionX(), this.jumpRight[0].getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -154,11 +161,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpLeft[1] = new TextureRegion(this.jumpRight[1]);
         this.jumpLeft[1].flip(true, false);
         
-        this.jumpShootRight[0] = new TextureRegion(texture,
+        this.jumpShootRight[0] = new TextureRegion(playerTexture,
                 this.runRight[1].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpShootRight[1] = new TextureRegion(texture, this.runRight[3].getRegionX(),
+        this.jumpShootRight[1] = new TextureRegion(playerTexture, this.runRight[3].getRegionX(),
                 this.standRight.getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -207,12 +214,14 @@ public class MegaPlayer implements GameEntity, Damageable {
         // Move according to velocity, and check for obstacle collisions.
         this.position.y += this.velocity.y;
         this.checkCollisionsY();
-        
         this.position.x += this.velocity.x;
         this.checkCollionsX();
         
+        // If not flinched, apply user controls. If flinched, just reduce flinch timer.
         if (this.flinchTimer == 0) {
             this.handleInput(deltaTime);
+        } else {
+            this.flinchTimer = Math.max(this.flinchTimer - deltaTime, 0);
         }
         
         // Apply constant forces.
@@ -258,7 +267,9 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        GameEntity[] returnList = (GameEntity[]) this.newShots.toArray();
+        
+        GameEntity[] returnList = new GameEntity[this.newShots.size()];
+        this.newShots.toArray(returnList);
         this.newShots.clear();
         return returnList;
     }
@@ -332,7 +343,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 if (this.hitBox.x < obstacleRightEdge && hitBoxRightEdge > obstacleRightEdge) {
                     // Set position to obstacle's right edge. Drop velocity to 0 if you were moving left.
                     this.position.x = obstacleRightEdge;
-                    this.hitBox.x = this.position.x + 1;
+                    this.hitBox.x = this.position.x;
                     if(this.velocity.x < 0)
                     {
                         this.velocity.x = 0;
@@ -343,7 +354,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 else if (hitBoxRightEdge > obstacle.x && this.hitBox.x < obstacle.x) {
                     // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
                     this.position.x = obstacle.x - this.hitBox.width;
-                    this.hitBox.x = this.position.x - 1;
+                    this.hitBox.x = this.position.x;
                     if(this.velocity.x < 0)
                     {
                         this.velocity.x = 0;
@@ -372,8 +383,6 @@ public class MegaPlayer implements GameEntity, Damageable {
                     + (MegaPlayer.ACCELERATION * deltaTime),
                     MegaPlayer.MAX_SPEED);
         }
-        
-        
         
         // Jumping.
         if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W))
@@ -405,6 +414,22 @@ public class MegaPlayer implements GameEntity, Damageable {
             } else {
                 this.isJumping = false;
                 this.jumpThrustTimer = 0;
+            }
+        }
+        
+        // Shooting.
+        if (this.busterCooldown > 0) {
+            this.busterCooldown = Math.max(this.busterCooldown - deltaTime, 0);
+        } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+            this.busterCooldown = MegaPlayer.MAX_BUSTER_COOLDOWN;
+            if (this.isFacingRight) {
+                this.newShots.push(new BusterShot(this.busterTexture, position,
+                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
+                        MegaPlayer.BASE_SHOT_POWER, this.obstacles, this.targets));
+            } else {
+                this.newShots.push(new BusterShot(this.busterTexture, position,
+                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
+                        MegaPlayer.BASE_SHOT_POWER, this.obstacles, this.targets));
             }
         }
     }

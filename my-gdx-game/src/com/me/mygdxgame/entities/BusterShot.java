@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
@@ -35,20 +36,27 @@ public class BusterShot implements GameEntity {
     private Vector3 position = new Vector3(0, 0, 0);
     /** Current velocity. */
     private int speed =  0;
+    /** Damage done on collision.*/
+    private int power = 0;
+    /** Hitbox.*/
+    private Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
     
     private EntityState status;
     
     /** Areas of the map to look out for. */
     private Rectangle [] watchOut;
+    /** Stuff to hurt.*/
+    private Damageable[] targets;
   
-    public BusterShot() {}
-    public BusterShot(Texture spriteSheet, Vector3 position, int speed, ShotDirection dir, Rectangle[] watchOut) {
+    public BusterShot(Texture spriteSheet, Vector3 position, int speed, ShotDirection dir, int power, Rectangle[] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.position.set(position);
         this.speed = speed;
         this.dir = dir;
+        this.power = power;
         this.bullet = new TextureRegion(this.spriteSheet, BULLET_X, BULLET_Y, BULLET_W, BULLET_H);
-        this.watchOut = watchOut;
+        this.watchOut = obstacles;
+        this.targets = targets;
         this.status = EntityState.Running;
     }
     
@@ -63,9 +71,24 @@ public class BusterShot implements GameEntity {
             } else {
                 this.position.x += this.speed * deltaTime;;
             }
+            this.hitBox.x = this.position.x;
+            this.hitBox.y = this.position.y;
             
-            for(Rectangle r: this.watchOut) {
-                if (r.overlaps(new Rectangle(this.position.x, this.position.y, BULLET_W, BULLET_H))) {
+            // Check collisions with potential targets.
+            for (Damageable target : this.targets) {
+                Rectangle[] hitAreas = target.getHitArea();
+                for (Rectangle hitBox : hitAreas) {
+                    if (hitBox.overlaps(this.hitBox)) {
+                        target.damage(this.power);
+                        this.status = EntityState.Destroyed;
+                        return;
+                    }
+                }
+            }
+            
+            // Check for collisions with obstacles.
+            for (Rectangle r: this.watchOut) {
+                if (r.overlaps(this.hitBox)) {
                     this.status = EntityState.Destroyed;
                     return;
                 }
