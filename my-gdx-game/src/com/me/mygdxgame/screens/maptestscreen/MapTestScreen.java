@@ -36,7 +36,6 @@ public class MapTestScreen implements GameScreen {
     public void render(float deltaTime, int difficulty) {
 
         // Camera controls. Moves at 180 units a second.
-        // Camera controls. Moves at 180 units a second.
         if (Gdx.input.isKeyPressed(Keys.A)) {
             MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
         }
