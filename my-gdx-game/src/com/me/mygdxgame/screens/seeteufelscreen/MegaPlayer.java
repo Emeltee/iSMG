@@ -3,6 +3,8 @@ package com.me.mygdxgame.screens.seeteufelscreen;
 import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -23,10 +25,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float MAX_BUSTER_COOLDOWN = 1.0f;
     private static final float MAX_FLINCH_TIME = 1.0f;
     private static final float MAX_SPEED = 5.0f;
+    private static final float MAX_JUMP_THRUST_TIME = 1.0f;
     private static final float ACCELERATION = 120.0f;
     private static final float DECELERATION = 30.0f;
     private static final short RUN_FRAMERATE = 3;
     private static final short MAX_RUN_FRAMES = 4;
+    private static final float JUMP_THRUST = 120.0f;
     
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
@@ -36,8 +40,11 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
     private int animationFrame = 0;
     private boolean isInAir = false;
+    private boolean isJumping = false;
+    private boolean canJump = true;
     private int busterCooldown = 0;
     private float flinchTimer = 0;
+    private float jumpThrustTimer = 0;
     
     private TextureRegion[] runRight = new TextureRegion[4];
     private TextureRegion[] runLeft = new TextureRegion[4];
@@ -193,33 +200,23 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     @Override
     public void update(float deltaTime) {
+
+        // Move according to velocity, and check for obstacle collisions.
+        this.position.y += this.velocity.y;
+        this.checkCollisionsY();
         
-//        // Check collisions with obstacles on y. Move box up by one to avoid
-//        // detecting collisions with the floor you may be standing on.
-//        this.position.y += this.velocity.y;
-//        this.hitBox.y += 1;
-//        
-//        // Brute force it. We've got a deadline here.
-//        for (Rectangle obstacle : this.obstacles) {
-//            if (obstacle.overlaps(this.hitBox)) {
-//                
-//                // Check if it's a floor collision.
-//                if (this.position.y + this.hitBox.height > obstacle.y + obstacle.height &&
-//                        this.position.y <= obstacle.y + obstacle.height) {
-//                    this.position.y = obstacle.y + obstacle.height;
-//                    this.velocity.y = 0;
-//                    this.isInAir = false;
-//                }
-//                // Check if it's a ceiling collision.
-//                else if(this.position.y + this.hitBox.height < obstacle.y + obstacle.height && this.position.y + this.hitBox.height > obstacle.y)
-//                {
-//                    this.position.y = (collide->at(x)->posY_ - hitbox_.height_);
-//                    velocity->y = 0;
-//                    isJumping_ = false;
-//                    jumpThrustTime_ = 0;
-//                }
-//            }
-//        }
+        this.position.x += this.velocity.x;
+        this.checkCollionsX();
+        
+        if (this.flinchTimer == 0) {
+            this.handleInput(deltaTime);
+        }
+        
+        // Apply constant forces.
+        this.handlePhysics(deltaTime);
+        
+        // Update position.
+        this.position.add(this.velocity);
     }
 
     @Override
@@ -255,5 +252,173 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.newShots.clear();
         return returnList;
     }
+    
+    /**
+     * Check for collisions with obstacles in obstacles[] on the y axis.
+     * Alters position as appropriate.
+     */
+    private void checkCollisionsY() {
+        // Check collisions with obstacles on y. Move box up by one to avoid
+        // detecting collisions with the floor you may be standing on.
+        this.hitBox.x = this.position.x;
+        this.hitBox.y = this.position.y + 1;
+        
+        float obstacleTop = 0;
+        float hitBoxTop = this.hitBox.x + MegaPlayer.HITBOX_HEIGHT;
+        boolean yCollision = false;
+        
+        // Brute force it. We've got a deadline here.
+        for (Rectangle obstacle : this.obstacles) {
+            if (obstacle.overlaps(this.hitBox)) {
+                
+                obstacleTop = obstacle.y + obstacle.height;
+                // Check if it's a floor collision.
+                if (hitBoxTop > obstacleTop && this.hitBox.y <= obstacleTop) {
+                    // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
+                    this.position.y = obstacle.y + obstacle.height;
+                    this.velocity.y = 0;
+                    this.isInAir = false;
+                    yCollision = true;
+                    break;
+                }
+                // Check if it's a ceiling collision.
+                else if(hitBoxTop < obstacleTop && hitBoxTop > obstacle.y)
+                {
+                    // Set position to bottom of obstacle. Set y velocity to 0. Reset jump values.
+                    this.position.y = obstacle.y - this.hitBox.height;
+                    this.velocity.y = 0;
+                    this.isJumping = false;
+                    this.jumpThrustTimer = 0;
+                    yCollision = true;
+                    break;
+                }
+            }
+        }
 
+        // If there were no y collisions, assume you're in the air.
+        if (!yCollision) {
+            this.isInAir = true;
+        }
+    }
+    
+    /**
+     * Check for collisions with obstacles in obstacles[] on the x axis.
+     * Alters position as appropriate.
+     */
+    private void checkCollionsX() {
+        // Check collisions with obstacles on x.
+        this.hitBox.x = this.position.x;
+        this.hitBox.y = this.position.y;
+        
+        float obstacleRightEdge = 0;
+        float hitBoxRightEdge = this.hitBox.x + MegaPlayer.HITBOX_WIDTH;
+        
+        // O(n) like a charlatan.
+        for (Rectangle obstacle : this.obstacles) {
+            if (obstacle.overlaps(this.hitBox)) {
+                
+                obstacleRightEdge = obstacle.x + obstacle.width;
+                
+                // Collision on right side of obstacle.
+                if (this.hitBox.x < obstacleRightEdge && hitBoxRightEdge > obstacleRightEdge) {
+                    // Set position to obstacle's right edge. Drop velocity to 0 if you were moving left.
+                    this.position.x = hitBoxRightEdge;
+                    if(this.velocity.x < 0)
+                    {
+                        this.velocity.x = 0;
+                    }
+                    break;
+                }
+                // Collision on left side of obstacle.
+                else if (hitBoxRightEdge > obstacle.x && this.hitBox.x < obstacle.x) {
+                    // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
+                    this.position.x = obstacle.x - this.hitBox.width;
+                    if(this.velocity.x < 0)
+                    {
+                        this.velocity.x = 0;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates velocity according to user input.
+     * 
+     * @param deltaTime This update's time delta.
+     */
+    private void handleInput(float deltaTime) {
+        
+        // Acceleration based on key states.
+        if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
+            this.velocity.x = Math.max(this.velocity.x
+                    - (MegaPlayer.ACCELERATION * deltaTime),
+                    -MegaPlayer.MAX_SPEED);
+        }
+        if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
+            this.velocity.x = Math.min(this.velocity.x
+                    + (MegaPlayer.ACCELERATION * deltaTime),
+                    MegaPlayer.MAX_SPEED);
+        }
+        
+        
+        
+        // Jumping.
+        if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W))
+        {
+            // Jump if you're on the ground and can jump. Set flags as needed.
+            if (!this.isInAir && this.canJump) {
+                this.velocity.y = MegaPlayer.JUMP_THRUST;
+                this.isJumping = true;
+                this.canJump = false;
+            }
+        } else {
+            // If not pressing key and in the middle of a jump, stop ascending.
+            // Also keep the canJump flag updated. Ensures you need to let go
+            // of the key before you can jump again. Reset jump timer, which
+            // determines how long you ascend upwards.
+            this.canJump = !this.isInAir;
+            this.isJumping = false;
+            this.jumpThrustTimer = 0;
+        }
+        
+        // If already jumping, ascend upwards for as long as indicated by the
+        // timer.
+        if (this.isJumping) {
+            if (this.jumpThrustTimer < MegaPlayer.MAX_JUMP_THRUST_TIME) {
+                this.velocity.y = Math.max(this.velocity.y
+                        + (MegaPlayer.ACCELERATION * deltaTime),
+                        MegaPlayer.MAX_SPEED);
+                this.jumpThrustTimer += deltaTime;
+            } else {
+                this.isJumping = false;
+                this.jumpThrustTimer = 0;
+            }
+        }
+    }
+    
+    /**
+     * Apply constant forces such as deceleration and gravity to velocity.
+     * @param deltaTime The time delta for the current update.
+     */
+    private void handlePhysics(float deltaTime) {
+        // Applies deceleration to current velocity. Player decelerated such then they
+        // slow to a stop over several frames when not accelerating (pushing a
+        // movement button).
+        if (this.velocity.x < 0) {
+            this.velocity.x = Math.min(this.velocity.x
+                    + (MegaPlayer.DECELERATION * deltaTime), 0);
+        } else if (this.velocity.x > 0) {
+            this.velocity.x = Math.max(this.velocity.x
+                    - (MegaPlayer.DECELERATION * deltaTime), 0);
+        }
+        
+        // Apply gravity.
+        if (this.isInAir) {
+            this.velocity.y = Math.min(this.velocity.y
+                    - (MegaPlayer.DECELERATION * deltaTime),
+                    MegaPlayer.MAX_SPEED);
+        }
+    }
 }
