@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Refractor implements GameEntity {
 
     // Texture extraction constants 
-    public static final int REFRACTOR_X = 138;
+    public static final int REFRACTOR_X = 136;
     public static final int REFRACTOR_Y = 210;
     public static final int REFRACTOR_W = 18;
     public static final int REFRACTOR_H = 46;

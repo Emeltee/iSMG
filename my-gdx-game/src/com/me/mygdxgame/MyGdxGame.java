@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.BusterShot;
 import com.me.mygdxgame.entities.Bomb;
+import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.Rocket;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
@@ -170,6 +171,7 @@ public class MyGdxGame implements ApplicationListener {
             this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-50,25,-25), entityTestScreen.getObstacles()));
             this.entityTestScreen.addEntity(new Rocket(new Texture("img/seeTiles1.png"), new Vector3(0, 0, -100), new Vector3(-25,25,-50), entityTestScreen.getObstacles()));
             this.entityTestScreen.addEntity(new Refractor(new Texture("img/seeTiles1.png"), 0 - (int)(Refractor.REFRACTOR_W/2), 0-(int)(Refractor.REFRACTOR_H/2)));
+            this.entityTestScreen.addEntity(new Door(new Texture("img/seeTiles2.png"), -100, -100));
         }
         
         this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);

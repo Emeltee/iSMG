@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Bomb;
+import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -89,10 +90,26 @@ public class EntityTestScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
-        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
             for (GameEntity e: this.entities) {
                 if (e instanceof Refractor) {
                     ((Refractor) e).onTake();
+                }
+            }
+        }
+        
+        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+            for (GameEntity e: this.entities) {
+                if (e instanceof Door) {
+                    ((Door) e).onOpen();
+                }
+            }
+        }
+        
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            for (GameEntity e: this.entities) {
+                if (e instanceof Door) {
+                    ((Door) e).onShut();
                 }
             }
         }
