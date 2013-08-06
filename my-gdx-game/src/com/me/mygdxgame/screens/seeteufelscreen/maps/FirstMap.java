@@ -109,8 +109,7 @@ public class FirstMap extends GameMap {
 
     @Override
     public Vector3 getInitialPosition() {
-        // TODO Auto-generated method stub
-        return null;
+        return new Vector3(GROUND_END_X - GROUND_DIM, GROUND_START_Y + 2, 0);
     }
 
     @Override
