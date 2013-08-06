@@ -14,10 +14,10 @@ import com.me.mygdxgame.utilities.GameEntity;
 public class MegaHealthBar implements GameEntity {
 
     // Texture extraction coordinates and dimensions (Healthbar-chrome texture)
-    private static final int CHROME_X = 38;
-    private static final int CHROME_Y = 57;
-    private static final int CHROME_H = 68;
-    private static final int CHROME_W = 14;
+    public static final int CHROME_X = 38;
+    public static final int CHROME_Y = 57;
+    public static final int CHROME_H = 68;
+    public static final int CHROME_W = 14;
 
    // Offset distance for the healthbar from the Chrome
     private static final int BAR_X = 4;

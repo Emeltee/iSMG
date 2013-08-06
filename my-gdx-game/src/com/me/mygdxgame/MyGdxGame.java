@@ -5,24 +5,29 @@ import java.util.ArrayList;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.BonneHealthBar;
 import com.me.mygdxgame.entities.BusterShot;
 import com.me.mygdxgame.entities.Bomb;
 import com.me.mygdxgame.entities.Door;
+import com.me.mygdxgame.entities.MegaHealthBar;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.Rocket;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
 import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
 import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
 import com.me.mygdxgame.screens.seeteufelscreen.MegaPlayer;
+import com.me.mygdxgame.screens.seeteufelscreen.SeeteufellScreen;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.ThirdMap;
+import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
 
 /**
@@ -83,7 +88,7 @@ public class MyGdxGame implements ApplicationListener {
             // resources for storage in a public place. Also, can do this with
             // reflection.
             //this.games.add(new MapTestScreen(new ThirdMap(true)));
-            this.games.add(new MapTestScreen(new EntityTestMap(256, 256, EntityTestMap.DEFAULT_THICKNESS)));
+            this.games.add(new SeeteufellScreen());
             //this.games.add(new MapTestScreen(null));
 
             for (GameScreen game : this.games) {
@@ -158,12 +163,15 @@ public class MyGdxGame implements ApplicationListener {
         //        }
 
         // TEMP. Just run current screen. Change once we have enough to rotate between.
-        //this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        /*
         if (this.entityTestScreen.getEntityCount() == 0) {
-            this.entityTestScreen.addEntity(new MegaPlayer(new Texture("img/mmd.png"), null, new Vector3(0, 0, 0), this.entityTestScreen.getObstacles()));
-        }
+            MegaPlayer megaMan = new MegaPlayer(new Texture("img/mmd.png"), null, null, new Vector3(0, 0, 0), this.entityTestScreen.getObstacles(), null);
+            this.entityTestScreen.addEntity(megaMan);
+            this.entityTestScreen.addEntity(new BonneHealthBar(new Texture("img/seeTiles2.png"), 0, 0, megaMan));
+        }*/
         
-        this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        //this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
     }
 
     @Override
