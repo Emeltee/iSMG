@@ -4,31 +4,13 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.entities.BonneHealthBar;
-import com.me.mygdxgame.entities.BusterShot;
-import com.me.mygdxgame.entities.Bomb;
-import com.me.mygdxgame.entities.Door;
-import com.me.mygdxgame.entities.MegaHealthBar;
-import com.me.mygdxgame.entities.Refractor;
-import com.me.mygdxgame.entities.Rocket;
-import com.me.mygdxgame.screens.entitytestscreen.EntityTestMap;
-import com.me.mygdxgame.screens.entitytestscreen.EntityTestScreen;
-import com.me.mygdxgame.screens.maptestscreen.MapTestScreen;
-import com.me.mygdxgame.screens.seeteufelscreen.MegaPlayer;
-import com.me.mygdxgame.screens.seeteufelscreen.SeeteufellScreen;
-import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
-import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
-import com.me.mygdxgame.screens.seeteufelscreen.maps.ThirdMap;
-import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameScreen;
+import com.me.mygdxgame.utilities.GameState;
 
 /**
  * Some game. Uses libGDX.
@@ -52,10 +34,11 @@ public class MyGdxGame implements ApplicationListener {
     public SpriteBatch spriteBatch;
     /** Communal ShapeRenderer for primitives.*/
     public ShapeRenderer shapeRenderer;
-    /** Communal OrthographicCamera for adjusting view. */
-    public OrthographicCamera orthoCamera;
-    /** Communal PerspectiveCamera for adjusting view. */
-    public PerspectiveCamera perspectiveCamera;
+    
+    /** OrthographicCamera for adjusting view. */
+    private OrthographicCamera orthoCamera;
+    /** PerspectiveCamera for adjusting view. */
+    private PerspectiveCamera perspectiveCamera;
 
     private GameScreen currentGameScreen = null;
     /** List of GameScreens containing regular games. */
@@ -68,8 +51,10 @@ public class MyGdxGame implements ApplicationListener {
     private int lives = MyGdxGame.MAX_LIVES;
     /** Current difficulty level.*/
     private int difficulty = 0;
-    /** Screen used for testing GameEntities. Probably a cleaner way to do this.*/
-    private EntityTestScreen entityTestScreen = new EntityTestScreen(256, 256);
+//    /** Screen used for testing GameEntities. Probably a cleaner way to do this.*/
+//    private EntityTestScreen entityTestScreen = new EntityTestScreen(256, 256);
+    /** Used to ensure that initialize is called on the very first screen.*/
+    private boolean isThisTheFirstRun = true;
 
     /** Constructor */
     public MyGdxGame() {
@@ -88,11 +73,12 @@ public class MyGdxGame implements ApplicationListener {
             // resources for storage in a public place. Also, can do this with
             // reflection.
             //this.games.add(new MapTestScreen(new ThirdMap(true)));
-            this.games.add(new SeeteufellScreen());
+            this.games.add(new SeeteufelScreen());
             //this.games.add(new MapTestScreen(null));
 
             for (GameScreen game : this.games) {
                 game.load();
+                game.initialize();
             }
 
             // Set and initialize first screen.
@@ -136,42 +122,37 @@ public class MyGdxGame implements ApplicationListener {
 
     @Override
     public void render() {
-
-        //        // TODO Should choose boss/miniboss screens as appropriate.
-        //        // TODO Need to to proper screen transitions.
-        //        //TODO If lives == 0, transition to Game Over.
-        //
-        //        // If current screen has not reached a win or lose state, keep running.
-        //        if (this.currentGameScreen.getState() == GameState.Running) {
-        //            this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
-        //        } else {
-        //            // If current screen has reached either the win or lose state, time to pick a new screen.
-        //
-        //            // If screen has reached the lose state, reduce lives by one.
-        //            if (this.currentGameScreen.getState() == GameState.Lose) {
-        //                this.lives--;
-        //            }
-        //
-        //            // Pick the next screen. Ensure that it is not the same as the current screen.
-        //            GameScreen lastScreen = this.currentGameScreen;
-        //            while (lastScreen == this.currentGameScreen) {
-        //                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
-        //            }
-        //
-        //            // Initialize new screen.
-        //            this.currentGameScreen.initialize();
-        //        }
-
-        // TEMP. Just run current screen. Change once we have enough to rotate between.
-        this.currentGameScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
-        /*
-        if (this.entityTestScreen.getEntityCount() == 0) {
-            MegaPlayer megaMan = new MegaPlayer(new Texture("img/mmd.png"), null, null, new Vector3(0, 0, 0), this.entityTestScreen.getObstacles(), null);
-            this.entityTestScreen.addEntity(megaMan);
-            this.entityTestScreen.addEntity(new BonneHealthBar(new Texture("img/seeTiles2.png"), 0, 0, megaMan));
-        }*/
+    
+        // TODO Should choose boss/miniboss screens as appropriate.
+        // TODO Need to to proper screen transitions.
+        //TODO If lives == 0, transition to Game Over.
+    
+        if (this.isThisTheFirstRun) {
+            this.currentGameScreen.initialize();
+            this.isThisTheFirstRun = false;
+        }
         
-        //this.entityTestScreen.render(Gdx.graphics.getDeltaTime(), this.difficulty);
+        // If current screen has not reached a win or lose state, keep running.
+        if (this.currentGameScreen.getState() == GameState.Running) {
+            this.currentGameScreen.render(Gdx.graphics.getDeltaTime(),
+                    this.difficulty, this.perspectiveCamera, this.orthoCamera);
+        } else {
+            // If current screen has reached either the win or lose state, time to pick a new screen.
+    
+            // If screen has reached the lose state, reduce lives by one.
+            if (this.currentGameScreen.getState() == GameState.Lose) {
+                this.lives--;
+            }
+    
+            // Pick the next screen. Ensure that it is not the same as the current screen.
+            GameScreen lastScreen = this.currentGameScreen;
+            while (lastScreen == this.currentGameScreen) {
+                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
+            }
+    
+            // Initialize new screen.
+            this.currentGameScreen.initialize();
+        }
     }
 
     @Override

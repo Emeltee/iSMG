@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -40,8 +41,8 @@ public class Door implements GameEntity {
     }
 
     @Override
-    public void draw() {
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+    public void draw(Matrix4 transformMatrix) {
+        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.spriteBatch.begin();
         
         if (this.doorStatus == DoorState.SHUT) {

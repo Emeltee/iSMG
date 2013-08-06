@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
-import com.me.mygdxgame.MyGdxGame;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
 
@@ -12,9 +14,14 @@ import com.me.mygdxgame.utilities.GameState;
  * Screen for testing. Roughly analogous to a game "level".
  */
 public class SampleScreen implements GameScreen {
+    
+    private static final Vector3 CAM_INITIAL_POSITION = new Vector3(0, 0, 256);
 
     /** Object that handles player updating and rendering. */
     private SamplePlayer player = new SamplePlayer();
+    
+    /** Tracks the location of the camera, since it cannot be relied upon to be unchanged between calls to render.*/
+    private Vector3 camPos = new Vector3(SampleScreen.CAM_INITIAL_POSITION);
 
     /** Constructor. */
     public SampleScreen() {
@@ -35,31 +42,34 @@ public class SampleScreen implements GameScreen {
 
             // Camera controls. Moves at 180 units a second.
             if (Gdx.input.isKeyPressed(Keys.A)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
+                this.camPos.x -= (180 * deltaTime);
             }
             if (Gdx.input.isKeyPressed(Keys.D)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.x += (180 * deltaTime);
+                this.camPos.x += (180 * deltaTime);
             }
             if (Gdx.input.isKeyPressed(Keys.S)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.y -= (180 * deltaTime);
+                this.camPos.y -= (180 * deltaTime);
             }
             if (Gdx.input.isKeyPressed(Keys.W)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.y += (180 * deltaTime);
+                this.camPos.y += (180 * deltaTime);
             }
             if (Gdx.input.isKeyPressed(Keys.E)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.z -= (180 * deltaTime);
+                this.camPos.z -= (180 * deltaTime);
             }
             if (Gdx.input.isKeyPressed(Keys.Q)) {
-                MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
+                this.camPos.z += (180 * deltaTime);
             }
-            MyGdxGame.currentGame.perspectiveCamera.update();
         }
     }
 
     /**
      * Rendering logic. Clear screen and draw textures.
      */
-    private void draw() {
+    private void draw(PerspectiveCamera perspCam) {
+        // Update camera with position calculated in update.
+        perspCam.position.set(this.camPos);
+        perspCam.update();
+        
         // Set screen clear color. Cornflower Blue, just because.
         Gdx.gl.glClearColor((100.0f / 256.0f), (149.0f / 256.0f),
                 (237.0f / 256.0f), 0.0f);
@@ -68,7 +78,7 @@ public class SampleScreen implements GameScreen {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
         // Draw player.
-        this.player.draw();
+        this.player.draw(perspCam.combined);
     }
 
     @Override
@@ -84,7 +94,7 @@ public class SampleScreen implements GameScreen {
     @Override
     public void initialize() {
         this.player.initialize();
-        MyGdxGame.currentGame.perspectiveCamera.position.set(0, 0, 256);
+        this.camPos.set(SampleScreen.CAM_INITIAL_POSITION);
     }
 
     @Override
@@ -94,10 +104,10 @@ public class SampleScreen implements GameScreen {
     }
 
     @Override
-    public void render(float deltaTime, int difficulty) {
+    public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
 
         // Nice to separate update logic and rendering logic.
         this.update(deltaTime, difficulty);
-        this.draw();
+        this.draw(perspCam);
     }
 }

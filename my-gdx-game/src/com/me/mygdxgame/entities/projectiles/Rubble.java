@@ -1,8 +1,9 @@
-package com.me.mygdxgame.entities;
+package com.me.mygdxgame.entities.projectiles;
 
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -64,11 +65,11 @@ public abstract class Rubble implements GameEntity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         if (this.status == EntityState.Running){            
             // Prepare the game's spriteBatch for drawing.
             MyGdxGame.currentGame.spriteBatch
-            .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);            
+            .setProjectionMatrix(transformMatrix);            
             MyGdxGame.currentGame.spriteBatch.begin();
             
             // TODO spriteBatch's draw() function won't manage the z-axis automatically. Fix manually with scaleX/scaleY params? 

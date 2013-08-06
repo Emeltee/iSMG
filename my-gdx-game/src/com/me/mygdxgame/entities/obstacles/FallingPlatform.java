@@ -1,4 +1,4 @@
-package com.me.mygdxgame.entities;
+package com.me.mygdxgame.entities.obstacles;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;

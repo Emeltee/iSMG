@@ -1,9 +1,9 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.GameMap;
 
 /**
@@ -71,8 +71,8 @@ public class EntityTestMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime) {
-        GameMap.drawObstacles(MyGdxGame.currentGame.perspectiveCamera, obstacles, Color.RED);
+    public void render(float deltaTime, Matrix4 transformMatrix) {
+        GameMap.drawObstacles(transformMatrix, obstacles, Color.RED);
     }
 
 }

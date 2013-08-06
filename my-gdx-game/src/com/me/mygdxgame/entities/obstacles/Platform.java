@@ -1,12 +1,17 @@
-package com.me.mygdxgame.entities;
+package com.me.mygdxgame.entities.obstacles;
 
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.entities.projectiles.FatRubble;
+import com.me.mygdxgame.entities.projectiles.Rubble;
+import com.me.mygdxgame.entities.projectiles.SmallRubble;
+import com.me.mygdxgame.entities.projectiles.TallRubble;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -53,10 +58,10 @@ public class Platform implements GameEntity, Damageable {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         if (this.status == EntityState.Running) {
             MyGdxGame.currentGame.spriteBatch
-            .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+            .setProjectionMatrix(transformMatrix);
             MyGdxGame.currentGame.spriteBatch.begin();
             MyGdxGame.currentGame.spriteBatch.draw(this.platform, this.x, this.y);
             MyGdxGame.currentGame.spriteBatch.end();

@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 
@@ -100,11 +101,11 @@ public class SamplePlayer {
     /**
      * Render object to screen.
      */
-    public void draw() {
+    public void draw(Matrix4 transMat) {
 
         // Prepare the game's spriteBatch for drawing.
         MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+        .setProjectionMatrix(transMat);
         MyGdxGame.currentGame.spriteBatch.begin();
 
         // If player is running, current frame and sound effects need to be
