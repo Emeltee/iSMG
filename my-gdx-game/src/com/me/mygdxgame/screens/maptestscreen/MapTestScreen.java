@@ -3,7 +3,9 @@ package com.me.mygdxgame.screens.maptestscreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
-import com.me.mygdxgame.MyGdxGame;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
@@ -11,8 +13,13 @@ import com.me.mygdxgame.utilities.GameState;
 /** Just loads some GameMap and lets you view it.*/
 public class MapTestScreen implements GameScreen {
 
+    private static final Vector3 CAM_INITIAL_POSITION = new Vector3(0, 0, 256);
+    
     /** GameMap to display.*/
     private GameMap map = null;
+    
+    /** Tracks camera position.*/
+    private Vector3 camPos = new Vector3(MapTestScreen.CAM_INITIAL_POSITION);
 
     /** Constructor.
      * 
@@ -33,28 +40,29 @@ public class MapTestScreen implements GameScreen {
     }
 
     @Override
-    public void render(float deltaTime, int difficulty) {
+    public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
 
         // Camera controls. Moves at 180 units a second.
         if (Gdx.input.isKeyPressed(Keys.A)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
+            this.camPos.x -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.D)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.x += (180 * deltaTime);
+            this.camPos.x += (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.S)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.y -= (180 * deltaTime);
+            this.camPos.y -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.W)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.y += (180 * deltaTime);
+            this.camPos.y += (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.E)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.z -= (180 * deltaTime);
+            this.camPos.z -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.Q)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
+            this.camPos.z += (180 * deltaTime);
         }
-        MyGdxGame.currentGame.perspectiveCamera.update();
+        perspCam.position.set(this.camPos);
+        perspCam.update();
 
         // Set screen clear color. Black, like a proper 8-bit game.
         Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -62,13 +70,13 @@ public class MapTestScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-        this.map.render(deltaTime);
+        this.map.render(deltaTime, perspCam.combined);
     }
 
     @Override
     public void initialize() {
         // Initialize camera position.
-        MyGdxGame.currentGame.perspectiveCamera.position.set(0, 0, 0);
+        this.camPos.set(MapTestScreen.CAM_INITIAL_POSITION);
     }
 
     @Override

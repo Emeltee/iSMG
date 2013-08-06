@@ -1,9 +1,11 @@
-package com.me.mygdxgame.entities;
+package com.me.mygdxgame.entities.projectiles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -28,6 +30,8 @@ public class BusterShot implements GameEntity {
     private short animationTimer = 0;
     /** General-purpose sprite sheet. */
     private Texture spriteSheet = null;
+    /** Sound to play upon destruction when no targets are hit.*/
+    private Sound missSound = null;
 
     /** Direction of bullet trajectory */
     private ShotDirection dir;
@@ -38,6 +42,9 @@ public class BusterShot implements GameEntity {
     private int speed =  0;
     /** Damage done on collision.*/
     private int power = 0;
+    /** Distance shot may travel.*/
+    private float range = 0;
+    private float distanceTraveled = 0;
     /** Hitbox.*/
     private Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
     
@@ -48,11 +55,13 @@ public class BusterShot implements GameEntity {
     /** Stuff to hurt.*/
     private Damageable[] targets;
   
-    public BusterShot(Texture spriteSheet, Vector3 position, int speed, ShotDirection dir, int power, Rectangle[] obstacles, Damageable[] targets) {
+    public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, ShotDirection dir, int power, float range, Rectangle[] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
+        this.missSound = missSound;
         this.position.set(position);
         this.speed = speed;
         this.dir = dir;
+        this.range = range;
         this.power = power;
         this.bullet = new TextureRegion(this.spriteSheet, BULLET_X, BULLET_Y, BULLET_W, BULLET_H);
         this.watchOut = obstacles;
@@ -65,12 +74,23 @@ public class BusterShot implements GameEntity {
     public void update(float deltaTime) {
         
         if (this.status == EntityState.Running) {
-            // Assumes speed is always positive.
+            // Move. Assumes speed is always positive.
+            float toTravel = this.speed * deltaTime;
             if (this.dir == ShotDirection.LEFT) {
-                this.position.x -= this.speed * deltaTime;            
+                this.position.x -= toTravel;            
             } else {
-                this.position.x += this.speed * deltaTime;;
+                this.position.x += toTravel;
             }
+            
+            // Check if range has been traveled. If so, destroy.
+            this.distanceTraveled += toTravel;
+            if (this.distanceTraveled >= this.range) {
+                this.status = EntityState.Destroyed;
+                this.missSound.play();
+                return;
+            }
+            
+            // Update hitbox.
             this.hitBox.x = this.position.x;
             this.hitBox.y = this.position.y;
             
@@ -90,6 +110,7 @@ public class BusterShot implements GameEntity {
             for (Rectangle r: this.watchOut) {
                 if (r.overlaps(this.hitBox)) {
                     this.status = EntityState.Destroyed;
+                    this.missSound.play();
                     return;
                 }
             }
@@ -98,15 +119,14 @@ public class BusterShot implements GameEntity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         
         if (this.status == EntityState.Running) {
             // Every call, increment the animationTimer.
             this.animationTimer++;
             
             // Prepare the game's spriteBatch for drawing.
-            MyGdxGame.currentGame.spriteBatch
-            .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
             
             MyGdxGame.currentGame.spriteBatch.begin();
             

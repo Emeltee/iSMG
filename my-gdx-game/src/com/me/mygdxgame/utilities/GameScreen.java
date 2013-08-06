@@ -1,5 +1,8 @@
 package com.me.mygdxgame.utilities;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+
 
 /**
  * Interface through which the ApplicationListener will interact with and manage
@@ -35,8 +38,12 @@ public interface GameScreen {
      *            should become "harder" as this value increases. What this
      *            means is left to the implementer to decide. Value should
      *            always be >= 0 and may go arbitrarily high.
+     * @param perpCam
+     *            PerspectiveCamera to use for perspective rendering.
+     * @param orthoCam
+     *            OrthographicCamera to use for 2D rendering.
      */
-    public void render(float deltaTime, int difficulty);
+    public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam);
 
     /**
      * Should reset all stateful data. The result should a game that is in the

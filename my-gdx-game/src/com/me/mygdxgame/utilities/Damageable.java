@@ -33,7 +33,8 @@ public interface Damageable {
     /**
      * Retrieves this objects vulnerable areas.
      * 
-     * @return An array of Rectangles indicating areas attacks may affect.
+     * @return An array of Rectangles indicating areas attacks may affect. May
+     *         be empty, but should not be null.
      */
     public Rectangle[] getHitArea();
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -139,10 +140,10 @@ public class ThirdMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime) {
+    public void render(float deltaTime, Matrix4 transformMatrix) {
         // Prepare the game's spriteBatch for drawing.
         MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+        .setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.spriteBatch.begin();
         
         // Draw the bg
@@ -201,7 +202,7 @@ public class ThirdMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(MyGdxGame.currentGame.perspectiveCamera, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(transformMatrix, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 

@@ -1,18 +1,13 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
 import java.util.ArrayDeque;
-import java.util.Iterator;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.entities.Bomb;
-import com.me.mygdxgame.entities.Door;
-import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
@@ -22,9 +17,10 @@ import com.me.mygdxgame.utilities.GameState;
  * {@link GameScreen} used to test {@link GameEntity} objects. Uses {@link EntityTestMap}.
  */
 public class EntityTestScreen implements GameScreen {
+    
+    private static Vector3 CAM_INITIAL_POSITION = new Vector3(0, 0, 256);
 
-    private int width = 0;
-    private int height = 0;
+    private Vector3 camPos = new Vector3(EntityTestScreen.CAM_INITIAL_POSITION);
     private ArrayDeque<GameEntity> entities = new ArrayDeque<GameEntity>();
     private ArrayDeque<GameEntity> toRemove = new ArrayDeque<GameEntity>();
     private ArrayDeque<GameEntity[]> toAdd = new ArrayDeque<GameEntity[]>();
@@ -86,62 +82,38 @@ public class EntityTestScreen implements GameScreen {
     }
 
     @Override
-    public void render(float deltaTime, int difficulty) {
-        
+    public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         
         // Camera controls. Moves at 180 units a second.
         if (Gdx.input.isKeyPressed(Keys.A)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.x -= (180 * deltaTime);
+            this.camPos.x -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.D)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.x += (180 * deltaTime);
+            this.camPos.x += (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.S)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.y -= (180 * deltaTime);
+            this.camPos.y -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.W)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.y += (180 * deltaTime);
+            this.camPos.y += (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.E)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.z -= (180 * deltaTime);
+            this.camPos.z -= (180 * deltaTime);
         }
         if (Gdx.input.isKeyPressed(Keys.Q)) {
-            MyGdxGame.currentGame.perspectiveCamera.position.z += (180 * deltaTime);
+            this.camPos.z += (180 * deltaTime);
         }
-        MyGdxGame.currentGame.perspectiveCamera.update();
+        perspCam.position.set(this.camPos);
+        perspCam.update();
         
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        
-        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-            for (GameEntity e: this.entities) {
-                if (e instanceof Refractor) {
-                    ((Refractor) e).onTake();
-                }
-            }
-        }
-        
-        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
-            for (GameEntity e: this.entities) {
-                if (e instanceof Door) {
-                    ((Door) e).onOpen();
-                }
-            }
-        }
-        
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            for (GameEntity e: this.entities) {
-                if (e instanceof Door) {
-                    ((Door) e).onShut();
-                }
-            }
-        }
         
         // Update and draw all current entities.
         for (GameEntity e : this.entities) {
             
             e.update(deltaTime);
-            e.draw();
+            e.draw(perspCam.combined);
             
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.push(e);              
@@ -162,13 +134,12 @@ public class EntityTestScreen implements GameScreen {
         this.toRemove.clear();
 
         // Render obstacles.
-        this.map.render(deltaTime);
+        this.map.render(deltaTime, perspCam.combined);
     }
 
     @Override
     public void initialize() {
-        // Initialize camera position.
-        MyGdxGame.currentGame.perspectiveCamera.position.set(0, 0, 256);
+        this.camPos.set(EntityTestScreen.CAM_INITIAL_POSITION);
     }
 
     @Override

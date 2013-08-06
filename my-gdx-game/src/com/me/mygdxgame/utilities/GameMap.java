@@ -1,11 +1,11 @@
 package com.me.mygdxgame.utilities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -60,8 +60,11 @@ public abstract class GameMap {
      * @param deltaTime
      *            The amount of time in seconds that has passed since the
      *            previous render call.
+     * @param transformMatrix
+     *            Matrix4 to pass down to SpriteBatch and/or ShapeRenderer for
+     *            drawing.
      */
-    public abstract void render(float deltaTime);
+    public abstract void render(float deltaTime, Matrix4 transformMatrix);
     
     /**
      * Sets the debug flag. In debug mode, obstacles should be drawn to the
@@ -78,7 +81,7 @@ public abstract class GameMap {
      * Utility method that draws all Rectangles returned by getObstacles to the
      * screen in the given color.
      * 
-     * @param camera
+     * @param transformMatrix
      *            The Camera to use for drawing. Camera will not be updated or
      *            otherwise modified; caller should prepare the camera prior to
      *            calling this method.
@@ -87,7 +90,7 @@ public abstract class GameMap {
      * @param obstacleColor
      *            Color to fill Rectangles with.
      */
-    protected static void drawObstacles(Camera camera, Rectangle[] obstacles, Color obstacleColor) {
+    protected static void drawObstacles(Matrix4 transformMatrix, Rectangle[] obstacles, Color obstacleColor) {
         
         // They seem to require you to call this RIGHT before drawing.
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -95,7 +98,7 @@ public abstract class GameMap {
         
         MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
         MyGdxGame.currentGame.shapeRenderer.setColor(obstacleColor);
-        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(camera.combined);
+        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(transformMatrix);
         
         for (Rectangle rect : obstacles) {
                     

@@ -1,17 +1,14 @@
-package com.me.mygdxgame.entities;
-
-import java.util.NoSuchElementException;
+package com.me.mygdxgame.entities.progressbars;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Matrix4;
 import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.utilities.Damageable;
-import com.me.mygdxgame.utilities.EntityState;
-import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.ProgressBar;
 
-public class MegaHealthBar implements GameEntity {
+public class MegaHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions (Healthbar-chrome texture)
     public static final int CHROME_X = 38;
@@ -40,25 +37,21 @@ public class MegaHealthBar implements GameEntity {
     private static final Color BAR_COLOR = Color.YELLOW;
     
     // Parameters affecting state of the bar
-    private Damageable character;
-    private double percentHealth;
+    protected float value = 1.0f;
     private int barSize;
     
     // Bar position and graphic holders
     private int x, y;
     private TextureRegion chrome;
     private TextureRegion dangerSignal, safetySignal;
-    private Texture spriteSheet;
     private boolean inDanger;
     
-    public MegaHealthBar(Texture spriteSheet, int x, int y, Damageable character) {
-        this.spriteSheet = spriteSheet;
+    public MegaHealthBar(Texture spriteSheet, int x, int y) {
         this.chrome = new TextureRegion(spriteSheet, CHROME_X, CHROME_Y, CHROME_W, CHROME_H);
         this.dangerSignal = new TextureRegion(spriteSheet, DANGER_X, DANGER_Y, SIGNAL_W, SIGNAL_H);
         this.safetySignal = new TextureRegion(spriteSheet, SAFETY_X, SAFETY_Y, SIGNAL_W, SIGNAL_H);
         this.x = x;
         this.y = y;
-        this.character = character;
         this.inDanger = true;
     }
     
@@ -69,20 +62,19 @@ public class MegaHealthBar implements GameEntity {
     
     @Override
     public void update(float deltaTime) {
-        this.percentHealth = this.character.getHealth() / (double) this.character.getMaxHealth();
-        this.barSize = Math.max(0, (int) Math.ceil(percentHealth * BAR_H));
+        // N/A
     }
 
     @Override
-    public void draw() {        
+    public void draw(Matrix4 transformMatrix) {        
         // Draw the bar
-        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(MyGdxGame.currentGame.orthoCamera.combined);
+        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
         MyGdxGame.currentGame.shapeRenderer.rect(this.x + BAR_X, this.y + BAR_Y, BAR_W, this.barSize, BAR_COLOR, BAR_COLOR, BAR_COLOR, BAR_COLOR);
         MyGdxGame.currentGame.shapeRenderer.end();
         
         // Draw the chrome and signal light
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(MyGdxGame.currentGame.orthoCamera.combined);
+        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.spriteBatch.begin();
         MyGdxGame.currentGame.spriteBatch.draw(this.chrome, this.x, this.y);
         MyGdxGame.currentGame.spriteBatch.draw((this.inDanger) ? this.dangerSignal : this.safetySignal, this.x + SIGNAL_X, this.y + SIGNAL_Y);
@@ -90,18 +82,14 @@ public class MegaHealthBar implements GameEntity {
     }
 
     @Override
-    public EntityState getState() {
-        return EntityState.Running;
+    public void setValue(float value) {
+        // Clamp to range [0, 1].
+        this.value = Math.max(1, Math.min(0, value));
+        this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_H));
     }
 
     @Override
-    public boolean hasCreatedEntities() {
-        return false;
+    public float getValue() {
+        return this.value;
     }
-
-    @Override
-    public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        return null;
-    }
-
 }

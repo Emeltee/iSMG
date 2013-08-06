@@ -1,7 +1,8 @@
-package com.me.mygdxgame.screens.seeteufelscreen;
+package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
@@ -29,8 +30,8 @@ public class Seeteufel implements GameEntity, Damageable {
 
     @Override
     public Rectangle[] getHitArea() {
-        // TODO
-        return new Rectangle[] {new Rectangle(1, 1, 1, 1)};
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class Seeteufel implements GameEntity, Damageable {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         // TODO Auto-generated method stub
         
     }
@@ -48,7 +49,7 @@ public class Seeteufel implements GameEntity, Damageable {
     @Override
     public EntityState getState() {
         // TODO Auto-generated method stub
-        return EntityState.Running;
+        return null;
     }
 
     @Override
@@ -62,6 +63,4 @@ public class Seeteufel implements GameEntity, Damageable {
         // TODO Auto-generated method stub
         return null;
     }
-
-
 }

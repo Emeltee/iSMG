@@ -1,4 +1,4 @@
-package com.me.mygdxgame.screens.seeteufelscreen;
+package com.me.mygdxgame.entities;
 
 import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
@@ -8,11 +8,12 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
-import com.me.mygdxgame.entities.BusterShot;
-import com.me.mygdxgame.entities.BusterShot.ShotDirection;
+import com.me.mygdxgame.entities.projectiles.BusterShot;
+import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -20,10 +21,10 @@ import com.me.mygdxgame.utilities.GameEntity;
 public class MegaPlayer implements GameEntity, Damageable {
 
     private static final int MAX_HEALTH = 100;
-    private static final int HITBOX_WIDTH = 26;
+    private static final int HITBOX_WIDTH = 28;
     private static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
-    private static final int SPRITE_HEIGHT = 46;
+    private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
     private static final int HITBOX_OFFSET_Y = 5;
     private static final float MAX_BUSTER_COOLDOWN = 0.3f;
@@ -39,6 +40,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static int BASE_SHOT_POWER = 1;
     private static float SHOT_OFFSET_Y = 16;
     private static float SHOT_OFFSET_X = 16;
+    private static float BASE_SHOT_RANGE = 300;
     
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
@@ -77,6 +79,9 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     private ArrayDeque<BusterShot> newShots = new ArrayDeque<BusterShot>();
     
+    /**
+     * Simple storage class to manage the resources required by MegaPlayer.
+     */
     public static class MegaPlayerResources {
         public Texture playerTexture = null;
         public Texture busterTexture = null;
@@ -86,6 +91,38 @@ public class MegaPlayer implements GameEntity, Damageable {
         public Sound jumpSound = null;
         public Sound landSound = null;
         public Sound hurtSound = null;
+        
+        private boolean isLoaded = false;
+        
+        public void load() {
+            if (!this.isLoaded) {
+                this.busterTexture = new Texture(Gdx.files.internal("img/seeTiles1.png"));
+                this.playerTexture = new Texture(Gdx.files.internal("img/mmd.png"));
+                this.footstepSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-walk1.ogg"));
+                this.hurtSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-hurt1.ogg"));
+                this.jumpSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-jump1.ogg"));
+                this.landSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-land1.ogg"));
+                this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-fire1.ogg"));
+                this.shotMissSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-miss1.ogg"));
+                
+                this.isLoaded = true;
+            }
+        }
+        
+        public void unload() {
+            if (this.isLoaded) {
+                this.busterTexture.dispose();
+                this.playerTexture.dispose();
+                this.footstepSound.dispose();
+                this.hurtSound.dispose();
+                this.jumpSound.dispose();
+                this.landSound.dispose();
+                this.shootSound.dispose();
+                this.shotMissSound.dispose();
+                
+                this.isLoaded = false;
+            }
+        }
     }
     
     public MegaPlayer(MegaPlayerResources resources, Vector3 initialPosition,
@@ -204,6 +241,10 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.velocity.add(force);
     }
     
+    public Vector3 getPosition() {
+        return this.position;
+    }
+    
     @Override
     public void damage(int damage) {
         this.health -= damage;
@@ -247,13 +288,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         
         float drawPositionX = this.position.x - MegaPlayer.HITBOX_OFFSET_X;
         float drawPositionY = this.position.y - MegaPlayer.HITBOX_OFFSET_Y;
         
-        MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.spriteBatch.begin();
         
         // Facing right.
@@ -299,7 +339,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                     this.animationTimer = 0;
                     currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                     
-                    if (currentFrame == 0 || currentFrame == 2) {
+                    if (currentFrame == 1 || currentFrame == 3) {
                         this.resources.footstepSound.play();
                     }
                 }
@@ -356,7 +396,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.animationTimer = 0;
                 currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                 
-                if (currentFrame == 0 || currentFrame == 2) {
+                if (currentFrame == 1 || currentFrame == 3) {
                     this.resources.footstepSound.play();
                 }
             }
@@ -386,8 +426,11 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     @Override
     public EntityState getState() {
-        // Always running, until the end of the screen.
-        return EntityState.Running;
+        if (this.health > 0) {
+            return EntityState.Running;
+        } else {
+            return EntityState.Destroyed;
+        }
     }
 
     @Override
@@ -571,13 +614,15 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 this.newShots.push(new BusterShot(this.resources.busterTexture,
-                        this.shotOrigin, MegaPlayer.BASE_SHOT_SPEED,
-                        ShotDirection.RIGHT, MegaPlayer.BASE_SHOT_POWER,
+                        this.resources.shotMissSound, this.shotOrigin,
+                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
+                        MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
             } else {
                 this.newShots.push(new BusterShot(this.resources.busterTexture,
-                        this.shotOrigin, MegaPlayer.BASE_SHOT_SPEED,
-                        ShotDirection.LEFT, MegaPlayer.BASE_SHOT_POWER,
+                        this.resources.shotMissSound, this.shotOrigin,
+                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
+                        MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
             }
         }

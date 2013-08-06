@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 
 
 public class Refractor implements GameEntity {
@@ -52,17 +53,17 @@ public class Refractor implements GameEntity {
     }
 
     @Override
-    public void draw() {        
+    public void draw(Matrix4 transformMatrix) {        
         if (this.status == EntityState.Running && !this.taken) {
             // Refractor is neither taken nor destroyed, show refractor
             // Prepare the game's spriteBatch for drawing.
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
             MyGdxGame.currentGame.spriteBatch.begin();
             MyGdxGame.currentGame.spriteBatch.draw(this.refractor, this.x, this.y);
             MyGdxGame.currentGame.spriteBatch.end();
         } else if (this.taken) {
             // Once refractor is taken, show mesg until destroyed
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
             MyGdxGame.currentGame.spriteBatch.begin();
             
             // Using emulogic, an imitation of the original NES font

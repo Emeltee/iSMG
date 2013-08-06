@@ -1,9 +1,10 @@
-package com.me.mygdxgame.entities;
+package com.me.mygdxgame.entities.particles;
 
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
@@ -19,7 +20,6 @@ public class Explosion implements GameEntity {
     private static final int SPLODE_Y = 209;
     private static final int SPLODE_DIM = 32;
     
-    private Texture spriteSheet;
     private TextureRegion[] splode;
     private Vector3 position;
     private EntityState status;
@@ -30,7 +30,6 @@ public class Explosion implements GameEntity {
     private static final int NUM_FRAMES = 4;
     
     public Explosion(Texture spriteSheet, Vector3 position) {
-        this.spriteSheet = spriteSheet;
         this.position = position;
         this.splode = new TextureRegion[4];
         this.splode[0] = new TextureRegion(spriteSheet, SPLODE_1_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
@@ -57,9 +56,9 @@ public class Explosion implements GameEntity {
     }
 
     @Override
-    public void draw() {
+    public void draw(Matrix4 transformMatrix) {
         if (this.status == EntityState.Running) {
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);          
+            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);          
             MyGdxGame.currentGame.spriteBatch.begin();
             MyGdxGame.currentGame.spriteBatch.draw(splode[this.frame], this.position.x, this.position.y);
             MyGdxGame.currentGame.spriteBatch.end();
