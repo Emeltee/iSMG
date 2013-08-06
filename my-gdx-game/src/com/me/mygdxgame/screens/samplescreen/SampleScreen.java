@@ -11,13 +11,13 @@ import com.me.mygdxgame.utilities.GameState;
 /**
  * Screen for testing. Roughly analogous to a game "level".
  */
-public class DebugScreen implements GameScreen {
+public class SampleScreen implements GameScreen {
 
     /** Object that handles player updating and rendering. */
     private SamplePlayer player = new SamplePlayer();
 
     /** Constructor. */
-    public DebugScreen() {
+    public SampleScreen() {
     }
 
     /**
