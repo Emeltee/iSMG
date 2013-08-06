@@ -6,11 +6,8 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
@@ -60,6 +57,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = true;
     
+    MegaPlayerResources resources = new MegaPlayerResources();
+    
     private TextureRegion[] runRight = new TextureRegion[4];
     private TextureRegion[] runLeft = new TextureRegion[4];
     private TextureRegion[] runShootRight = new TextureRegion[4];
@@ -74,8 +73,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion[] jumpRight = new TextureRegion[2];
     private TextureRegion[] jumpShootLeft = new TextureRegion[2];
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
-    private Texture busterTexture = null;
-    
+
+
     private ArrayDeque<BusterShot> newShots = new ArrayDeque<BusterShot>();
     
     public static class MegaPlayerResources {
@@ -87,25 +86,24 @@ public class MegaPlayer implements GameEntity, Damageable {
         public Sound jumpSound = null;
         public Sound landSound = null;
         public Sound hurtSound = null;
-        public Sound hitGroundSound = null;
     }
     
-    public MegaPlayer(Texture playerTexture, Texture busterTexture, Vector3 initialPosition,
+    public MegaPlayer(MegaPlayerResources resources, Vector3 initialPosition,
             Rectangle[] obstacles, Damageable[] targets) {
+        this.resources = resources;
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
-        this.busterTexture = busterTexture;
         
-        this.runRight[0] = new TextureRegion(playerTexture, 0, 0,
+        this.runRight[0] = new TextureRegion(resources.playerTexture, 0, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[1] = new TextureRegion(playerTexture,
+        this.runRight[1] = new TextureRegion(resources.playerTexture,
                 this.runRight[0].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[2] = new TextureRegion(playerTexture,
+        this.runRight[2] = new TextureRegion(resources.playerTexture,
                 this.runRight[1].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[3] = new TextureRegion(playerTexture,
+        this.runRight[3] = new TextureRegion(resources.playerTexture,
                 this.runRight[2].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -118,18 +116,18 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runLeft[3] = new TextureRegion(this.runRight[3]);
         this.runLeft[3].flip(true, false);
         
-        this.runShootRight[0] = new TextureRegion(playerTexture, 0,
+        this.runShootRight[0] = new TextureRegion(resources.playerTexture, 0,
                 MegaPlayer.SPRITE_HEIGHT + 1, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[1] = new TextureRegion(playerTexture,
+        this.runShootRight[1] = new TextureRegion(resources.playerTexture,
                 this.runRight[1].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[2] = new TextureRegion(playerTexture,
+        this.runShootRight[2] = new TextureRegion(resources.playerTexture,
                 this.runRight[2].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[3] = new TextureRegion(playerTexture,
+        this.runShootRight[3] = new TextureRegion(resources.playerTexture,
                 this.runRight[3].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
@@ -143,23 +141,23 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runShootLeft[3] = new TextureRegion(this.runShootRight[3]);
         this.runShootLeft[3].flip(true, false);
         
-        this.standRight = new TextureRegion(playerTexture, 0,
+        this.standRight = new TextureRegion(resources.playerTexture, 0,
                 this.runShootRight[0].getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.standLeft = new TextureRegion(this.standRight);
         this.standLeft.flip(true, false);
         
-        this.standShootRight = new TextureRegion(playerTexture,
+        this.standShootRight = new TextureRegion(resources.playerTexture,
                 this.runShootRight[1].getRegionX(),
                 this.standRight.getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
         this.standShootLeft = new TextureRegion(this.standShootRight);
         this.standShootLeft.flip(true, false);
 
-        this.damageRight[0] = new TextureRegion(playerTexture, this.runShootRight[2].getRegionX(),
+        this.damageRight[0] = new TextureRegion(resources.playerTexture, this.runShootRight[2].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.damageRight[1] = new TextureRegion(playerTexture, this.runShootRight[3].getRegionX(),
+        this.damageRight[1] = new TextureRegion(resources.playerTexture, this.runShootRight[3].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.damageLeft[0] = new TextureRegion(this.damageRight[0]);
@@ -167,11 +165,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.damageLeft[1] = new TextureRegion(this.damageRight[1]);
         this.damageLeft[1].flip(true, false);
         
-        this.jumpRight[0] = new TextureRegion(playerTexture,
+        this.jumpRight[0] = new TextureRegion(resources.playerTexture,
                 this.runRight[0].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpRight[1] = new TextureRegion(playerTexture,
+        this.jumpRight[1] = new TextureRegion(resources.playerTexture,
                 this.runRight[2].getRegionX(), this.jumpRight[0].getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -180,11 +178,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpLeft[1] = new TextureRegion(this.jumpRight[1]);
         this.jumpLeft[1].flip(true, false);
         
-        this.jumpShootRight[0] = new TextureRegion(playerTexture,
+        this.jumpShootRight[0] = new TextureRegion(resources.playerTexture,
                 this.runRight[1].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpShootRight[1] = new TextureRegion(playerTexture, this.runRight[3].getRegionX(),
+        this.jumpShootRight[1] = new TextureRegion(resources.playerTexture, this.runRight[3].getRegionX(),
                 this.standRight.getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -299,7 +297,11 @@ public class MegaPlayer implements GameEntity, Damageable {
                 int currentFrame = this.prevFrame;
                 if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
                     this.animationTimer = 0;
-                    currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                    currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                    
+                    if (currentFrame == 0 || currentFrame == 2) {
+                        this.resources.footstepSound.play();
+                    }
                 }
                 
                 if (Gdx.input.isKeyPressed(Keys.SPACE)) {
@@ -353,6 +355,10 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
                 this.animationTimer = 0;
                 currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                
+                if (currentFrame == 0 || currentFrame == 2) {
+                    this.resources.footstepSound.play();
+                }
             }
             
             if (Gdx.input.isKeyPressed(Keys.SPACE)) {
@@ -419,6 +425,12 @@ public class MegaPlayer implements GameEntity, Damageable {
                 obstacleTop = obstacle.y + obstacle.height;
                 // Check if it's a floor collision.
                 if (hitBoxTop > obstacleTop && this.hitBox.y <= obstacleTop) {
+                    
+                    // Play landing sound if in the air.
+                    if (this.isInAir) {
+                        this.resources.landSound.play();
+                    }
+                    
                     // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
                     this.position.y = obstacle.y + obstacle.height;
                     this.velocity.y = 0;
@@ -517,6 +529,9 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (!this.isInAir && this.canJump) {
                 this.isJumping = true;
                 this.canJump = false;
+                
+                // Play jump sound.
+                this.resources.jumpSound.play();
             }
         } else {
             // If not pressing key and in the middle of a jump, stop ascending.
@@ -546,6 +561,8 @@ public class MegaPlayer implements GameEntity, Damageable {
         if (this.busterCooldown > 0) {
             this.busterCooldown = Math.max(this.busterCooldown - deltaTime, 0);
         } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+            
+            this.resources.shootSound.play(0.75f);
 
             this.shotOrigin.set(this.position);
             this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
@@ -553,12 +570,12 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.busterCooldown = MegaPlayer.MAX_BUSTER_COOLDOWN;
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
-                this.newShots.push(new BusterShot(this.busterTexture,
+                this.newShots.push(new BusterShot(this.resources.busterTexture,
                         this.shotOrigin, MegaPlayer.BASE_SHOT_SPEED,
                         ShotDirection.RIGHT, MegaPlayer.BASE_SHOT_POWER,
                         this.obstacles, this.targets));
             } else {
-                this.newShots.push(new BusterShot(this.busterTexture,
+                this.newShots.push(new BusterShot(this.resources.busterTexture,
                         this.shotOrigin, MegaPlayer.BASE_SHOT_SPEED,
                         ShotDirection.LEFT, MegaPlayer.BASE_SHOT_POWER,
                         this.obstacles, this.targets));
