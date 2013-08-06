@@ -26,13 +26,16 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 46;
+    private static final int HITBOX_OFFSET_X = 5;
+    private static final int HITBOX_OFFSET_Y = 5;
     private static final float MAX_BUSTER_COOLDOWN = 0.3f;
-    private static final float MAX_FLINCH_TIME = 1.0f;
+    private static final float MAX_FLINCH_TIME = 0.4f;
+    private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     private static final float MAX_SPEED = 4.0f;
-    private static final float MAX_JUMP_THRUST_TIME = 0.3f;
+    private static final float MAX_JUMP_THRUST_TIME = 0.25f;
     private static final float ACCELERATION = 80.0f;
     private static final float DECELERATION = 40.0f;
-    private static final short RUN_FRAMERATE = 3;
+    private static final short RUN_FRAMERATE = 10;
     private static final short MAX_RUN_FRAMES = 4;
     private static int BASE_SHOT_SPEED = 200;
     private static int BASE_SHOT_POWER = 1;
@@ -44,7 +47,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Damageable[] targets = null;
     private Seeteufel seeteufel = null;
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
-    private int animationFrame = 0;
+    private int animationTimer = 0;
+    private int prevFrame = 0;
     private boolean isInAir = false;
     private boolean isJumping = false;
     private boolean canJump = true;
@@ -191,6 +195,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     public void damage(int damage) {
         this.health -= damage;
         this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
+        this.isJumping = false;
     }
 
     @Override
@@ -211,12 +216,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     @Override
     public void update(float deltaTime) {
 
-        // Move according to velocity, and check for obstacle collisions.
-        this.position.y += this.velocity.y;
-        this.checkCollisionsY();
-        this.position.x += this.velocity.x;
-        this.checkCollionsX();
-        
         // If not flinched, apply user controls. If flinched, just reduce flinch timer.
         if (this.flinchTimer == 0) {
             this.handleInput(deltaTime);
@@ -224,31 +223,139 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.flinchTimer = Math.max(this.flinchTimer - deltaTime, 0);
         }
         
+        // Move according to velocity, and check for obstacle collisions.
+        this.position.y += this.velocity.y;
+        this.checkCollisionsY();
+        this.position.x += this.velocity.x;
+        this.checkCollionsX();
+
         // Apply constant forces.
         this.handlePhysics(deltaTime);
     }
 
     @Override
     public void draw() {
-//        this.animationFrame++;
-//        
-//        MyGdxGame.currentGame.spriteBatch
-//        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
-//        MyGdxGame.currentGame.spriteBatch.begin();
-//        
-////        MyGdxGame.currentGame.spriteBatch.draw(this.runRight[(animationFrame / 20) % 4],
-////                this.position.x, this.position.y);
-//        MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootRight[(animationFrame / 20) % 2],
-//                this.position.x, this.position.y);
-//        
-//        MyGdxGame.currentGame.spriteBatch.end();
+        
+        MyGdxGame.currentGame.spriteBatch
+        .setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
+        MyGdxGame.currentGame.spriteBatch.begin();
+        
+        // Facing right.
+        if (this.isFacingRight) {
+            if (this.flinchTimer > 0) {
+                if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.damageRight[0],
+                            this.position.x, this.position.y);
+                } else {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.damageRight[1],
+                            this.position.x, this.position.y);
+                }
+            } else if (this.isInAir) {
+                if (this.velocity.y > 0) {
+                    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                            MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootRight[0],
+                                    this.position.x, this.position.y);
+                    } else {
+                        MyGdxGame.currentGame.spriteBatch.draw(this.jumpRight[0],
+                                this.position.x, this.position.y);
+                    }
+                } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootRight[1],
+                            this.position.x, this.position.y);
+                } else {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpRight[1],
+                            this.position.x, this.position.y);
+                }
+            } else if (this.velocity.x == 0) {
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.standShootRight,
+                            this.position.x, this.position.y);
+                } else {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.standRight,
+                            this.position.x, this.position.y);
+                }
+            } else {
+                
+                // Update animation timer/frame for running.
+                this.animationTimer++;
+                int currentFrame = this.prevFrame;
+                if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
+                    this.animationTimer = 0;
+                    currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                }
+                
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.runShootRight[currentFrame],
+                            this.position.x, this.position.y);
+                } else {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.runRight[currentFrame],
+                            this.position.x, this.position.y);
+                }
+                
+                this.prevFrame = currentFrame;
+            }
+        // Facing left.
+        } else if (this.flinchTimer > 0) {
+            if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
+                MyGdxGame.currentGame.spriteBatch.draw(this.damageLeft[0],
+                        this.position.x, this.position.y);
+            } else {
+                MyGdxGame.currentGame.spriteBatch.draw(this.damageLeft[1],
+                        this.position.x, this.position.y);
+            }
+        } else if (this.isInAir) {
+            if (this.velocity.y > 0) {
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                        MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootLeft[0],
+                                this.position.x, this.position.y);
+                } else {
+                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpLeft[0],
+                            this.position.x, this.position.y);
+                }
+            } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootLeft[1],
+                        this.position.x, this.position.y);
+            } else {
+                MyGdxGame.currentGame.spriteBatch.draw(this.jumpLeft[1],
+                        this.position.x, this.position.y);
+            }
+        } else if (this.velocity.x == 0) {
+            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                MyGdxGame.currentGame.spriteBatch.draw(this.standShootLeft,
+                        this.position.x, this.position.y);
+            } else {
+                MyGdxGame.currentGame.spriteBatch.draw(this.standLeft,
+                        this.position.x, this.position.y);
+            }
+        } else {
+            
+            // Update animation timer/frame for running.
+            this.animationTimer++;
+            int currentFrame = this.prevFrame;
+            if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
+                this.animationTimer = 0;
+                currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+            }
+            
+            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                MyGdxGame.currentGame.spriteBatch.draw(this.runShootLeft[currentFrame],
+                        this.position.x, this.position.y);
+            } else {
+                MyGdxGame.currentGame.spriteBatch.draw(this.runLeft[currentFrame],
+                        this.position.x, this.position.y);
+            }
+            
+            this.prevFrame = currentFrame;
+        }
+        
+        MyGdxGame.currentGame.spriteBatch.end();
         
         
         
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
-        MyGdxGame.currentGame.shapeRenderer.setColor(new Color(0, 0, 1, 1));
+        MyGdxGame.currentGame.shapeRenderer.setColor(new Color(0, 0, 1, 0.5f));
         MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
         MyGdxGame.currentGame.shapeRenderer.rect(this.hitBox.x, this.hitBox.y, this.hitBox.width, this.hitBox.height);
         MyGdxGame.currentGame.shapeRenderer.end();
@@ -355,7 +462,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                     // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
                     this.position.x = obstacle.x - this.hitBox.width;
                     this.hitBox.x = this.position.x;
-                    if(this.velocity.x < 0)
+                    if(this.velocity.x > 0)
                     {
                         this.velocity.x = 0;
                     }
@@ -374,11 +481,13 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Acceleration based on key states.
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
+            this.isFacingRight = false;
             this.velocity.x = Math.max(this.velocity.x
                     - (MegaPlayer.ACCELERATION * deltaTime),
                     -MegaPlayer.MAX_SPEED);
         }
         if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
+            this.isFacingRight = true;
             this.velocity.x = Math.min(this.velocity.x
                     + (MegaPlayer.ACCELERATION * deltaTime),
                     MegaPlayer.MAX_SPEED);
@@ -389,7 +498,6 @@ public class MegaPlayer implements GameEntity, Damageable {
         {
             // Jump if you're on the ground and can jump. Set flags as needed.
             if (!this.isInAir && this.canJump) {
-                //this.velocity.y -= MegaPlayer.JUMP_THRUST * deltaTime;
                 this.isJumping = true;
                 this.canJump = false;
             }
