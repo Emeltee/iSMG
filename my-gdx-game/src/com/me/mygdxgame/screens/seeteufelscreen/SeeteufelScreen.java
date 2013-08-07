@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.MegaPlayer;
+import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
@@ -66,6 +68,8 @@ public class SeeteufelScreen implements GameScreen {
     // Common Entities for entire program
     private MegaPlayer player;
     private MegaHealthBar playerHealth;
+    private Refractor refractor;
+    private Door door;
     
     public SeeteufelScreen() {
         this.map1 = new FirstMap();
@@ -127,9 +131,10 @@ public class SeeteufelScreen implements GameScreen {
     public void initialize() {
         this.currentMap = this.map1;
         this.player = new MegaPlayer(this.playerResources, this.currentMap.getInitialPosition(), this.getObstacles(), this.getTargets());
-        this.playerHealth = new MegaHealthBar(this.t_tiles2, (int) SeeteufelScreen.PLAYER_HEALTH_POS.x, (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);        
-        this.entities.clear();
-    }
+        this.playerHealth = new MegaHealthBar(this.t_tiles2, (int) SeeteufelScreen.PLAYER_HEALTH_POS.x, (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
+        this.refractor = new Refractor(this.t_tiles1, (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM * 1.5 - Refractor.REFRACTOR_W / 2), (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM + 22));
+        this.door = new Door(this.t_tiles2, FirstMap.GROUND_END_X - (int)(FirstMap.GROUND_DIM * 4 - Door.DOOR_W/2) - 5, FirstMap.GROUND_START_Y);
+        this.entities.clear();    }
 
     @Override
     public GameState getState() {
@@ -141,7 +146,7 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     public Damageable [] getTargets() {
-        // Grab all the Damageabls out of entities, store in a temporary ArrayDeque
+        // Grab all the Damageables out of entities, store in a temporary ArrayDeque
         ArrayDeque<Damageable> result = new ArrayDeque<Damageable> ();
         for (GameEntity e: this.entities) {
             if (e instanceof Damageable) {
@@ -179,6 +184,12 @@ public class SeeteufelScreen implements GameScreen {
         
         // Update and draw all specially-managed entities.
         
+        // TODO Refractor and door.
+        this.refractor.update(deltaTime);
+        this.refractor.draw(orthoCam.combined);
+        this.door.update(deltaTime);
+        this.door.draw(orthoCam.combined);
+        
         // Player.
         this.player.update(deltaTime);
         this.player.draw(orthoCam.combined);
@@ -193,9 +204,6 @@ public class SeeteufelScreen implements GameScreen {
         orthoCam.update();
         this.playerHealth.draw(orthoCam.combined);
         
-        // TODO Refractor and door.
-        
-        
         // Remove or add to generic entity list as needed.
         this.entities.removeAll(this.toRemove);
         for (GameEntity[] newEntities : this.toAdd) {
@@ -205,10 +213,52 @@ public class SeeteufelScreen implements GameScreen {
         }
         this.toAdd.clear();
         this.toRemove.clear();
-    }
+        
+        // Special collision detection for player
+        for (Rectangle box: player.getHitArea()) {
+            // Grab the refractor
+            if (refractor.getHitBox().overlaps(box)) {
+                refractor.onTake();
+            }
+            
+            // Exit the room
+            if (door.getHitBox().overlaps(box)) {
+                if (door.getDoorState() == Door.DoorState.OPEN) {
+                    this.currentMap = map2;
+                }
+            }
+            
+        }
+        
+        // Wait for Refractor to be declared Destroyed to open the door.
+        if (refractor.getState() == EntityState.Destroyed && door.getDoorState() == Door.DoorState.SHUT) {
+            door.onOpen();
+        }
+     }
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
-        // TODO
+     // Update camera.
+        orthoCam.position.x = this.player.getPosition().x;
+        orthoCam.position.y = SeeteufelScreen.MAP1_CAM_Y;
+        orthoCam.update();
+        
+        // Clear screen.
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);   
+        
+        // Draw the map
+        this.currentMap.render(deltaTime, orthoCam.combined);
+        
+        // Update and draw all generic entities.
+        for (GameEntity e : this.entities) {
+            e.update(deltaTime);
+            e.draw(orthoCam.combined);            
+            if (e.getState() == EntityState.Destroyed) {
+                this.toRemove.push(e);              
+            }
+            if (e.hasCreatedEntities()) {
+                this.toAdd.push(e.getCreatedEntities());
+            }
+        }
     }
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {

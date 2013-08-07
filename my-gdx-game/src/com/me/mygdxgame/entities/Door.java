@@ -2,9 +2,12 @@ package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -27,6 +30,9 @@ public class Door implements GameEntity {
     private int x; // x-coord
     private int y; // y coord
     private DoorState doorStatus; // Door-specific status variable
+    
+    private static final Sound DOOR_OPEN_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
+    private static final Sound DOOR_SHUT_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg")); 
     
     public Door(Texture spriteSheet, int x, int y) {
         this.doorShut = new TextureRegion(spriteSheet, DOOR_SHUT_X, DOOR_SHUT_Y, DOOR_W, DOOR_H);
@@ -79,15 +85,23 @@ public class Door implements GameEntity {
     
     /** Opens the door, should be called when refractor is obtained */
     public void onOpen() {
-        // TODO Play door sound effect?
-        this.doorStatus = DoorState.OPEN;
+        if (this.doorStatus == DoorState.SHUT) {
+            DOOR_OPEN_SFX.play();
+            this.doorStatus = DoorState.OPEN;
+        }
     }
     
     /** CLOSE THE HATCH! */
     public void onShut() {
-        // TODO Play sound effect?
         // Even though this one never really gets called..
-        this.doorStatus = DoorState.SHUT;
+        if (this.doorStatus == DoorState.OPEN) {
+            DOOR_SHUT_SFX.play();
+            this.doorStatus = DoorState.SHUT;
+        }
+    }
+    
+    public Rectangle getHitBox() {
+        return new Rectangle(this.x, this.y, DOOR_W, DOOR_H);
     }
     
     

@@ -26,7 +26,8 @@ public class FirstMap extends GameMap {
     private TextureRegion pillarSprite;
     private TextureRegion pillarTopBaseSprite;
     private TextureRegion pillarBottomBaseSprite;
-
+    private TextureRegion nadiaSprite;
+    
     private TextureRegion[] borderFrames;
 
     private TextureRegion grate;
@@ -40,18 +41,18 @@ public class FirstMap extends GameMap {
     // as everything makes sense relative to everything else, all you have to do is put
     // the camera in the right spot, and you can kind of get it to look the way you want..
 
-    private final int GROUND_DIM = 44; // Width of ground tile
-    private final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
-    private final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
+    public static final int GROUND_DIM = 45; // Width of ground tile
+    public static final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
+    public static final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
             GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2) - OFFSET, // Origin Y point, off-screen below
             GROUND_HEIGHT = 1, // Rows of ground tile
             GROUND_WIDTH = 20; // Columns of ground tile
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
-    private final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
+    public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
 
-    private final int PLATFORM_START_X = GROUND_ORIGIN_X + (6 * GROUND_DIM);
+    public static final int PLATFORM_START_X = GROUND_ORIGIN_X + (6 * GROUND_DIM);
 
     public FirstMap() {}    
     
@@ -64,10 +65,10 @@ public class FirstMap extends GameMap {
         if (!this.resourcesLoaded) {
             this.spriteSheet = new Texture(Gdx.files.internal(TEXTURE_PATH));
             this.spriteSheet.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
-            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, 44, 44);
-            this.wallSprite = new TextureRegion(spriteSheet, 209, 17, 44, 44);
-            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, 44, 44);
-            this.greyBlockSprite = new TextureRegion(spriteSheet, 165, 120, 44, 44);
+            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, GROUND_DIM, GROUND_DIM);
+            this.wallSprite = new TextureRegion(spriteSheet, 209, 17, GROUND_DIM, GROUND_DIM);
+            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, GROUND_DIM, GROUND_DIM);
+            this.greyBlockSprite = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
             this.pedistalSprite = new TextureRegion(spriteSheet, 165, 0, 55, 17);
 
             this.borderFrames = new TextureRegion[5];
@@ -90,6 +91,8 @@ public class FirstMap extends GameMap {
             this.pillarTopBaseSprite = new TextureRegion(spriteSheet, 224, 160, 19, 15);
             this.pillarTopBaseSprite.flip(false, true);
 
+            this.nadiaSprite = new TextureRegion(spriteSheet, 165, 165, GROUND_DIM, GROUND_DIM);
+            
             this.animationFrame = 0;
 
             this.resourcesLoaded = true;
@@ -163,6 +166,9 @@ public class FirstMap extends GameMap {
         //tileY(this.wallSprite, GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, 7);
         //tileY(this.wallSprite, GROUND_END_X, GROUND_START_Y - GROUND_DIM, 7);
 
+        // NADIA
+        MyGdxGame.currentGame.spriteBatch.draw(this.nadiaSprite, PLATFORM_START_X - GROUND_DIM * 4, GROUND_ORIGIN_Y);
+        
         // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
         
