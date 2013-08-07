@@ -66,7 +66,7 @@ public class FirstMap extends GameMap {
             this.spriteSheet = new Texture(Gdx.files.internal(TEXTURE_PATH));
             this.spriteSheet.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
             this.rockSprite = new TextureRegion(spriteSheet, 0, 57, GROUND_DIM, GROUND_DIM);
-            this.wallSprite = new TextureRegion(spriteSheet, 209, 17, GROUND_DIM, GROUND_DIM);
+            this.wallSprite = new TextureRegion(spriteSheet, 210, 17, GROUND_DIM, GROUND_DIM);
             this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, GROUND_DIM, GROUND_DIM);
             this.greyBlockSprite = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
             this.pedistalSprite = new TextureRegion(spriteSheet, 165, 0, 55, 17);
