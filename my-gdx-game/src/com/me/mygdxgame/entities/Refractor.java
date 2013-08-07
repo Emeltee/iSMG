@@ -6,10 +6,12 @@ import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 
 
 public class Refractor implements GameEntity {
@@ -26,6 +28,7 @@ public class Refractor implements GameEntity {
     private boolean taken; // Whether or not player has taken refractor
     private static final float MESG_DELAY = 3.0f; // Time for message to be on-screen
     private float mesgDuration; // 
+    private static final Sound ITEM_GET_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
     
     public Refractor(Texture spriteSheet, int x, int y) {
         this.refractor = new TextureRegion(spriteSheet, REFRACTOR_X, REFRACTOR_Y, REFRACTOR_W, REFRACTOR_H);
@@ -61,7 +64,7 @@ public class Refractor implements GameEntity {
             MyGdxGame.currentGame.spriteBatch.begin();
             MyGdxGame.currentGame.spriteBatch.draw(this.refractor, this.x, this.y);
             MyGdxGame.currentGame.spriteBatch.end();
-        } else if (this.taken) {
+        } else if (this.taken && (this.mesgDuration < MESG_DELAY)) {
             // Once refractor is taken, show mesg until destroyed
             MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
             MyGdxGame.currentGame.spriteBatch.begin();
@@ -96,11 +99,17 @@ public class Refractor implements GameEntity {
         return null;
     }
     
+    public Rectangle getHitBox() {
+        return new Rectangle(this.x, this.y, REFRACTOR_W, REFRACTOR_H);
+    }
+    
     public void onTake() {
         // Originally this was going to have more logic, but it makes more sense
-        // to put it in update(). 
-        // TODO add the sound effect here
-        this.taken = true;
+        // to put it in update().
+        if (!this.taken) {
+            ITEM_GET_SFX.play();
+            this.taken = true;
+        }
     }
 
 }
