@@ -7,9 +7,12 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -65,18 +68,30 @@ public class Refractor implements GameEntity {
             MyGdxGame.currentGame.spriteBatch.draw(this.refractor, this.x, this.y);
             MyGdxGame.currentGame.spriteBatch.end();
         } else if (this.taken && (this.mesgDuration < MESG_DELAY)) {
+            // Using emulogic, an imitation of the original NES font
+            BitmapFont nesFont = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"), Gdx.files.internal("data/emulogic.png"), false);
+            CharSequence mesg = "YOU GOT BLUE REFRACTOR";
+            
             // Once refractor is taken, show mesg until destroyed
+            Gdx.gl.glEnable(GL10.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+            MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(transformMatrix);
+            MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
+            MyGdxGame.currentGame.shapeRenderer.setColor(new Color(0, 0, 1, 0.35f));
+            MyGdxGame.currentGame.shapeRenderer.rect(this.x - (int)((mesg.length() + 2) / 2 * 8), this.y + REFRACTOR_H + 16, (mesg.length() + 5) * 8, 24);
+            MyGdxGame.currentGame.shapeRenderer.end();
+            MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Line);
+            MyGdxGame.currentGame.shapeRenderer.setColor(new Color(1, 1, 1, 0.5f));
+            MyGdxGame.currentGame.shapeRenderer.rect(this.x - (int)((mesg.length() + 2) / 2 * 8), this.y + REFRACTOR_H + 16, (mesg.length() + 5) * 8, 24);
+            MyGdxGame.currentGame.shapeRenderer.end();
+            Gdx.gl.glDisable(GL10.GL_BLEND);
+            
             MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
             MyGdxGame.currentGame.spriteBatch.begin();
             
-            // Using emulogic, an imitation of the original NES font
-            BitmapFont nesFont = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"),
-         Gdx.files.internal("data/emulogic.png"), false);
-            CharSequence mesg = "YOU GOT BLUE REFRACTOR";
-            
             // This centers the text above wherever the refractor is.
             // TODO Maybe make this a fixed coord, but I like it this way.
-            nesFont.draw(MyGdxGame.currentGame.spriteBatch, mesg, this.x - (int)(mesg.length() / 2 * 8), this.y + this.refractor.getRegionWidth() + 32);            
+            nesFont.draw(MyGdxGame.currentGame.spriteBatch, mesg, this.x - (int)(mesg.length() / 2 * 8), this.y + REFRACTOR_H + 32);            
             MyGdxGame.currentGame.spriteBatch.end();
         }
     }

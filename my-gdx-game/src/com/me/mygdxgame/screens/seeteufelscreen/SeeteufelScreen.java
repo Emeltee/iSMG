@@ -133,8 +133,9 @@ public class SeeteufelScreen implements GameScreen {
         this.player = new MegaPlayer(this.playerResources, this.currentMap.getInitialPosition(), this.getObstacles(), this.getTargets());
         this.playerHealth = new MegaHealthBar(this.t_tiles2, (int) SeeteufelScreen.PLAYER_HEALTH_POS.x, (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
         this.refractor = new Refractor(this.t_tiles1, (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM * 1.5 - Refractor.REFRACTOR_W / 2), (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM + 22));
-        this.door = new Door(this.t_tiles2, FirstMap.GROUND_END_X - (int)(FirstMap.GROUND_DIM * 4 - Door.DOOR_W/2) - 5, FirstMap.GROUND_START_Y);
-        this.entities.clear();    }
+        this.door = new Door(this.t_tiles2, FirstMap.GROUND_END_X - (int)(FirstMap.GROUND_DIM * 2), FirstMap.GROUND_START_Y);
+        this.entities.clear();    
+    }
 
     @Override
     public GameState getState() {

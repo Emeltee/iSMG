@@ -137,9 +137,9 @@ public class FirstMap extends GameMap {
         // Draw the lower wall in columns, alternating between decorative tiles by refractor
         tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH, 6);
         // for (int i = 0; i < 5; i++) { checkerX(this.wallSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * GROUND_DIM), (int)Math.ceil(GROUND_WIDTH / 2), 1); }
-        checkerX(this.pillarBottomBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y, (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1);
-        for (int i=0; i < 6; i++) { checkerX(this.pillarSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * this.pillarSprite.getRegionHeight()) + this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1); }
-        checkerX(this.pillarTopBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * GROUND_WIDTH / (float) this.pillarTopBaseSprite.getRegionWidth()) / 2, 1);
+        checkerX(this.pillarBottomBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y, (int) Math.ceil(GROUND_DIM * (GROUND_WIDTH-2) / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1);
+        for (int i=0; i < 6; i++) { checkerX(this.pillarSprite, GROUND_ORIGIN_X, GROUND_START_Y + (i * this.pillarSprite.getRegionHeight()) + this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * (GROUND_WIDTH - 2) / (float) this.pillarBottomBaseSprite.getRegionWidth()) / 2, 1); }
+        checkerX(this.pillarTopBaseSprite, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - this.pillarTopBaseSprite.getRegionHeight(), (int) Math.ceil(GROUND_DIM * (GROUND_WIDTH-2) / (float) this.pillarTopBaseSprite.getRegionWidth()) / 2, 1);
         
         tileXY(this.smallMazeSprite, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 9, 6);
         diagonalRight(this.greyBlockSprite, PLATFORM_START_X - (2 * GROUND_DIM), GROUND_START_Y, 4);
