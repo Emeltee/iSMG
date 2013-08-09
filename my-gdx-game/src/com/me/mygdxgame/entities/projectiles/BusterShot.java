@@ -19,42 +19,44 @@ public class BusterShot implements GameEntity {
     public static enum ShotDirection { LEFT, RIGHT };
     
     // Constants for extracting bullet from Texture
-    private static final int BULLET_X = 226;
-    private static final int BULLET_Y = 175;
-    private static final int BULLET_W = 7;
-    private static final int BULLET_H = 5;
+    public static final int BULLET_X = 226;
+    public static final int BULLET_Y = 175;
+    public static final int BULLET_W = 7;
+    public static final int BULLET_H = 5;
  
     /** TextureRegion representing the idle frame. */
-    private TextureRegion bullet;
+    protected TextureRegion bullet;
     /** Tracks the number of frames that have passed. Used to time animation. */
-    private short animationTimer = 0;
+    protected short animationTimer = 0;
     /** General-purpose sprite sheet. */
-    private Texture spriteSheet = null;
+    protected Texture spriteSheet = null;
     /** Sound to play upon destruction when no targets are hit.*/
-    private Sound missSound = null;
+    protected Sound missSound = null;
 
     /** Direction of bullet trajectory */
-    private ShotDirection dir;
+    protected ShotDirection dir;
 
     /** Current position in 3D space. */
-    private Vector3 position = new Vector3(0, 0, 0);
+    protected Vector3 position = new Vector3(0, 0, 0);
     /** Current velocity. */
-    private int speed =  0;
+    protected int speed =  0;
     /** Damage done on collision.*/
-    private int power = 0;
+    protected int power = 0;
     /** Distance shot may travel.*/
-    private float range = 0;
-    private float distanceTraveled = 0;
+    protected float range = 0;
+    protected float distanceTraveled = 0;
     /** Hitbox.*/
-    private Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
+    protected Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
     
-    private EntityState status;
+    protected EntityState status;
     
     /** Areas of the map to look out for. */
-    private Rectangle [] watchOut;
+    protected Rectangle [] watchOut;
     /** Stuff to hurt.*/
-    private Damageable[] targets;
+    protected Damageable[] targets;
   
+    public BusterShot() {}
+    
     public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, ShotDirection dir, int power, float range, Rectangle[] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.missSound = missSound;
