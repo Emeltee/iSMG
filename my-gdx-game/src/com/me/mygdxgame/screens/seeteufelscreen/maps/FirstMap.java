@@ -26,7 +26,6 @@ public class FirstMap extends GameMap {
     private TextureRegion pillarSprite;
     private TextureRegion pillarTopBaseSprite;
     private TextureRegion pillarBottomBaseSprite;
-    private TextureRegion nadiaSprite;
     
     private TextureRegion[] borderFrames;
 
@@ -90,8 +89,6 @@ public class FirstMap extends GameMap {
             this.pillarBottomBaseSprite = new TextureRegion(spriteSheet, 224, 160, 19, 15);
             this.pillarTopBaseSprite = new TextureRegion(spriteSheet, 224, 160, 19, 15);
             this.pillarTopBaseSprite.flip(false, true);
-
-            this.nadiaSprite = new TextureRegion(spriteSheet, 165, 165, GROUND_DIM, GROUND_DIM);
             
             this.animationFrame = 0;
 

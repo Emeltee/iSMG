@@ -1,6 +1,7 @@
 package com.me.mygdxgame.screens.seeteufelscreen;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -73,6 +74,10 @@ public class SeeteufelScreen implements GameScreen {
     private Door door;
     private WatchNadia bonus;
     
+    private ArrayDeque<Rectangle> obstacles = new ArrayDeque<Rectangle>();
+    private ArrayDeque<Damageable> playerTargets = new ArrayDeque<Damageable>();
+    private ArrayDeque<Damageable> seeteufelTargets = new ArrayDeque<Damageable>();
+    
     public SeeteufelScreen() {
         this.map1 = new FirstMap();
         this.map2 = new SecondMap();
@@ -131,39 +136,59 @@ public class SeeteufelScreen implements GameScreen {
 
     @Override
     public void initialize() {
+        // Reset values.
         this.currentMap = this.map1;
-        this.player = new MegaPlayer(this.playerResources, this.currentMap.getInitialPosition(), this.getObstacles(), this.getTargets());
-        this.playerHealth = new MegaHealthBar(this.t_tiles2, (int) SeeteufelScreen.PLAYER_HEALTH_POS.x, (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
-        this.refractor = new Refractor(this.t_tiles1, (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM * 1.5 - Refractor.REFRACTOR_W / 2), (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM + 22));
-        this.door = new Door(this.t_tiles2, FirstMap.GROUND_END_X - (int)(FirstMap.GROUND_DIM * 1.5), FirstMap.GROUND_START_Y);
-        this.bonus = new WatchNadia(this.t_tiles1, FirstMap.PLATFORM_START_X, FirstMap.GROUND_START_Y);
         this.entities.clear();
+        this.obstacles.clear();
+        this.playerTargets.clear();
+        this.seeteufelTargets.clear();
+        
+        // Create fresh instances of vital objects.
+        this.player = new MegaPlayer(this.playerResources,
+                this.currentMap.getInitialPosition(),
+                Collections.unmodifiableCollection(this.obstacles),
+                Collections.unmodifiableCollection(this.playerTargets));
+        this.playerHealth = new MegaHealthBar(this.t_tiles2,
+                (int) SeeteufelScreen.PLAYER_HEALTH_POS.x,
+                (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
+        this.refractor = new Refractor(this.t_tiles1,
+                (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
+                        * 1.5 - Refractor.REFRACTOR_W / 2),
+                (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM
+                        + 22));
+        this.door = new Door(this.t_tiles2, FirstMap.GROUND_END_X
+                - (int) (FirstMap.GROUND_DIM * 1.5), FirstMap.GROUND_START_Y);
+        this.bonus = new WatchNadia(this.t_tiles1, FirstMap.PLATFORM_START_X,
+                FirstMap.GROUND_START_Y);
+        
+        // Add objects to lists as needed.
         this.entities.add(this.refractor);
         this.entities.add(this.door);
         this.entities.add(this.bonus);
+        Rectangle[] mapObstacles = this.map1.getObstacles();
+        for (Rectangle rect : mapObstacles) {
+            this.obstacles.add(rect);
+        }
+        this.playerTargets.add(this.bonus);
     }
 
     @Override
     public GameState getState() {
         return this.state;
     }
-
-    public Rectangle [] getObstacles() {
-        return this.currentMap.getObstacles();
-    }
     
-    public Damageable [] getTargets() {
-        // Grab all the Damageables out of entities, store in a temporary ArrayDeque
-        ArrayDeque<Damageable> temp = new ArrayDeque<Damageable> ();
-        for (GameEntity e: this.entities) {
-            if (e instanceof Damageable) {
-                temp.add((Damageable) e);
-            }
-        }
-        
-        Damageable[] result = new Damageable[temp.size()];
-        return temp.toArray(result);
-    }
+//    public Damageable [] getTargets() {
+//        // Grab all the Damageables out of entities, store in a temporary ArrayDeque
+//        ArrayDeque<Damageable> temp = new ArrayDeque<Damageable> ();
+//        for (GameEntity e: this.entities) {
+//            if (e instanceof Damageable) {
+//                temp.add((Damageable) e);
+//            }
+//        }
+//        
+//        Damageable[] result = new Damageable[temp.size()];
+//        return temp.toArray(result);
+//    }
     
     
     private void updateMap1(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -197,8 +222,6 @@ public class SeeteufelScreen implements GameScreen {
         // Update and draw all specially-managed entities.
         
         // Player.
-        this.player.setTargets(this.getTargets());
-        this.player.setObstacles(this.getObstacles());
         this.player.update(deltaTime);
         this.player.draw(orthoCam.combined);
         if (this.player.hasCreatedEntities()) {

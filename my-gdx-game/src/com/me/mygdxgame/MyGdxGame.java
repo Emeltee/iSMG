@@ -53,8 +53,6 @@ public class MyGdxGame implements ApplicationListener {
     private int difficulty = 0;
 //    /** Screen used for testing GameEntities. Probably a cleaner way to do this.*/
 //    private EntityTestScreen entityTestScreen = new EntityTestScreen(256, 256);
-    /** Used to ensure that initialize is called on the very first screen.*/
-    private boolean isThisTheFirstRun = true;
 
     /** Constructor */
     public MyGdxGame() {
@@ -126,11 +124,6 @@ public class MyGdxGame implements ApplicationListener {
         // TODO Should choose boss/miniboss screens as appropriate.
         // TODO Need to to proper screen transitions.
         //TODO If lives == 0, transition to Game Over.
-    
-        if (this.isThisTheFirstRun) {
-            this.currentGameScreen.initialize();
-            this.isThisTheFirstRun = false;
-        }
         
         // If current screen has not reached a win or lose state, keep running.
         if (this.currentGameScreen.getState() == GameState.Running) {

@@ -1,12 +1,11 @@
 package com.me.mygdxgame.entities.projectiles;
 
-import javax.sound.sampled.Line;
+import java.util.Collection;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 
@@ -18,7 +17,7 @@ public class GeminiShot extends BusterShot {
     private Deflection dir2;
     private int numDeflects;
     
-    public GeminiShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, BusterShot.ShotDirection dir, int power, float range, Rectangle [] obstacles, Damageable [] targets) {
+    public GeminiShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, BusterShot.ShotDirection dir, int power, float range, Collection<Rectangle> obstacles, Collection<Damageable> targets) {
         super(spriteSheet, missSound, position, speed, dir, 2 * power, 3 * range, obstacles, targets);
         this.isDeflected = false;
         this.numDeflects = 0;

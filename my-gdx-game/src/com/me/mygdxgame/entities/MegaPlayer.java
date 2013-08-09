@@ -1,6 +1,8 @@
 package com.me.mygdxgame.entities;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.Gdx;
@@ -47,8 +49,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Vector3 velocity = new Vector3();
     private Vector3 shotOrigin = new Vector3();
     private int health = MegaPlayer.MAX_HEALTH;
-    private Rectangle[] obstacles = null;
-    private Damageable[] targets = null;
+    private Collection<Rectangle> obstacles = null;
+    private Collection<Damageable> targets = null;
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
     private int animationTimer = 0;
     private int prevFrame = 0;
@@ -128,7 +130,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     public MegaPlayer(MegaPlayerResources resources, Vector3 initialPosition,
-            Rectangle[] obstacles, Damageable[] targets) {
+            Collection<Rectangle> obstacles, Collection<Damageable> targets) {
         this.resources = resources;
         this.position.set(initialPosition);
         this.obstacles = obstacles;
@@ -234,14 +236,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setPosition(Vector3 position) {
         this.position.set(position);
-    }
-    
-    public void setObstacles(Rectangle[] obstacles) {
-        this.obstacles = obstacles;
-    }
-    
-    public void setTargets(Damageable[] targets) {
-        this.targets = targets;
     }
     
     public void setGeminiEnabled(boolean geminiEnabled) {
@@ -671,12 +665,10 @@ public class MegaPlayer implements GameEntity, Damageable {
                     - (MegaPlayer.DECELERATION * deltaTime), 0);
         }
         
-        // Apply gravity. Accelerate downwards the same as you accelerate
-        // upwards (acceleration - deceleration). It looks like it should be
-        // more intuitive to control this way.
+        // Apply gravity.
         if (this.isInAir) {
-            this.velocity.y = Math.min(this.velocity.y -
-                    ((MegaPlayer.ACCELERATION - MegaPlayer.DECELERATION) * deltaTime),
+            this.velocity.y = Math.min(this.velocity.y
+                    - (MegaPlayer.DECELERATION * deltaTime),
                     MegaPlayer.MAX_SPEED);
         }
     }

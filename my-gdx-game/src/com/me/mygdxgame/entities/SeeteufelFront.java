@@ -1,39 +1,33 @@
 package com.me.mygdxgame.entities;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
-public class Seeteufel implements GameEntity, Damageable {
-
-    @Override
-    public void damage(int damage) {
-        // TODO Auto-generated method stub
+public class SeeteufelFront implements GameEntity {
+    
+    private ArrayDeque<Damageable> targets = null;
+    
+    private TextureRegion front = null;
+    private TextureRegion frontArmRight = null;
+    private TextureRegion frontArmLeft = null;
+    private TextureRegion backArmRight = null;
+    private TextureRegion backArmLeft = null;
+    private TextureRegion upperArmRight = null;
+    private TextureRegion upperArmLeft = null;
+    
+    public SeeteufelFront(Texture spritesheet, Collection<Damageable> targets) {
         
     }
-
-    @Override
-    public int getHealth() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int getMaxHealth() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public Rectangle[] getHitArea() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    
     @Override
     public void update(float deltaTime) {
         // TODO Auto-generated method stub
