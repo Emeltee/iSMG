@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
+import com.me.mygdxgame.entities.projectiles.GeminiShot;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -58,6 +59,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = true;
+    private boolean geminiEnabled; 
     
     MegaPlayerResources resources = new MegaPlayerResources();
     
@@ -131,6 +133,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
+        this.geminiEnabled = false;
         
         this.runRight[0] = new TextureRegion(resources.playerTexture, 0, 0,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
@@ -235,6 +238,14 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setObstacles(Rectangle[] obstacles) {
         this.obstacles = obstacles;
+    }
+    
+    public void setTargets(Damageable[] targets) {
+        this.targets = targets;
+    }
+    
+    public void setGeminiEnabled(boolean geminiEnabled) {
+        this.geminiEnabled = geminiEnabled;
     }
     
     public void applyForce(Vector3 force) {
@@ -610,20 +621,36 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.shotOrigin.set(this.position);
             this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
 
-            this.busterCooldown = MegaPlayer.MAX_BUSTER_COOLDOWN;
+            this.busterCooldown = MegaPlayer.MAX_BUSTER_COOLDOWN;             
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
-                this.newShots.push(new BusterShot(this.resources.busterTexture,
-                        this.resources.shotMissSound, this.shotOrigin,
-                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
-                        MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
-                        this.obstacles, this.targets));
+                if (geminiEnabled) {
+                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
+                            this.resources.shotMissSound, this.shotOrigin,
+                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
+                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
+                            this.obstacles, this.targets));
+                } else {
+                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                            this.resources.shotMissSound, this.shotOrigin,
+                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
+                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
+                            this.obstacles, this.targets)); 
+                }
             } else {
-                this.newShots.push(new BusterShot(this.resources.busterTexture,
+                if (geminiEnabled) {
+                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
+                } else {
+                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                            this.resources.shotMissSound, this.shotOrigin,
+                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
+                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
+                            this.obstacles, this.targets));
+                }
             }
         }
     }

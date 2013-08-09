@@ -171,7 +171,7 @@ public class FirstMap extends GameMap {
         //tileY(this.wallSprite, GROUND_END_X, GROUND_START_Y - GROUND_DIM, 7);
 
         // NADIA
-        MyGdxGame.currentGame.spriteBatch.draw(this.nadiaSprite, PLATFORM_START_X - GROUND_DIM * 4, GROUND_ORIGIN_Y);
+        // MyGdxGame.currentGame.spriteBatch.draw(this.nadiaSprite, PLATFORM_START_X - GROUND_DIM * 4, GROUND_ORIGIN_Y);
         
         // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
