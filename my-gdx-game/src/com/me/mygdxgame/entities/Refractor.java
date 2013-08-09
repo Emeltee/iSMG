@@ -29,7 +29,7 @@ public class Refractor implements GameEntity {
     private EntityState status; // Running/Destroyed
     private TextureRegion refractor;
     private boolean taken; // Whether or not player has taken refractor
-    private static final float MESG_DELAY = 3.0f; // Time for message to be on-screen
+    private static final float MESG_DELAY = 1.5f; // Time for message to be on-screen
     private float mesgDuration; // 
     private static final Sound ITEM_GET_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
     

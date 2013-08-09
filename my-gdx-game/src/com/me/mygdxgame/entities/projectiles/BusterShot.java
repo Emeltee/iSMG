@@ -1,5 +1,6 @@
 package com.me.mygdxgame.entities.projectiles;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.audio.Sound;
@@ -51,13 +52,13 @@ public class BusterShot implements GameEntity {
     protected EntityState status;
     
     /** Areas of the map to look out for. */
-    protected Rectangle [] watchOut;
+    protected Collection<Rectangle> watchOut;
     /** Stuff to hurt.*/
-    protected Damageable[] targets;
+    protected Collection<Damageable> targets;
   
     public BusterShot() {}
     
-    public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, ShotDirection dir, int power, float range, Rectangle[] obstacles, Damageable[] targets) {
+    public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, ShotDirection dir, int power, float range, Collection<Rectangle> obstacles, Collection<Damageable> targets) {
         this.spriteSheet = spriteSheet;
         this.missSound = missSound;
         this.position.set(position);
@@ -140,20 +141,17 @@ public class BusterShot implements GameEntity {
 
     @Override
     public EntityState getState() {
-        // TODO Auto-generated method stub
         return this.status;
     }
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NoSuchElementException();
     }
 
 }
