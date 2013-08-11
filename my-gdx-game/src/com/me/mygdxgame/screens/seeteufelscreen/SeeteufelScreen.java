@@ -14,6 +14,7 @@ import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.entities.Refractor;
+import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.WatchNadia;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
@@ -73,6 +74,7 @@ public class SeeteufelScreen implements GameScreen {
     private Refractor refractor;
     private Door door;
     private WatchNadia bonus;
+    private SeeteufelFront seeFront;
     
     private ArrayDeque<Rectangle> obstacles = new ArrayDeque<Rectangle>();
     private ArrayDeque<Damageable> playerTargets = new ArrayDeque<Damageable>();
@@ -252,10 +254,11 @@ public class SeeteufelScreen implements GameScreen {
                 refractor.onTake();
             }
             
-            // Exit the room
+            // Exit the room. Do setup for room 2.
             if (door.getHitBox().overlaps(box)) {
                 if (door.getDoorState() == Door.DoorState.OPEN) {
                     this.currentMap = map2;
+                    this.setupMap2();
                 }
             }
             
@@ -267,10 +270,29 @@ public class SeeteufelScreen implements GameScreen {
         }
      }
     
+    private void setupMap2() {
+        this.entities.clear();
+        this.playerTargets.clear();
+        this.seeteufelTargets.clear();
+        this.obstacles.clear();
+        
+        Rectangle[] map2Obstacles = this.map2.getObstacles();
+        for (Rectangle rect : map2Obstacles) {
+            this.obstacles.add(rect);
+        }
+        
+        // TODO add destructable platforms to obstacles.
+        
+        this.player.setPosition(this.map2.getInitialPosition());
+        
+        this.seeFront = new SeeteufelFront(this.t_seeteufel, null);
+        
+    }
+    
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
-     // Update camera.
+        // Update camera.
         orthoCam.position.x = this.player.getPosition().x;
-        orthoCam.position.y = SeeteufelScreen.MAP1_CAM_Y;
+        orthoCam.position.y = this.player.getPosition().y;
         orthoCam.update();
         
         // Clear screen.
@@ -290,6 +312,36 @@ public class SeeteufelScreen implements GameScreen {
                 this.toAdd.push(e.getCreatedEntities());
             }
         }
+        
+        // Update and draw all specially-managed entities.
+        
+        // Seeteufel.
+        this.seeFront.update(deltaTime);
+        this.seeFront.draw(orthoCam.combined);
+        
+        // Player.
+        this.player.update(deltaTime);
+        this.player.draw(orthoCam.combined);
+        if (this.player.hasCreatedEntities()) {
+            this.toAdd.push(this.player.getCreatedEntities());
+        }
+        
+        // Health bar.
+        this.playerHealth.setInDanger(false);
+        this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
+        orthoCam.position.set(0, 0, 0);
+        orthoCam.update();
+        this.playerHealth.draw(orthoCam.combined);
+        
+        // Remove or add to generic entity list as needed.
+        this.entities.removeAll(this.toRemove);
+        for (GameEntity[] newEntities : this.toAdd) {
+            for (GameEntity e : newEntities) {
+                this.entities.add(e);
+            }
+        }
+        this.toAdd.clear();
+        this.toRemove.clear();
     }
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
