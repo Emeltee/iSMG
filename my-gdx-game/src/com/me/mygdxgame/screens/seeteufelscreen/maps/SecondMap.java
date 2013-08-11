@@ -94,8 +94,8 @@ public class SecondMap extends GameMap {
 
     @Override
     public Vector3 getInitialPosition() {
-        // TODO Auto-generated method stub
-        return null;
+        //return new Vector3(50, 50, 0);
+        return new Vector3(FirstMap.GROUND_DIM, FirstMap.GROUND_DIM / 2, 0);
     }
 
     @Override
