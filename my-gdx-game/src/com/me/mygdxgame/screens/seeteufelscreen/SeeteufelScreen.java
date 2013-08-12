@@ -55,6 +55,7 @@ public class SeeteufelScreen implements GameScreen {
     private SecondMap map2;
     private ThirdMap map3;
     private GameMap currentMap;
+    private int map2Y = -SCREEN_BOTTOM;
     
     // Texture files for building sprites
     private Texture t_tiles1;
@@ -287,12 +288,14 @@ public class SeeteufelScreen implements GameScreen {
         
         this.seeFront = new SeeteufelFront(this.t_seeteufel, null);
         
+        this.map2.setDebugMode(true);
+        
     }
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
         orthoCam.position.x = this.player.getPosition().x;
-        orthoCam.position.y = this.player.getPosition().y;
+        orthoCam.position.y = this.map2Y;
         orthoCam.update();
         
         // Clear screen.

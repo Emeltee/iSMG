@@ -34,12 +34,11 @@ public class SecondMap extends GameMap {
     // as everything makes sense relative to everything else, all you have to do is put
     // the camera in the right spot, and you can kind of get it to look the way you want..
 
-    private final int GROUND_DIM = 44; // Width of ground tile
-    private final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
+    private final int GROUND_DIM = 45; // Width of ground tile
     private final int GROUND_ORIGIN_X = 0,  // Origin X point
             GROUND_ORIGIN_Y = 0, // Origin Y point
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 9; // Columns of ground tile
+            GROUND_WIDTH = 12; // Columns of ground tile
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
     private final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
