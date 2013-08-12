@@ -16,6 +16,7 @@ public class SeeteufelFront implements GameEntity {
     
     private static final int FRONT_ARM_FRAMERATE = 30;
     private static final int BACK_ARM_FRAMERATE = 15;
+    private static final int GRAVITY_FACTOR = 40;
     
     private Vector3 position = new Vector3();
     
@@ -31,6 +32,7 @@ public class SeeteufelFront implements GameEntity {
     private int backArmFrame = 0;
     private int frontArmTimer = 0;
     private int backArmTimer = 0;
+    private int targetY = 0;
     
     public SeeteufelFront(Texture spritesheet, Collection<Damageable> targets) {
         this.targets = targets;
@@ -55,10 +57,21 @@ public class SeeteufelFront implements GameEntity {
         this.backArmRight[2] = new TextureRegion(spritesheet, 228, 362, 113, 29);
     }
     
+    public void setTargetY(int targetY) {
+        
+    }
+    
+    public int getTargetY() {
+        return this.targetY;
+    }
+    
     @Override
     public void update(float deltaTime) {
-        // TODO Auto-generated method stub
-        
+        if (this.position.y > this.targetY) {
+            this.position.y += SeeteufelFront.GRAVITY_FACTOR;
+        } else {
+            this.position.y = this.targetY;
+        }
     }
 
     @Override
@@ -106,8 +119,7 @@ public class SeeteufelFront implements GameEntity {
 
     @Override
     public EntityState getState() {
-        // TODO Auto-generated method stub
-        return null;
+        return EntityState.Running;
     }
 
     @Override

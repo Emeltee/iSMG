@@ -4,12 +4,16 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.MegaPlayer;
@@ -40,6 +44,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final int SCREEN_RIGHT = MyGdxGame.currentGame.SCREEN_WIDTH / 2;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
+    private static Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
+    private static Color WATER_COLOR_ELECTRIC = new Color(1, 1, 0, 0);
     
     // Constant locations for the texture paths, just because
     private static final String PATH_TILES_1 = "img/seeTiles1.png";
@@ -294,14 +300,12 @@ public class SeeteufelScreen implements GameScreen {
         this.player.setPosition(this.map2.getInitialPosition());
         
         this.seeFront = new SeeteufelFront(this.t_seeteufel, null);
-        
-        this.map2.setDebugMode(true);
-        
     }
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
-        orthoCam.position.x = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
+        Vector3 playerPos = this.player.getPosition();
+        orthoCam.position.x = playerPos.x;
         orthoCam.position.y = this.map2Y;
         orthoCam.update();
         
@@ -330,11 +334,26 @@ public class SeeteufelScreen implements GameScreen {
         this.seeFront.draw(orthoCam.combined);
         
         // Player.
+        if (playerPos.y < this.map2Y) {
+            this.player.setIsUnderwarer(true);
+        } else {
+            this.player.setIsUnderwarer(false);
+        }
         this.player.update(deltaTime);
         this.player.draw(orthoCam.combined);
         if (this.player.hasCreatedEntities()) {
             this.toAdd.push(this.player.getCreatedEntities());
         }
+        
+        // Water, which basically follows the camera's y.
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        
+        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
+        MyGdxGame.currentGame.shapeRenderer.setColor(SeeteufelScreen.WATER_COLOR);
+        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(orthoCam.combined);
+        MyGdxGame.currentGame.shapeRenderer.rect(orthoCam.position.x - Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth(), this.map2Y);
+        MyGdxGame.currentGame.shapeRenderer.end();
         
         // Health bar.
         this.playerHealth.setInDanger(false);
