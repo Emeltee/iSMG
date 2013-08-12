@@ -42,7 +42,7 @@ public class ThirdMap extends GameMap {
     // as everything makes sense relative to everything else, all you have to do is put
     // the camera in the right spot, and you can kind of get it to look the way you want..
 
-    private final int GROUND_DIM = 44; // Width of ground tile
+    private final int GROUND_DIM = 45; // Width of ground tile
     private final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
     private final int 
             GROUND_ORIGIN_X = 0,  // Origin X point
@@ -67,11 +67,11 @@ public class ThirdMap extends GameMap {
             // Make the various sprites
             this.spriteSheet = new Texture(Gdx.files.internal(TEXTURE_PATH));
             this.spriteSheet.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
-            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, 44, 44);
-            this.wallSprite = new TextureRegion(spriteSheet, 209, 17, 44, 44);
-            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, 44, 44);
+            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, GROUND_DIM, GROUND_DIM);
+            this.wallSprite = new TextureRegion(spriteSheet, 210, 17, GROUND_DIM, GROUND_DIM);
+            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, GROUND_DIM, GROUND_DIM);
             this.largeMazeSprite = new TextureRegion(spriteSheet, 45, 0, 120, 120);
-            this.idkSprite = new TextureRegion(spriteSheet, 165, 120, 44, 44);
+            this.idkSprite = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
             
             // Make the border animation
             this.borderFrames = new TextureRegion[8];

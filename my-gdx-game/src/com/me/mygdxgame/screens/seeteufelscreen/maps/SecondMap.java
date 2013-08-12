@@ -63,11 +63,11 @@ public class SecondMap extends GameMap {
         if (!this.resourcesLoaded) {
             this.spriteSheet = new Texture(Gdx.files.internal(TEXTURE_PATH));
             this.spriteSheet.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
-            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, 44, 44);
-            this.wallSprite = new TextureRegion(spriteSheet, 209, 17, 44, 44);
-            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, 44, 44);
+            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, GROUND_DIM, GROUND_DIM);
+            this.wallSprite = new TextureRegion(spriteSheet, 210, 17, GROUND_DIM, GROUND_DIM);
+            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, GROUND_DIM, GROUND_DIM);
             this.largeMazeSprite = new TextureRegion(spriteSheet, 45, 0, 120, 120);
-            this.idkSprite = new TextureRegion(spriteSheet, 165, 120, 44, 44);
+            this.idkSprite = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
             
             this.borderFrames = new TextureRegion[5];
             this.borderFrames[0] = new TextureRegion(spriteSheet, 35, 3, 10, 10);
@@ -115,10 +115,10 @@ public class SecondMap extends GameMap {
         .setProjectionMatrix(transformMatrix);
         MyGdxGame.currentGame.spriteBatch.begin();
 
-        //tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
-        tileY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
-        tileY(this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
+        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
+        tileY(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
+        tileY(this.rockSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
+        tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
         tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
         
         // Update animation frame
