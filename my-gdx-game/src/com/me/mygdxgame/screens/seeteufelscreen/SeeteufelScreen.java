@@ -197,6 +197,13 @@ public class SeeteufelScreen implements GameScreen {
     private void updateMap1(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
         orthoCam.position.x = this.player.getPosition().x;
+        
+        if ((orthoCam.position.x - MyGdxGame.SCREEN_WIDTH / 2.0f) <= FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) {
+            orthoCam.position.x = (FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) + MyGdxGame.SCREEN_WIDTH / 2.0f;
+        } else if ((orthoCam.position.x + MyGdxGame.SCREEN_WIDTH / 2.0f) >= FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) {
+            orthoCam.position.x = (FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) - MyGdxGame.SCREEN_WIDTH / 2.0f;
+        }
+        
         orthoCam.position.y = SeeteufelScreen.MAP1_CAM_Y;
         orthoCam.update();
         
@@ -294,7 +301,7 @@ public class SeeteufelScreen implements GameScreen {
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
-        orthoCam.position.x = this.player.getPosition().x;
+        orthoCam.position.x = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
         orthoCam.position.y = this.map2Y;
         orthoCam.update();
         
