@@ -44,6 +44,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static float SHOT_OFFSET_Y = 16;
     private static float SHOT_OFFSET_X = 16;
     private static float BASE_SHOT_RANGE = 300;
+    private static float WATER_MOVEMENT_FACTOR = 1.5f;
     
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
@@ -61,7 +62,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = true;
-    private boolean geminiEnabled; 
+    private boolean geminiEnabled = false;
+    private boolean isUnderwater = false;
     
     MegaPlayerResources resources = new MegaPlayerResources();
     
@@ -250,6 +252,14 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.position;
     }
     
+    public void setIsUnderwarer(boolean isUnderwater) {
+        this.isUnderwater = isUnderwater;
+    }
+    
+    public boolean getIsUnderwater() {
+        return this.isUnderwater;
+    }
+    
     @Override
     public void damage(int damage) {
         this.health -= damage;
@@ -283,9 +293,17 @@ public class MegaPlayer implements GameEntity, Damageable {
         }
         
         // Move according to velocity, and check for obstacle collisions.
-        this.position.y += this.velocity.y;
+        if (this.isUnderwater) {
+            this.position.y += this.velocity.y / MegaPlayer.WATER_MOVEMENT_FACTOR;
+        } else {
+            this.position.y += this.velocity.y;
+        }
         this.checkCollisionsY();
-        this.position.x += this.velocity.x;
+        if (this.isUnderwater) {
+            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
+        } else {
+            this.position.x += this.velocity.x;
+        }
         this.checkCollionsX();
 
         // Apply constant forces.
