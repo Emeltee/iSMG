@@ -298,6 +298,7 @@ public class SeeteufelScreen implements GameScreen {
         // TODO add destructable platforms to obstacles.
         
         this.player.setPosition(this.map2.getInitialPosition());
+        this.playerHealth.setInDanger(true);
         
         this.seeFront = new SeeteufelFront(this.t_seeteufel, null);
     }
@@ -305,7 +306,7 @@ public class SeeteufelScreen implements GameScreen {
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
         Vector3 playerPos = this.player.getPosition();
-        orthoCam.position.x = playerPos.x;
+        orthoCam.position.x = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
         orthoCam.position.y = this.map2Y;
         orthoCam.update();
         
@@ -356,7 +357,6 @@ public class SeeteufelScreen implements GameScreen {
         MyGdxGame.currentGame.shapeRenderer.end();
         
         // Health bar.
-        this.playerHealth.setInDanger(false);
         this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
         orthoCam.position.set(0, 0, 0);
         orthoCam.update();
