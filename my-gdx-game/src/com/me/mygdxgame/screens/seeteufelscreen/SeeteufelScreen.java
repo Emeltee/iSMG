@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
@@ -270,7 +271,8 @@ public class SeeteufelScreen implements GameScreen {
             
             // Exit the room. Do setup for room 2.
             if (door.getHitBox().overlaps(box)) {
-                if (door.getDoorState() == Door.DoorState.OPEN) {
+                if (door.getDoorState() == Door.DoorState.OPEN
+                    && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                     this.currentMap = map2;
                     this.setupMap2();
                 }
