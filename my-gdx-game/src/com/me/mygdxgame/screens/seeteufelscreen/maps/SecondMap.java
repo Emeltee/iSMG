@@ -38,24 +38,14 @@ public class SecondMap extends GameMap {
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
             GROUND_ORIGIN_Y = 0, // Origin Y point
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 12; // Columns of ground tile
+            GROUND_WIDTH = 15; // Columns of ground tile
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
-
-    
-    public SecondMap() {
-        this.height=15;
-    }
     
     public SecondMap(int height) {
         this.height=height;
-    }
-    
-    public SecondMap(int height, boolean debugMode) {
-        this.height = height;
-        this.debugMode = debugMode;
     }
     
     @Override

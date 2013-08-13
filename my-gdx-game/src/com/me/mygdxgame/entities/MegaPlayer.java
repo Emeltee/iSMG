@@ -252,7 +252,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.position;
     }
     
-    public void setIsUnderwarer(boolean isUnderwater) {
+    public void setIsUnderwater(boolean isUnderwater) {
         this.isUnderwater = isUnderwater;
     }
     
@@ -508,7 +508,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 else if(hitBoxTop < obstacleTop && hitBoxTop > obstacle.y)
                 {
                     // Set position to bottom of obstacle. Set y velocity to 0. Reset jump values.
-                    this.hitBox.y = obstacle.y - this.hitBox.height - 1;
+                    this.position.y = obstacle.y - this.hitBox.height - 1;
                     this.velocity.y = 0;
                     this.isJumping = false;
                     this.jumpThrustTimer = 0;
