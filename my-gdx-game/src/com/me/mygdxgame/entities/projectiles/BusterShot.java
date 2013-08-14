@@ -52,7 +52,7 @@ public class BusterShot implements GameEntity {
     protected EntityState status;
     
     /** Areas of the map to look out for. */
-    protected Collection<Rectangle> watchOut;
+    protected Collection<Rectangle> obstacles;
     /** Stuff to hurt.*/
     protected Collection<Damageable> targets;
   
@@ -67,7 +67,7 @@ public class BusterShot implements GameEntity {
         this.range = range;
         this.power = power;
         this.bullet = new TextureRegion(this.spriteSheet, BULLET_X, BULLET_Y, BULLET_W, BULLET_H);
-        this.watchOut = obstacles;
+        this.obstacles = obstacles;
         this.targets = targets;
         this.status = EntityState.Running;
     }
@@ -110,7 +110,7 @@ public class BusterShot implements GameEntity {
             }
             
             // Check for collisions with obstacles.
-            for (Rectangle r: this.watchOut) {
+            for (Rectangle r: this.obstacles) {
                 if (r.overlaps(this.hitBox)) {
                     this.status = EntityState.Destroyed;
                     this.missSound.play();
