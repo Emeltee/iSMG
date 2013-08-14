@@ -242,6 +242,11 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
+        if (geminiEnabled) {
+            this.resources.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-gemini-shot.ogg"));
+        } else {
+            this.resources.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-fire1.ogg"));
+        }
     }
     
     public void applyForce(Vector3 force) {
