@@ -97,8 +97,11 @@ public class GeminiShot extends BusterShot {
             for (Rectangle r: this.watchOut) {
                 if (r.overlaps(this.hitBox)) {
                     
-                    if (numDeflects >= MAX_DEFLECTS) { return; }
-                    else { numDeflects++; }                    
+                    if (numDeflects >= MAX_DEFLECTS) { 
+                        // return; 
+                    } else { 
+                        numDeflects++; 
+                    }                    
                     
                     if (!this.isDeflected) {
                         this.isDeflected = true;
