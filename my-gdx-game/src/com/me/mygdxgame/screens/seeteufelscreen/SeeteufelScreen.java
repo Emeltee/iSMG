@@ -21,6 +21,7 @@ import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.WatchNadia;
+import com.me.mygdxgame.entities.obstacles.Platform;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
@@ -44,9 +45,16 @@ public class SeeteufelScreen implements GameScreen {
     private static final int SCREEN_LEFT = -MyGdxGame.currentGame.SCREEN_WIDTH / 2;
     private static final int SCREEN_RIGHT = MyGdxGame.currentGame.SCREEN_WIDTH / 2;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
-    private static int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
-    private static Color WATER_COLOR_ELECTRIC = new Color(1, 1, 0, 0);
+    private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
+    private static final int MAP2_CAM_SPEED = 1;
+    private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
+    private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 3, 0);
+    private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
+    private static final Color WATER_COLOR_ELECTRIC = new Color(1, 1, 0, 0);
+    private static final int MAP2_HEIGHT = 40;
+    private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
+    private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 4); // -4 to account for wall, and then three more tiles.
+    private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
     
     // Constant locations for the texture paths, just because
     private static final String PATH_TILES_1 = "img/seeTiles1.png";
@@ -88,9 +96,11 @@ public class SeeteufelScreen implements GameScreen {
     private ArrayDeque<Damageable> playerTargets = new ArrayDeque<Damageable>();
     private ArrayDeque<Damageable> seeteufelTargets = new ArrayDeque<Damageable>();
     
+    private boolean isMap2Flooding = false;
+    
     public SeeteufelScreen() {
         this.map1 = new FirstMap();
-        this.map2 = new SecondMap();
+        this.map2 = new SecondMap(SeeteufelScreen.MAP2_HEIGHT);
         this.map3 = new ThirdMap();
         this.currentMap = this.map1;
     }
@@ -152,6 +162,7 @@ public class SeeteufelScreen implements GameScreen {
         this.obstacles.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
+        this.isMap2Flooding = false;
         
         // Create fresh instances of vital objects.
         this.player = new MegaPlayer(this.playerResources,
@@ -171,7 +182,7 @@ public class SeeteufelScreen implements GameScreen {
         this.bonus = new WatchNadia(this.t_tiles1, FirstMap.PLATFORM_START_X,
                 FirstMap.GROUND_START_Y);
         
-        // Add objects to lists as needed.
+        // Set up first map.
         this.entities.add(this.refractor);
         this.entities.add(this.door);
         this.entities.add(this.bonus);
@@ -287,28 +298,96 @@ public class SeeteufelScreen implements GameScreen {
      }
     
     private void setupMap2() {
+        // Clear lists.
         this.entities.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
         this.obstacles.clear();
         
+        // Add player static obstacles.
         Rectangle[] map2Obstacles = this.map2.getObstacles();
         for (Rectangle rect : map2Obstacles) {
             this.obstacles.add(rect);
         }
         
-        // TODO add destructable platforms to obstacles.
+        // Generate stairs of destructable platforms and load them into lists.
+        this.generateMap2Stairs();
         
         this.player.setPosition(this.map2.getInitialPosition());
-        this.playerHealth.setInDanger(true);
+    }
+    
+    private void generateMap2Stairs() {
+        // Add player dynamic obstacles. This also doubles as the Seeteufel target list.
         
-        this.seeFront = new SeeteufelFront(this.t_seeteufel, null);
+        // First flight of stairs.
+        int currentTileX = 0;
+        int currentTileY = 1;
+        for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < SecondMap.GROUND_WIDTH; currentTileX++) {
+            Platform destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentTileY * SecondMap.GROUND_DIM);
+            this.seeteufelTargets.add(destructableTile);
+            this.obstacles.add(destructableTile.getHitArea()[0]);
+            this.entities.add(destructableTile);
+            
+            if (currentTileX % 2 == 0) {
+                currentTileY++;
+            }
+        }
+        
+        // The rest up to the ceiling.
+        boolean platformDirection = false;
+        currentTileX -= 5;
+        while (currentTileY < SeeteufelScreen.MAP2_HEIGHT) {
+            
+            Platform destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentTileY * SecondMap.GROUND_DIM);
+            this.seeteufelTargets.add(destructableTile);
+            this.obstacles.add(destructableTile.getHitArea()[0]);
+            this.entities.add(destructableTile);
+            
+            if (platformDirection) {
+                currentTileX++;
+                if (currentTileX == SecondMap.GROUND_WIDTH) {
+                    if (currentTileX % 2 == 0) {
+                        currentTileX -= 6;
+                    } else {
+                        currentTileX -= 5;
+                    }
+                    platformDirection = !platformDirection;
+                } else if (currentTileX % 2 == 0) {
+                    currentTileY++;
+                }
+            } else {
+                currentTileX--;
+                if (currentTileX == 0) {
+                    if (currentTileX % 2 == 0) {
+                        currentTileX += 6;
+                    } else {
+                        currentTileX += 5;
+                    }
+                    platformDirection = !platformDirection;
+                } else if (currentTileX % 2 == 0) {
+                    currentTileY++;
+                }
+            }
+        }
     }
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
-        // Update camera.
+        
+        // Update camera according to current map state.
+        // Rises slowly as room floods. Stays static prior.
         Vector3 playerPos = this.player.getPosition();
-        orthoCam.position.x = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
+        orthoCam.position.x = SeeteufelScreen.MAP2_CAM_X;
+        
+        // Activate flooding once player moves above certain x.
+        if (this.isMap2Flooding) {
+            if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
+                this.map2Y += SeeteufelScreen.MAP2_CAM_SPEED;
+            }
+        } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
+            this.isMap2Flooding = true;
+            this.playerHealth.setInDanger(true);
+            this.seeFront = new SeeteufelFront(this.t_seeteufel, SeeteufelScreen.MAP2_SEETEUFEL_INIT_POS, this.seeteufelTargets);
+        }
         orthoCam.position.y = this.map2Y;
         orthoCam.update();
         
@@ -317,6 +396,13 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw the map
         this.currentMap.render(deltaTime, orthoCam.combined);
+        
+        // Update Seeteufel only after water starts rising.
+        if (this.isMap2Flooding) {
+            this.seeFront.setTargetY(this.map2Y);
+            this.seeFront.update(deltaTime);
+            this.seeFront.draw(orthoCam.combined);
+        }
         
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
@@ -330,17 +416,11 @@ public class SeeteufelScreen implements GameScreen {
             }
         }
         
-        // Update and draw all specially-managed entities.
-        
-        // Seeteufel.
-        this.seeFront.update(deltaTime);
-        this.seeFront.draw(orthoCam.combined);
-        
         // Player.
         if (playerPos.y < this.map2Y) {
-            this.player.setIsUnderwarer(true);
+            this.player.setIsUnderwater(true);
         } else {
-            this.player.setIsUnderwarer(false);
+            this.player.setIsUnderwater(false);
         }
         this.player.update(deltaTime);
         this.player.draw(orthoCam.combined);
