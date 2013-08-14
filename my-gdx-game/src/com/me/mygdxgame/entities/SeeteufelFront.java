@@ -14,9 +14,12 @@ import com.me.mygdxgame.utilities.GameEntity;
 
 public class SeeteufelFront implements GameEntity {
     
+    public static final int BASE_WIDTH = 98;
+    public static final int TARGET_Y_OFFSET = 20;
+    
     private static final int FRONT_ARM_FRAMERATE = 30;
     private static final int BACK_ARM_FRAMERATE = 15;
-    private static final int GRAVITY_FACTOR = 40;
+    private static final int GRAVITY_FACTOR = 7;
     
     private Vector3 position = new Vector3();
     
@@ -34,8 +37,9 @@ public class SeeteufelFront implements GameEntity {
     private int backArmTimer = 0;
     private int targetY = 0;
     
-    public SeeteufelFront(Texture spritesheet, Collection<Damageable> targets) {
+    public SeeteufelFront(Texture spritesheet, Vector3 position, Collection<Damageable> targets) {
         this.targets = targets;
+        this.position.set(position);
         
         this.front = new TextureRegion(spritesheet, 73, 211, 98, 115);
         
@@ -58,7 +62,7 @@ public class SeeteufelFront implements GameEntity {
     }
     
     public void setTargetY(int targetY) {
-        
+        this.targetY = targetY;
     }
     
     public int getTargetY() {
@@ -67,10 +71,11 @@ public class SeeteufelFront implements GameEntity {
     
     @Override
     public void update(float deltaTime) {
-        if (this.position.y > this.targetY) {
-            this.position.y += SeeteufelFront.GRAVITY_FACTOR;
+        int adjustedTargetY = this.targetY - SeeteufelFront.TARGET_Y_OFFSET;
+        if (this.position.y > adjustedTargetY) {
+            this.position.y -= SeeteufelFront.GRAVITY_FACTOR;
         } else {
-            this.position.y = this.targetY;
+            this.position.y = adjustedTargetY;
         }
     }
 

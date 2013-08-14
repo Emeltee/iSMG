@@ -2,8 +2,12 @@ package com.me.mygdxgame.entities.obstacles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -31,10 +35,8 @@ public class Platform implements GameEntity, Damageable {
     protected int x, y;
     protected int health;
     protected Rectangle hitbox;
-    protected Rubble[] rubble;
+    protected Rubble[] rubble = null;
     protected static final int RUBBLE_LIFE = 500;
-    
-    public Platform() {}
     
     public Platform(Texture spriteSheet, int x, int y) {
         this.spriteSheet = spriteSheet;
@@ -42,7 +44,7 @@ public class Platform implements GameEntity, Damageable {
         this.status = EntityState.Running;
         this.x = x;
         this.y = y;
-        this.hitbox = new Rectangle(this.x, this.y, this.x + PLATFORM_W, this.x + PLATFORM_H);
+        this.hitbox = new Rectangle(this.x, this.y, PLATFORM_W, PLATFORM_H);
         this.health = MAX_HEALTH;
     }
     
@@ -80,7 +82,17 @@ public class Platform implements GameEntity, Damageable {
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        return this.rubble;
+        
+        GameEntity[] returnList;
+        
+        if (this.rubble != null && this.rubble.length > 0) {
+            returnList = this.rubble;
+            this.rubble = null;
+        } else {
+            throw new NoSuchElementException();
+        }
+        
+        return returnList;
     }
 
     @Override
