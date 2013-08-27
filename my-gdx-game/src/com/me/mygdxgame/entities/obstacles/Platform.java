@@ -2,12 +2,8 @@ package com.me.mygdxgame.entities.obstacles;
 
 import java.util.NoSuchElementException;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -123,5 +119,10 @@ public class Platform implements GameEntity, Damageable {
                 new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0), new Vector3(0, 0, 0), 0, new Rectangle [] { rubbleStopper }, new Damageable [] {}),
                 new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0), new Vector3(0, 0, 0), 0, new Rectangle [] { rubbleStopper}, new Damageable [] {}),
         };
+    }
+
+    @Override
+    public void applyForce(Vector3 force) {
+        // Do nothing.
     }
 }

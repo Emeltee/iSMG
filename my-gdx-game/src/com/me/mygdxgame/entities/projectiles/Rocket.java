@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.particles.Explosion;
+import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
@@ -21,8 +22,6 @@ public class Rocket implements GameEntity {
     private static final int ROCKET_W = 16;
     private static final int ROCKET_H = 16;
 
-    private static final float GRAVITY = 0; // Zero gravity for rockets. 
-    
     /** TextureRegion representing the idle frame. */
     private TextureRegion rocket;
     /** Tracks the number of frames that have passed. Used to time animation. */
@@ -35,22 +34,34 @@ public class Rocket implements GameEntity {
     /** Current velocity. */
     private Vector3 velocity = new Vector3(0, 0, 0);
     /** Collision detection rectangles */
-    private Rectangle [] watchOut;
+    private Rectangle [] obstacles;
+    /** Targets to damage. */
+    private Damageable[] targets;
     /** State of object */
     private EntityState status;
     /** Previous z-coord (for collision detection) */
     private float prevZ;
+    /** Hit box. */
+    private Rectangle hitBox = null;
+    /** Damage done to targets. */
+    private int power = 0;
+    /** Force to apply upon hitting a target. */
+    private float knockback = 0;
     
     // Entities to be created by rocket
     private Explosion[] explosions;
   
-    public Rocket(Texture spriteSheet, Vector3 position, Vector3 velocity, Rectangle [] watchOut) {
+    public Rocket(Texture spriteSheet, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.position.set(position);
         this.velocity = velocity;
         this.rocket = new TextureRegion(this.spriteSheet, ROCKET_X, ROCKET_Y, ROCKET_W, ROCKET_H);
-        this.watchOut = watchOut;
+        this.obstacles = obstacles;
+        this.targets = targets;
         this.status = EntityState.Running;
+        this.power = power;
+        this.knockback = knockback;
+        this.hitBox = new Rectangle(position.x, position.y, Rocket.ROCKET_W, Rocket.ROCKET_H);
     }
     
     
@@ -59,22 +70,41 @@ public class Rocket implements GameEntity {
         this.prevZ = this.position.z;
         
         if (this.status == EntityState.Running) {
+            // Move.
             this.position.x += this.velocity.x * deltaTime;;
             this.position.y +=  this.velocity.y * deltaTime;
-            this.velocity.y -= GRAVITY;
             this.position.z += this.velocity.z * deltaTime;
+            this.hitBox.setPosition(this.position.x, this.position.y);
             
-            for (Rectangle r: this.watchOut) {
-                if (r.overlaps(new Rectangle(this.position.x, this.position.y, ROCKET_W, ROCKET_H))
-                    && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
+            // Check for obstacle collisions.
+            for (Rectangle r: this.obstacles) {
+                if (r.overlaps(this.hitBox)
+                        && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
                          || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
                          || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
                     explode();
                     return;
                 }
             }
+            
+            // Check for target collisions.
+            Rectangle[] hitAreas = null;
+            for (Damageable d: this.targets) {
+                hitAreas = d.getHitArea();
+                for (Rectangle r : hitAreas) {
+                    if (r.overlaps(this.hitBox)
+                            && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
+                             || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
+                             || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
+                        // Apply damage and force, and explode. Don't apply force on z.
+                        d.damage(this.power);
+                        d.applyForce(new Vector3(this.position.x - r.x, this.position.y - r.y, 0).nor().scl(this.knockback));
+                        explode();
+                        return;
+                    }
+                }
+            }
         }
-        
     }
 
     @Override
