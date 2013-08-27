@@ -1,13 +1,15 @@
 package com.me.mygdxgame.entities;
 
-import java.util.Collection;
+import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.entities.projectiles.Rocket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -19,17 +21,20 @@ public class SeeteufelFront implements GameEntity {
     
     private static final int FRONT_ARM_FRAMERATE = 30;
     private static final int BACK_ARM_FRAMERATE = 15;
-    private static final int GRAVITY_FACTOR = 7;
+    private static final int GRAVITY_FACTOR = 500;
+    private static final float ATTACK_DELAY = 0.5f;
+    private static final float ROCKET_SPEED = 200.0f;
     
     private Vector3 position = new Vector3();
     
-    private Collection<Damageable> targets = null;
+    private ArrayDeque<Damageable> targets = new ArrayDeque<Damageable>();
     
     private TextureRegion front = null;
     private TextureRegion[] frontArmRight = new TextureRegion[2];
     private TextureRegion[] frontArmLeft = new TextureRegion[2];
     private TextureRegion[] backArmRight = new TextureRegion[3];
     private TextureRegion[] backArmLeft = new TextureRegion[3];
+    private Texture rocketSpritesheet = null;
     
     private boolean frontArmFrame = true;
     private int backArmFrame = 0;
@@ -37,11 +42,15 @@ public class SeeteufelFront implements GameEntity {
     private int backArmTimer = 0;
     private int targetY = 0;
     
-    public SeeteufelFront(Texture spritesheet, Vector3 position, Collection<Damageable> targets) {
-        this.targets = targets;
+    private float attackDelayTimer = 0;
+    private ArrayDeque<GameEntity> createdEntities = new ArrayDeque<GameEntity>();
+    
+    public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet, Vector3 position) {
         this.position.set(position);
         
         this.front = new TextureRegion(spritesheet, 73, 211, 98, 115);
+        
+        this.rocketSpritesheet = rocketSpritesheet;
         
         this.frontArmLeft[0] = new TextureRegion(spritesheet, 175, 271, 88, 54);
         this.frontArmLeft[1] = new TextureRegion(spritesheet, 269, 267, 82, 55);
@@ -69,13 +78,37 @@ public class SeeteufelFront implements GameEntity {
         return this.targetY;
     }
     
+    public void attack(Damageable target) {
+        this.targets.push(target);
+    }
+    
     @Override
     public void update(float deltaTime) {
+        
+        // Adjust target position down slightly do sprite isn't sitting exactly
+        // on the water level.
         int adjustedTargetY = this.targetY - SeeteufelFront.TARGET_Y_OFFSET;
         if (this.position.y > adjustedTargetY) {
-            this.position.y -= SeeteufelFront.GRAVITY_FACTOR;
-        } else {
+            // If higher than the water level, fall.
+            this.position.y -= SeeteufelFront.GRAVITY_FACTOR * deltaTime;
+        } 
+        if (this.position.y <= adjustedTargetY) {
             this.position.y = adjustedTargetY;
+        }
+        
+        // Attack targets specified via attack method at intervals.
+        if (this.attackDelayTimer < SeeteufelFront.ATTACK_DELAY) {
+            this.attackDelayTimer += deltaTime;
+        } else if (!this.targets.isEmpty()) {
+            this.attackDelayTimer = 0;
+            Damageable target = this.targets.removeLast();
+            Rectangle targetHitArea = target.getHitArea()[0];
+            Vector3 targetPosition = new Vector3(targetHitArea.x
+                    - this.position.x, targetHitArea.y - this.position.y, 0);
+            this.createdEntities.push(new Rocket(this.rocketSpritesheet,
+                    this.position, targetPosition.nor().scl(
+                            SeeteufelFront.ROCKET_SPEED), 1, 0,
+                    new Rectangle[0], new Damageable[] { target }));
         }
     }
 
@@ -129,13 +162,18 @@ public class SeeteufelFront implements GameEntity {
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
-        return false;
+        return !this.createdEntities.isEmpty();
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return null;
+        if (this.createdEntities.isEmpty()) {
+            throw new NoSuchElementException();
+        } else {
+            GameEntity[] entities = this.createdEntities.toArray(
+                    new GameEntity[this.createdEntities.size()]);
+            this.createdEntities.clear();
+            return entities;
+        }
     }
 }

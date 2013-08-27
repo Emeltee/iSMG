@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
@@ -79,6 +80,11 @@ public class WatchNadia implements Damageable, GameEntity {
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         return null;
+    }
+
+    @Override
+    public void applyForce(Vector3 force) {
+        // Do nothing.
     }
 
 }
