@@ -55,6 +55,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
     private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 4); // -4 to account for wall, and then three more tiles.
     private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
+    private static final int MAP2_ENEMY_ATTACK_OFFSET = (int) (SecondMap.GROUND_DIM * 2.5);
     
     // Constant locations for the texture paths, just because
     private static final String PATH_TILES_1 = "img/seeTiles1.png";
@@ -97,6 +98,7 @@ public class SeeteufelScreen implements GameScreen {
     private ArrayDeque<Damageable> playerTargets = new ArrayDeque<Damageable>();
     private ArrayDeque<ArrayDeque<Damageable>> seeteufelTargets = new ArrayDeque<ArrayDeque<Damageable>>();
     private ArrayDeque<Integer> seeteufelTargetLevels = new ArrayDeque<Integer>();
+    private Rectangle map2Ceiling = null;
     
     private boolean isMap2Flooding = false;
     
@@ -315,16 +317,21 @@ public class SeeteufelScreen implements GameScreen {
         // Generate stairs of destructable platforms and load them into lists.
         this.generateMap2Stairs();
         
+        // Add moving ceiling obstacle to obstacle list.
+        this.map2Ceiling = new Rectangle(0, 0, Gdx.graphics.getWidth(), 50);
+        this.obstacles.push(this.map2Ceiling);
+        
         this.player.setPosition(this.map2.getInitialPosition());
     }
     
+    /** Add player dynamic obstacles. Also generates Seeteufel target list(s).*/
     private void generateMap2Stairs() {
-        // Add player dynamic obstacles. This also doubles as the Seeteufel target list.
         
         // First flight of stairs. Do not add these to seeteufelTargets, no need to destroy them.
         int currentTileX = 0;
         int currentTileY = 1;
-        for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < SecondMap.GROUND_WIDTH; currentTileX++) {
+        int maxTileX = SecondMap.GROUND_WIDTH - 1;
+        for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
             Platform destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentTileY * SecondMap.GROUND_DIM);
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
@@ -349,7 +356,7 @@ public class SeeteufelScreen implements GameScreen {
             
             if (platformDirection) {
                 currentTileX++;
-                if (currentTileX == SecondMap.GROUND_WIDTH) {
+                if (currentTileX == maxTileX) {
                     if (currentTileX % 2 == 0) {
                         currentTileX -= 6;
                     } else {
@@ -377,6 +384,41 @@ public class SeeteufelScreen implements GameScreen {
                 }
             }
         }
+        
+        // Remove the second staircase from being targeted, to give the player a moment to adapt.
+        this.seeteufelTargets.removeLast();
+        this.seeteufelTargetLevels.removeLast();
+    }
+    
+    private int[] getSeeteufelTargets(Damageable[] currentTargets) {
+        
+        int[] targets = new int[3];
+        
+        // First target, random platform that isn't the first one on the
+        // stairs (so as not to create a ledge that can't be jumped up).
+        targets[0] = Math.max(1, (int) (Math.random() * currentTargets.length));
+        
+        // Second target, random platform that isn't first target or the
+        // first block of a staircase or adjacent to the first block.
+        targets[1] = (int) (Math.random() * currentTargets.length);
+        while (targets[1] < 1 || Math.abs(targets[0] - targets[1]) < 2) {
+            targets[1] = (int) (Math.random() * currentTargets.length);
+        }
+
+        // Third target, random platform that isn't first or second
+        // target, isn't adjacent to either, and isn't the first step on
+        // the stairs. May want to remove this if the room is made
+        // smaller.
+        targets[2] = (int) (Math.random() * currentTargets.length);
+        while (Math.abs(targets[2] - targets[0]) < 2 ||
+                Math.abs(targets[2] - targets[1]) < 2 ||
+                targets[2] == targets[1] ||
+                targets[2] == targets[0] ||
+                targets[2] < 1) {
+            targets[2] = (int) (Math.random() * currentTargets.length);
+        }
+        
+        return targets;
     }
     
     private void updateMap2(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -400,6 +442,9 @@ public class SeeteufelScreen implements GameScreen {
         orthoCam.position.y = (float) Math.floor(this.map2Y);
         orthoCam.update();
         
+        // Update moving barrier at the top of the screen.
+        this.map2Ceiling.setPosition(0, orthoCam.position.y + Gdx.graphics.getHeight() / 2);
+        
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);   
         
@@ -412,31 +457,15 @@ public class SeeteufelScreen implements GameScreen {
             this.seeFront.update(deltaTime);
             this.seeFront.draw(orthoCam.combined);
             
-            if (this.map2WaterY >= this.seeteufelTargetLevels.peekLast()) {
+            // Attack if water level is one block below the next staircase.
+            if (this.map2WaterY >= this.seeteufelTargetLevels.peekLast() - SeeteufelScreen.MAP2_ENEMY_ATTACK_OFFSET) {
                 Damageable[] currentTargets = new Damageable[this.seeteufelTargets.peekLast().size()];
                 currentTargets = this.seeteufelTargets.removeLast().toArray(currentTargets);
-                int horizontalTiles = currentTargets.length;
+                int[] targets = this.getSeeteufelTargets(currentTargets);
                 
-                // First target, random platform.
-                int firstTarget = (int) (Math.random() * horizontalTiles);
-                
-                // Second target, random platform that isn't first target.
-                int secondTarget = (int) (Math.random() * horizontalTiles);
-                while (firstTarget == secondTarget) {
-                    secondTarget = (int) (Math.random() * horizontalTiles);
+                for (int x : targets) {
+                    this.seeFront.attack(currentTargets[x]);
                 }
-                
-                // Third target, random platform that isn't first or second
-                // target, and isn't adjacent to first target (so you can't get
-                // a situation where three platforms in a row are destroyed.
-                int thirdTarget = (int) (Math.random() * horizontalTiles);
-                while (Math.abs(thirdTarget - firstTarget) < 2 || thirdTarget == secondTarget) {
-                    thirdTarget = (int) (Math.random() * horizontalTiles);
-                }
-                
-                this.seeFront.attack(currentTargets[firstTarget]);
-                this.seeFront.attack(currentTargets[secondTarget]);
-                //this.seeFront.attack(currentTargets[thirdTarget]);
                 
                 this.seeteufelTargetLevels.removeLast();
             }
@@ -444,7 +473,7 @@ public class SeeteufelScreen implements GameScreen {
             if (this.seeFront.hasCreatedEntities()) {
                 GameEntity[] newEntities = this.seeFront.getCreatedEntities();
                 for (GameEntity entity : newEntities) {
-                    this.entities.push(entity);
+                    this.entities.addLast(entity);
                 }
             }
         }
