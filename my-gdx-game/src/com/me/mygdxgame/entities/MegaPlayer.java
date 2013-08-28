@@ -2,7 +2,6 @@ package com.me.mygdxgame.entities;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.Gdx;
@@ -363,7 +362,10 @@ public class MegaPlayer implements GameEntity, Damageable {
                 // Update animation timer/frame for running.
                 this.animationTimer++;
                 int currentFrame = this.prevFrame;
-                if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
+                if ((!this.isUnderwater && this.animationTimer >
+                MegaPlayer.RUN_FRAMERATE) ||
+                (this.isUnderwater && this.animationTimer >
+                MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
                     this.animationTimer = 0;
                     currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                     
@@ -420,7 +422,10 @@ public class MegaPlayer implements GameEntity, Damageable {
             // Update animation timer/frame for running.
             this.animationTimer++;
             int currentFrame = this.prevFrame;
-            if (this.animationTimer > MegaPlayer.RUN_FRAMERATE) {
+            if ((!this.isUnderwater && this.animationTimer >
+            MegaPlayer.RUN_FRAMERATE) ||
+            (this.isUnderwater && this.animationTimer >
+            MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
                 this.animationTimer = 0;
                 currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                 

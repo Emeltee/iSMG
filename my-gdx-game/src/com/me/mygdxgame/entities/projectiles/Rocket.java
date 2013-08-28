@@ -21,6 +21,7 @@ public class Rocket implements GameEntity {
     private static final int ROCKET_Y = 175;
     private static final int ROCKET_W = 16;
     private static final int ROCKET_H = 16;
+    private static final Color ROCKET_TINT = new Color(1, 0.75f, 0.75f, 1);
 
     /** TextureRegion representing the idle frame. */
     private TextureRegion rocket;
@@ -118,7 +119,7 @@ public class Rocket implements GameEntity {
             .setProjectionMatrix(transformMatrix);
             
             MyGdxGame.currentGame.spriteBatch.begin();
-            MyGdxGame.currentGame.spriteBatch.setColor(Color.RED); // Colorize rockets
+            MyGdxGame.currentGame.spriteBatch.setColor(Rocket.ROCKET_TINT); // Colorize rockets
             MyGdxGame.currentGame.spriteBatch.draw(rocket, this.position.x, this.position.y, this.rocket.getRegionWidth() / 2.0f, this.rocket.getRegionHeight() / 2.0f, ROCKET_W, ROCKET_H, 1, 1, 30 * this.animationTimer);
             MyGdxGame.currentGame.spriteBatch.setColor(Color.WHITE); // Reset colorization
             MyGdxGame.currentGame.spriteBatch.end();
