@@ -145,10 +145,15 @@ public class Rocket implements GameEntity {
     }
 
     private void explode() {
-        // TODO Make this look better.
-        this.explosions = new Explosion[2];
+        // Adjust position vector to center of sprite.
+        this.position.x += Rocket.ROCKET_W / 2;
+        this.position.y += Rocket.ROCKET_H / 2;
+        
+        this.explosions = new Explosion[4];
         this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
-        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
+        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
+        this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
+        this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
         this.status = EntityState.Destroyed;
     }
 }

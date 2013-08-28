@@ -25,9 +25,17 @@ public abstract class Rubble implements GameEntity {
     protected Rectangle [] obstacles;
     /** List of damageable objects stopping rubble */
     protected Damageable [] targets;
+    /** Time to remain active before automatically being destroyed.*/
+    protected float lifetime = 10.0f;
     
     /** Factor for creating descending motion of rubble */
-    protected static final int GRAVITY = 2;
+    protected static final int GRAVITY = 600;
+    /** Factor that determines the rate at which x velocity moves towards 0.*/
+    protected static final int INERTIA = 200;
+    /** X velocity at which object stops moving horizontally.*/
+    protected static final float MIN_X_VELOCITY = 0.5f;
+    /** Maximum fall rate.*/
+    private static final int MIN_Y_VELOCITY = -300;
     /** Texture-control variables (can't be constants because of superclass/subclass relationship) */
     protected int x, y, w, h;
     /** Damage factor for falling rubble */
@@ -36,17 +44,34 @@ public abstract class Rubble implements GameEntity {
     @Override
     public void update(float deltaTime) {
         if (this.status == EntityState.Running) {
+            
             // Update the coords
-            this.position.x += this.velocity.x * deltaTime;
-            this.position.y += this.velocity.y * deltaTime;
-            this.position.y -= GRAVITY;
-            this.position.z += this.velocity.z * deltaTime;
+            this.position.add(this.velocity.cpy().scl(deltaTime));
+            
+            // Adjust velocity. Y goes down, x moves towards 0.
+            this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY, this.velocity.y - Rubble.GRAVITY * deltaTime);
+            if (this.velocity.x < Rubble.MIN_X_VELOCITY) {
+                this.velocity.x = 0;
+            } else {
+                if (this.velocity.x > 0) {
+                    this.velocity.x -= Rubble.INERTIA * deltaTime;
+                } else {
+                    this.velocity.x += Rubble.INERTIA * deltaTime;
+                }
+            }
+            
+            // Destroy if lifetime has been reached.
+            this.lifetime -= deltaTime;
+            if (this.lifetime < 0) {
+                this.status = EntityState.Destroyed;
+                return;
+            }
             
             // Check for harmless collisions
             for (Rectangle r: obstacles) {
                 if (r.overlaps(new Rectangle(this.position.x, this.position.y, this.w, this.h))) {
-                    this.status = EntityState.Destroyed;                    
-                    System.out.println(this.getClass().getName() + " : collision with object at " + r.toString());
+                    this.status = EntityState.Destroyed;
+                    return;
                 }
             }
             
@@ -57,7 +82,7 @@ public abstract class Rubble implements GameEntity {
                             this.position.x, this.position.y, this.w, this.h))) {
                         d.damage(damage);
                         this.status = EntityState.Destroyed;
-                        // System.out.println(this.getClass().getName() + " : collision with object at " + r.toString());
+                        return;
                     }
                 }
             }
