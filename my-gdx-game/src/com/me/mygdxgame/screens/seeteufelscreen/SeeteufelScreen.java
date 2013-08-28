@@ -385,9 +385,13 @@ public class SeeteufelScreen implements GameScreen {
             }
         }
         
-        // Remove the second staircase from being targeted, to give the player a moment to adapt.
+        // Remove the second staircase (the first "real" one) from being
+        // targeted, to give the player a moment to adapt. Remove the very last
+        // stairs since the exit will be there.
         this.seeteufelTargets.removeLast();
+        this.seeteufelTargets.pop();
         this.seeteufelTargetLevels.removeLast();
+        this.seeteufelTargetLevels.pop();
     }
     
     private int[] getSeeteufelTargets(Damageable[] currentTargets) {
@@ -458,7 +462,9 @@ public class SeeteufelScreen implements GameScreen {
             this.seeFront.draw(orthoCam.combined);
             
             // Attack if water level is one block below the next staircase.
-            if (this.map2WaterY >= this.seeteufelTargetLevels.peekLast() - SeeteufelScreen.MAP2_ENEMY_ATTACK_OFFSET) {
+            if (!this.seeteufelTargetLevels.isEmpty() &&
+                    this.map2WaterY >= this.seeteufelTargetLevels.peekLast() -
+                    SeeteufelScreen.MAP2_ENEMY_ATTACK_OFFSET) {
                 Damageable[] currentTargets = new Damageable[this.seeteufelTargets.peekLast().size()];
                 currentTargets = this.seeteufelTargets.removeLast().toArray(currentTargets);
                 int[] targets = this.getSeeteufelTargets(currentTargets);

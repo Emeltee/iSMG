@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
@@ -22,20 +23,27 @@ public class Explosion implements GameEntity {
     
     private TextureRegion[] splode;
     private Vector3 position;
+    private Vector2 originPosition;
     private EntityState status;
     private short animationTimer;
     private int frame;
+    private float spriteScale = 1.0f;
     
     private static final int FRAMERATE = 6;
     private static final int NUM_FRAMES = 4;
     
     public Explosion(Texture spriteSheet, Vector3 position) {
         this.position = position;
+        this.originPosition = new Vector2(Explosion.SPLODE_DIM / 2, Explosion.SPLODE_DIM / 2);
+        
         this.splode = new TextureRegion[4];
         this.splode[0] = new TextureRegion(spriteSheet, SPLODE_1_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
         this.splode[1] = new TextureRegion(spriteSheet, SPLODE_2_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
         this.splode[2] = new TextureRegion(spriteSheet, SPLODE_3_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
         this.splode[3] = new TextureRegion(spriteSheet, SPLODE_4_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
+        
+        this.spriteScale = 0.5f + (float)Math.random() * 2.0f;
+        
         this.animationTimer = 0;
         this.frame = 0;
         this.status = EntityState.Running;
@@ -60,7 +68,7 @@ public class Explosion implements GameEntity {
         if (this.status == EntityState.Running) {
             MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);          
             MyGdxGame.currentGame.spriteBatch.begin();
-            MyGdxGame.currentGame.spriteBatch.draw(splode[this.frame], this.position.x, this.position.y);
+            MyGdxGame.currentGame.spriteBatch.draw(splode[this.frame], this.position.x, this.position.y, this.originPosition.x, this.originPosition.y, Explosion.SPLODE_DIM, Explosion.SPLODE_DIM, spriteScale, spriteScale, 0);
             MyGdxGame.currentGame.spriteBatch.end();
         }
     }
