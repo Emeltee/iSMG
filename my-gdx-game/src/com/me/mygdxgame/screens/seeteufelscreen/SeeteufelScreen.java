@@ -53,7 +53,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final Color WATER_COLOR_ELECTRIC = new Color(1, 1, 0, 0);
     private static final int MAP2_HEIGHT = 40;
     private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
-    private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 4); // -4 to account for wall, and then three more tiles.
+    private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 5);
     private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
     private static final int MAP2_ENEMY_ATTACK_OFFSET = (int) (SecondMap.GROUND_DIM * 2.5);
     
