@@ -24,15 +24,7 @@ public class SecondMap extends GameMap {
     private TextureRegion largeMazeSprite;
     private TextureRegion idkSprite;
 
-    private TextureRegion[] borderFrames;
-    
-    // Since apparently this is a 3D space, which contains a sprawling infinity of
-    // floating point nonsense, and no precise integer pixel coordinates that one might
-    // use to find, say, the lower left corner of the screen ("field of view", whatever),
-    // I'm making everything on screen relative to the ground, where the ground starts,
-    // what size the ground tile is and how much it repeats. Because apparently as long
-    // as everything makes sense relative to everything else, all you have to do is put
-    // the camera in the right spot, and you can kind of get it to look the way you want..
+    private TextureRegion[] borderFrames;    
 
     public static final int GROUND_DIM = 45; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
