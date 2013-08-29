@@ -115,13 +115,13 @@ public class Platform implements GameEntity, Damageable {
         // Since rubble stops when it hits an obstacle, this rectangle acts as a trap to stop the rubble after a certain point.
         this.rubble = new Rubble [] {
                 new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
-                        new Vector3((200 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 400, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         5, new Rectangle [0], new Damageable [0]),
                 new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
-                        new Vector3((200 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 400, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         5, new Rectangle [0], new Damageable [0]),
                 new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
-                        new Vector3((200 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 400, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         5, new Rectangle [0], new Damageable [0]),
         };
     }
