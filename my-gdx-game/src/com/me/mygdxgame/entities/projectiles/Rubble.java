@@ -29,13 +29,13 @@ public abstract class Rubble implements GameEntity {
     protected float lifetime = 10.0f;
     
     /** Factor for creating descending motion of rubble */
-    protected static final int GRAVITY = 600;
+    protected static final int GRAVITY = 800;
     /** Factor that determines the rate at which x velocity moves towards 0.*/
     protected static final int INERTIA = 200;
     /** X velocity at which object stops moving horizontally.*/
-    protected static final float MIN_X_VELOCITY = 0.5f;
+    protected static final float MIN_X_VELOCITY = 0.2f;
     /** Maximum fall rate.*/
-    private static final int MIN_Y_VELOCITY = -300;
+    private static final int MIN_Y_VELOCITY = -500;
     /** Texture-control variables (can't be constants because of superclass/subclass relationship) */
     protected int x, y, w, h;
     /** Damage factor for falling rubble */
@@ -50,7 +50,7 @@ public abstract class Rubble implements GameEntity {
             
             // Adjust velocity. Y goes down, x moves towards 0.
             this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY, this.velocity.y - Rubble.GRAVITY * deltaTime);
-            if (this.velocity.x < Rubble.MIN_X_VELOCITY) {
+            if (Math.abs(this.velocity.x) < Rubble.MIN_X_VELOCITY) {
                 this.velocity.x = 0;
             } else {
                 if (this.velocity.x > 0) {
