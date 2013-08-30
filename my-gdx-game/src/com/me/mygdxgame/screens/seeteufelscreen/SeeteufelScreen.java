@@ -48,7 +48,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int SCREEN_RIGHT = MyGdxGame.currentGame.SCREEN_WIDTH / 2;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static final float MAP2_CAM_SPEED = 0.75f;
+    private static final float MAP2_CAM_SPEED = 0.5f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 3, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -88,7 +88,6 @@ public class SeeteufelScreen implements GameScreen {
     private Sound explosion;
     private Music music1;
     private Music music2;
-    private long musicId = 0;
     
     // Containers for managing entities generically. Keep a pointer to any entities that need specialized mgmt
     private ArrayDeque<GameEntity> entities = new ArrayDeque<GameEntity> ();
@@ -504,7 +503,7 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Player.
-        if (playerPos.y < this.map2Y) {
+        if (playerPos.y + MegaPlayer.HITBOX_HEIGHT < this.map2Y) {
             this.player.setIsUnderwater(true);
         } else {
             this.player.setIsUnderwater(false);

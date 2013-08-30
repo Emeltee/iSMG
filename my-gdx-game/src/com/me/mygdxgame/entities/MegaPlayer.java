@@ -23,8 +23,8 @@ import com.me.mygdxgame.utilities.GameEntity;
 public class MegaPlayer implements GameEntity, Damageable {
 
     private static final int MAX_HEALTH = 100;
-    private static final int HITBOX_WIDTH = 28;
-    private static final int HITBOX_HEIGHT = 32;
+    public static final int HITBOX_WIDTH = 28;
+    public static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
@@ -33,6 +33,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float MAX_FLINCH_TIME = 0.4f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     private static final float MAX_SPEED = 4.0f;
+    private static final float MAX_FALL_SPEED = 9.0f;
+    private static final float MAX_UNDERWATER_FALL_SPEED = 3.0f;
     private static final float MAX_JUMP_THRUST_TIME = 0.25f;
     private static final float ACCELERATION = 80.0f;
     private static final float DECELERATION = 40.0f;
@@ -695,9 +697,15 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Apply gravity.
         if (this.isInAir) {
-            this.velocity.y = Math.min(this.velocity.y
-                    - (MegaPlayer.DECELERATION * deltaTime),
-                    MegaPlayer.MAX_SPEED);
+            if (this.isUnderwater && velocity.y < 0) {
+                this.velocity.y = Math.max(this.velocity.y
+                        - (MegaPlayer.DECELERATION * deltaTime),
+                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED);
+            } else {
+                this.velocity.y = Math.max(Math.min(this.velocity.y
+                        - (MegaPlayer.DECELERATION * deltaTime), MegaPlayer.MAX_SPEED),
+                        -MegaPlayer.MAX_FALL_SPEED);
+            }
         }
     }
 }
