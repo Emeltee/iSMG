@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities.projectiles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -48,12 +49,15 @@ public class Rocket implements GameEntity {
     private int power = 0;
     /** Force to apply upon hitting a target. */
     private float knockback = 0;
+    /** Sound to play upon explosion.*/
+    private Sound explosion = null;
     
     // Entities to be created by rocket
     private Explosion[] explosions;
   
-    public Rocket(Texture spriteSheet, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
+    public Rocket(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
+        this.explosion = explosion;
         this.position.set(position);
         this.velocity = velocity;
         this.rocket = new TextureRegion(this.spriteSheet, ROCKET_X, ROCKET_Y, ROCKET_W, ROCKET_H);
@@ -128,20 +132,24 @@ public class Rocket implements GameEntity {
 
     @Override
     public EntityState getState() {
-        // TODO Auto-generated method stub
         return this.status;
     }
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
         return this.explosions != null;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return this.explosions;
+        if (this.explosions == null) {
+            throw new NoSuchElementException();
+        }
+        
+        GameEntity[] returnList = this.explosions;
+        this.explosions = null;
+        
+        return returnList;
     }
 
     private void explode() {
@@ -149,11 +157,18 @@ public class Rocket implements GameEntity {
         this.position.x += Rocket.ROCKET_W / 2;
         this.position.y += Rocket.ROCKET_H / 2;
         
+        
+        // Create explosions.
         this.explosions = new Explosion[4];
         this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
         this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
         this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
         this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
+        
+        // Play sound.
+        this.explosion.play();
+        
+        // Set object state.
         this.status = EntityState.Destroyed;
     }
 }
