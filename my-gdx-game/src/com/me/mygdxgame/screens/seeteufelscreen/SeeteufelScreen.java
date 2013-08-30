@@ -5,6 +5,8 @@ import java.util.Collections;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL20;
@@ -62,6 +64,9 @@ public class SeeteufelScreen implements GameScreen {
     private static final String PATH_TILES_2 = "img/seeTiles2.png";
     private static final String PATH_PLAYER = "img/mmd.png";
     private static final String PATH_SEETEUFEL = "img/seeteufel.png";
+    private static final String EXPLOSION_PATH = "sound/sfx-grenade-explode1.ogg";
+    private static final String SEE_MUSIC_1 = "sound/Seeteufel_the_Mighty_1.ogg";
+    private static final String SEE_MUSIC_2 = "sound/Seeteufel_the_Mighty_2.ogg";
     
     // State.
     private GameState state = GameState.Running;
@@ -74,12 +79,16 @@ public class SeeteufelScreen implements GameScreen {
     private float map2Y = -SCREEN_BOTTOM;
     private float map2WaterY = map2Y - 50;
     
-    // Texture files for building sprites
+    // Resource files.
     private Texture t_tiles1;
     private Texture t_tiles2;
     private Texture t_player;
     private Texture t_seeteufel;
     private MegaPlayer.MegaPlayerResources playerResources = new MegaPlayer.MegaPlayerResources();
+    private Sound explosion;
+    private Music music1;
+    private Music music2;
+    private long musicId = 0;
     
     // Containers for managing entities generically. Keep a pointer to any entities that need specialized mgmt
     private ArrayDeque<GameEntity> entities = new ArrayDeque<GameEntity> ();
@@ -118,6 +127,10 @@ public class SeeteufelScreen implements GameScreen {
         
         this.playerResources.load();
         
+        this.explosion = Gdx.audio.newSound(Gdx.files.internal(SeeteufelScreen.EXPLOSION_PATH));
+        this.music1 = Gdx.audio.newMusic(Gdx.files.internal(SeeteufelScreen.SEE_MUSIC_1));
+        this.music2 = Gdx.audio.newMusic(Gdx.files.internal(SeeteufelScreen.SEE_MUSIC_2));
+        
         this.map1.load();
         this.map2.load();
         this.map3.load();
@@ -136,8 +149,11 @@ public class SeeteufelScreen implements GameScreen {
         this.map2.unload();
         this.map3.unload();
         
-        // Unload player recs.
+        // Unload other recs.
         this.playerResources.unload();
+        this.explosion.dispose();
+        this.music1.dispose();
+        this.music2.dispose();
     }
 
     @Override
@@ -201,20 +217,6 @@ public class SeeteufelScreen implements GameScreen {
     public GameState getState() {
         return this.state;
     }
-    
-//    public Damageable [] getTargets() {
-//        // Grab all the Damageables out of entities, store in a temporary ArrayDeque
-//        ArrayDeque<Damageable> temp = new ArrayDeque<Damageable> ();
-//        for (GameEntity e: this.entities) {
-//            if (e instanceof Damageable) {
-//                temp.add((Damageable) e);
-//            }
-//        }
-//        
-//        Damageable[] result = new Damageable[temp.size()];
-//        return temp.toArray(result);
-//    }
-    
     
     private void updateMap1(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera.
@@ -434,14 +436,19 @@ public class SeeteufelScreen implements GameScreen {
         
         // Activate flooding once player moves above certain x.
         if (this.isMap2Flooding) {
+            if (!this.music1.isPlaying() && !this.music2.isPlaying()) {
+                this.music2.setLooping(true);
+                this.music2.play();
+            }
             if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                 this.map2Y += SeeteufelScreen.MAP2_CAM_SPEED;
                 this.map2WaterY += SeeteufelScreen.MAP2_CAM_SPEED;
             }
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
             this.isMap2Flooding = true;
+            this.music1.play();
             this.playerHealth.setInDanger(true);
-            this.seeFront = new SeeteufelFront(this.t_seeteufel, this.t_tiles1, SeeteufelScreen.MAP2_SEETEUFEL_INIT_POS);
+            this.seeFront = new SeeteufelFront(this.t_seeteufel, this.t_tiles1, this.explosion, SeeteufelScreen.MAP2_SEETEUFEL_INIT_POS);
         }
         orthoCam.position.y = (float) Math.floor(this.map2Y);
         orthoCam.update();

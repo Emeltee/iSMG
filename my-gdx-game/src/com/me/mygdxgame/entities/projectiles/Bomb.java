@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities.projectiles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
@@ -48,11 +49,14 @@ public class Bomb implements GameEntity {
     private int power = 0;
     /** Force to apply upon hitting a target. */
     private float knockback = 0;
+    /** Sound to play upon explosion.*/
+    private Sound explosion = null;
     
     private Explosion[] explosions;
   
-    public Bomb(Texture spriteSheet, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
+    public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
+        this.explosion = explosion;
         this.position.set(position);
         this.velocity = velocity;
         this.bomb = new TextureRegion(this.spriteSheet, BOMB_X, BOMB_Y, BOMB_W, BOMB_H);
@@ -125,27 +129,43 @@ public class Bomb implements GameEntity {
 
     @Override
     public EntityState getState() {
-        // TODO Auto-generated method stub
         return this.status;
     }
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
         return this.explosions != null;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return this.explosions;
+        if (this.explosions == null) {
+            throw new NoSuchElementException();
+        }
+        
+        GameEntity[] returnList = this.explosions;
+        this.explosions = null;
+        
+        return returnList;
     }
 
     private void explode() {
-        // TODO Make this look better.
-        this.explosions = new Explosion[2];
-        this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+2, this.position.y+2, this.position.z));
-        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-2, this.position.y-2, this.position.z));
+        // Adjust position vector to center of sprite.
+        this.position.x += Bomb.BOMB_W / 2;
+        this.position.y += Bomb.BOMB_H / 2;
+        
+        
+        // Create explosions.
+        this.explosions = new Explosion[4];
+        this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
+        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
+        this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
+        this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
+        
+        // Play sound.
+        this.explosion.play();
+        
+        // Set object state.
         this.status = EntityState.Destroyed;
     }
 }

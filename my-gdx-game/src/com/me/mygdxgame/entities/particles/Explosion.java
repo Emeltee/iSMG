@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities.particles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
@@ -21,6 +22,9 @@ public class Explosion implements GameEntity {
     private static final int SPLODE_Y = 209;
     private static final int SPLODE_DIM = 32;
     
+    private static final int FRAMERATE = 6;
+    private static final int NUM_FRAMES = 4;
+    
     private TextureRegion[] splode;
     private Vector3 position;
     private Vector2 originPosition;
@@ -29,12 +33,10 @@ public class Explosion implements GameEntity {
     private int frame;
     private float spriteScale = 1.0f;
     
-    private static final int FRAMERATE = 6;
-    private static final int NUM_FRAMES = 4;
-    
     public Explosion(Texture spriteSheet, Vector3 position) {
-        this.position = position;
-        this.originPosition = new Vector2(Explosion.SPLODE_DIM / 2, Explosion.SPLODE_DIM / 2);
+        float centerOffset = Explosion.SPLODE_DIM / 2;
+        this.position = new Vector3(position.x - centerOffset, position.y - centerOffset, position.x);
+        this.originPosition = new Vector2(centerOffset, centerOffset);
         
         this.splode = new TextureRegion[4];
         this.splode[0] = new TextureRegion(spriteSheet, SPLODE_1_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
