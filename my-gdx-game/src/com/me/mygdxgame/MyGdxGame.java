@@ -130,21 +130,23 @@ public class MyGdxGame implements ApplicationListener {
             this.currentGameScreen.render(Gdx.graphics.getDeltaTime(),
                     this.difficulty, this.perspectiveCamera, this.orthoCamera);
         } else {
-            // If current screen has reached either the win or lose state, time to pick a new screen.
-    
-            // If screen has reached the lose state, reduce lives by one.
-            if (this.currentGameScreen.getState() == GameState.Lose) {
-                this.lives--;
-            }
-    
-            // Pick the next screen. Ensure that it is not the same as the current screen.
-            GameScreen lastScreen = this.currentGameScreen;
-            while (lastScreen == this.currentGameScreen) {
-                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
-            }
-    
-            // Initialize new screen.
+            // Temp logic, since we only have one screen. Reinitialize screen.
             this.currentGameScreen.initialize();
+//            // If current screen has reached either the win or lose state, time to pick a new screen.
+//    
+//            // If screen has reached the lose state, reduce lives by one.
+//            if (this.currentGameScreen.getState() == GameState.Lose) {
+//                this.lives--;
+//            }
+//    
+//            // Pick the next screen. Ensure that it is not the same as the current screen.
+//            GameScreen lastScreen = this.currentGameScreen;
+//            while (lastScreen == this.currentGameScreen) {
+//                this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
+//            }
+//    
+//            // Initialize new screen.
+//            this.currentGameScreen.initialize();
         }
     }
 

@@ -20,8 +20,8 @@ public class Rocket implements GameEntity {
     // Constants for extracting bullet from Texture
     private static final int ROCKET_X = 210;
     private static final int ROCKET_Y = 175;
-    private static final int ROCKET_W = 16;
-    private static final int ROCKET_H = 16;
+    public static final int ROCKET_W = 16;
+    public static final int ROCKET_H = 16;
     private static final Color ROCKET_TINT = new Color(1, 0.75f, 0.75f, 1);
 
     /** TextureRegion representing the idle frame. */

@@ -62,7 +62,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float busterCooldown = 0;
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
-    private boolean isFacingRight = true;
+    private boolean isFacingRight = false;
     private boolean geminiEnabled = false;
     private boolean isUnderwater = false;
     
@@ -269,6 +269,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     @Override
     public void damage(int damage) {
         this.health -= damage;
+        this.health = Math.max(this.health, 0);
+        this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
         this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
         this.isJumping = false;
     }

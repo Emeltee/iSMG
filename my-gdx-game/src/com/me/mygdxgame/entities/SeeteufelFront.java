@@ -22,7 +22,7 @@ public class SeeteufelFront implements GameEntity {
     
     private static final int FRONT_ARM_FRAMERATE = 30;
     private static final int BACK_ARM_FRAMERATE = 15;
-    private static final int GRAVITY_FACTOR = 300;
+    private static final int GRAVITY_FACTOR = 400;
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
     
@@ -38,20 +38,26 @@ public class SeeteufelFront implements GameEntity {
     private Texture rocketSpritesheet = null;
     
     private Sound explosion = null;
+    private Sound splash = null;
+    private Sound shoot = null;
     
     private boolean frontArmFrame = true;
     private int backArmFrame = 0;
     private int frontArmTimer = 0;
     private int backArmTimer = 0;
     private int targetY = 0;
+    private boolean isFalling = false;
     
     private float attackDelayTimer = 0;
     private ArrayDeque<GameEntity> createdEntities = new ArrayDeque<GameEntity>();
     
-    public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet, Sound explosion, Vector3 position) {
+    public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet,
+            Sound explosion, Sound splash, Sound shoot, Vector3 position) {
         this.position.set(position);
         
         this.explosion = explosion;
+        this.splash = splash;
+        this.shoot = shoot;
         
         this.front = new TextureRegion(spritesheet, 73, 211, 98, 115);
         
@@ -96,9 +102,15 @@ public class SeeteufelFront implements GameEntity {
         if (this.position.y > adjustedTargetY) {
             // If higher than the water level, fall.
             this.position.y -= SeeteufelFront.GRAVITY_FACTOR * deltaTime;
+            this.isFalling = true;
         } 
         if (this.position.y <= adjustedTargetY) {
             this.position.y = adjustedTargetY;
+            
+            if (this.isFalling) {
+                this.splash.play();
+            }
+            this.isFalling = false;
         }
         
         // Attack targets specified via attack method at intervals.
@@ -106,12 +118,16 @@ public class SeeteufelFront implements GameEntity {
             this.attackDelayTimer += deltaTime;
         } else if (!this.targets.isEmpty()) {
             this.attackDelayTimer = 0;
+            this.shoot.play(1);
             Damageable target = this.targets.removeLast();
             Rectangle targetHitArea = target.getHitArea()[0];
+            Vector3 rocketPosition = this.position.cpy();
+            rocketPosition.x += SeeteufelFront.BASE_WIDTH / 2;
+            rocketPosition.x -= Rocket.ROCKET_W / 2;
             Vector3 targetPosition = new Vector3(targetHitArea.x
-                    - this.position.x, targetHitArea.y - this.position.y, 0);
+                    - rocketPosition.x, targetHitArea.y - rocketPosition.y, 0);
             this.createdEntities.push(new Rocket(this.rocketSpritesheet,
-                    this.explosion, this.position, targetPosition.nor().scl(
+                    this.explosion, rocketPosition, targetPosition.nor().scl(
                             SeeteufelFront.ROCKET_SPEED), 1, 0,
                     new Rectangle[0], new Damageable[] { target }));
         }
