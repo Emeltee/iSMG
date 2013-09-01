@@ -1,6 +1,6 @@
 package com.me.mygdxgame.entities;
 
-import java.util.ArrayDeque;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.audio.Sound;
@@ -28,7 +28,7 @@ public class SeeteufelFront implements GameEntity {
     
     private Vector3 position = new Vector3();
     
-    private ArrayDeque<Damageable> targets = new ArrayDeque<Damageable>();
+    private LinkedList<Damageable> targets = new LinkedList<Damageable>();
     
     private TextureRegion front = null;
     private TextureRegion[] frontArmRight = new TextureRegion[2];
@@ -49,7 +49,7 @@ public class SeeteufelFront implements GameEntity {
     private boolean isFalling = false;
     
     private float attackDelayTimer = 0;
-    private ArrayDeque<GameEntity> createdEntities = new ArrayDeque<GameEntity>();
+    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
     
     public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet,
             Sound explosion, Sound splash, Sound shoot, Vector3 position) {
@@ -90,7 +90,7 @@ public class SeeteufelFront implements GameEntity {
     }
     
     public void attack(Damageable target) {
-        this.targets.push(target);
+        this.targets.addFirst(target);
     }
     
     @Override
@@ -126,7 +126,7 @@ public class SeeteufelFront implements GameEntity {
             rocketPosition.x -= Rocket.ROCKET_W / 2;
             Vector3 targetPosition = new Vector3(targetHitArea.x
                     - rocketPosition.x, targetHitArea.y - rocketPosition.y, 0);
-            this.createdEntities.push(new Rocket(this.rocketSpritesheet,
+            this.createdEntities.addFirst(new Rocket(this.rocketSpritesheet,
                     this.explosion, rocketPosition, targetPosition.nor().scl(
                             SeeteufelFront.ROCKET_SPEED), 1, 0,
                     new Rectangle[0], new Damageable[] { target }));
