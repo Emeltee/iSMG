@@ -266,6 +266,10 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.isUnderwater;
     }
     
+    public boolean getIsInAir() {
+        return this.isInAir;
+    }
+    
     @Override
     public void damage(int damage) {
         this.health -= damage;
