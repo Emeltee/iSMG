@@ -1,6 +1,6 @@
 package com.me.mygdxgame.entities;
 
-import java.util.ArrayDeque;
+import java.util.LinkedList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
@@ -84,7 +84,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
 
 
-    private ArrayDeque<BusterShot> newShots = new ArrayDeque<BusterShot>();
+    private LinkedList<BusterShot> newShots = new LinkedList<BusterShot>();
     
     /**
      * Simple storage class to manage the resources required by MegaPlayer.
@@ -655,13 +655,13 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
-                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
+                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
-                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
@@ -669,13 +669,13 @@ public class MegaPlayer implements GameEntity, Damageable {
                 }
             } else {
                 if (geminiEnabled) {
-                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
+                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
-                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
