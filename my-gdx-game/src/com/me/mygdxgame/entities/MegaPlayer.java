@@ -1,6 +1,6 @@
 package com.me.mygdxgame.entities;
 
-import java.util.ArrayDeque;
+import java.util.LinkedList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
@@ -23,8 +23,8 @@ import com.me.mygdxgame.utilities.GameEntity;
 public class MegaPlayer implements GameEntity, Damageable {
 
     private static final int MAX_HEALTH = 100;
-    private static final int HITBOX_WIDTH = 28;
-    private static final int HITBOX_HEIGHT = 32;
+    public static final int HITBOX_WIDTH = 28;
+    public static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
@@ -33,6 +33,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float MAX_FLINCH_TIME = 0.4f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     private static final float MAX_SPEED = 4.0f;
+    private static final float MAX_FALL_SPEED = 9.0f;
+    private static final float MAX_UNDERWATER_FALL_SPEED = 3.0f;
     private static final float MAX_JUMP_THRUST_TIME = 0.25f;
     private static final float ACCELERATION = 80.0f;
     private static final float DECELERATION = 40.0f;
@@ -60,7 +62,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float busterCooldown = 0;
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
-    private boolean isFacingRight = true;
+    private boolean isFacingRight = false;
     private boolean geminiEnabled = false;
     private boolean isUnderwater = false;
     
@@ -82,7 +84,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
 
 
-    private ArrayDeque<BusterShot> newShots = new ArrayDeque<BusterShot>();
+    private LinkedList<BusterShot> newShots = new LinkedList<BusterShot>();
     
     /**
      * Simple storage class to manage the resources required by MegaPlayer.
@@ -264,9 +266,15 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.isUnderwater;
     }
     
+    public boolean getIsInAir() {
+        return this.isInAir;
+    }
+    
     @Override
     public void damage(int damage) {
         this.health -= damage;
+        this.health = Math.max(this.health, 0);
+        this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
         this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
         this.isJumping = false;
     }
@@ -647,13 +655,13 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
-                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
+                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
-                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
@@ -661,13 +669,13 @@ public class MegaPlayer implements GameEntity, Damageable {
                 }
             } else {
                 if (geminiEnabled) {
-                    this.newShots.push(new GeminiShot(this.resources.busterTexture,
+                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
-                    this.newShots.push(new BusterShot(this.resources.busterTexture,
+                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
@@ -695,9 +703,15 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Apply gravity.
         if (this.isInAir) {
-            this.velocity.y = Math.min(this.velocity.y
-                    - (MegaPlayer.DECELERATION * deltaTime),
-                    MegaPlayer.MAX_SPEED);
+            if (this.isUnderwater && velocity.y < 0) {
+                this.velocity.y = Math.max(this.velocity.y
+                        - (MegaPlayer.DECELERATION * deltaTime),
+                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED);
+            } else {
+                this.velocity.y = Math.max(Math.min(this.velocity.y
+                        - (MegaPlayer.DECELERATION * deltaTime), MegaPlayer.MAX_SPEED),
+                        -MegaPlayer.MAX_FALL_SPEED);
+            }
         }
     }
 }

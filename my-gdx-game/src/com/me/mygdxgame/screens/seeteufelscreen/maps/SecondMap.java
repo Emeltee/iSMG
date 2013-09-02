@@ -98,10 +98,10 @@ public class SecondMap extends GameMap {
         MyGdxGame.currentGame.spriteBatch.begin();
 
         tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
-        tileY(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
-        tileY(this.rockSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
+        tileY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
+        tileY(this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
         tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
-        tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
+        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
         
         // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
