@@ -1,6 +1,6 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
-import java.util.ArrayDeque;
+import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
@@ -21,9 +21,9 @@ public class EntityTestScreen implements GameScreen {
     private static Vector3 CAM_INITIAL_POSITION = new Vector3(0, 0, 256);
 
     private Vector3 camPos = new Vector3(EntityTestScreen.CAM_INITIAL_POSITION);
-    private ArrayDeque<GameEntity> entities = new ArrayDeque<GameEntity>();
-    private ArrayDeque<GameEntity> toRemove = new ArrayDeque<GameEntity>();
-    private ArrayDeque<GameEntity[]> toAdd = new ArrayDeque<GameEntity[]>();
+    private LinkedList<GameEntity> entities = new LinkedList<GameEntity>();
+    private LinkedList<GameEntity> toRemove = new LinkedList<GameEntity>();
+    private LinkedList<GameEntity[]> toAdd = new LinkedList<GameEntity[]>();
     private EntityTestMap map = null;
     
     /**
@@ -43,7 +43,7 @@ public class EntityTestScreen implements GameScreen {
      * @param entity GameEntity to add.
      */
     public void addEntity(GameEntity entity) {
-        this.entities.push(entity);
+        this.entities.addFirst(entity);
     }
     
     /**
@@ -116,10 +116,10 @@ public class EntityTestScreen implements GameScreen {
             e.draw(perspCam.combined);
             
             if (e.getState() == EntityState.Destroyed) {
-                this.toRemove.push(e);              
+                this.toRemove.addFirst(e);              
             }
             if (e.hasCreatedEntities()) {
-                this.toAdd.push(e.getCreatedEntities());
+                this.toAdd.addFirst(e.getCreatedEntities());
             }
         }
         

@@ -2,7 +2,6 @@ package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,9 +19,9 @@ public class Door implements GameEntity {
     // Texture control constants
     public static final int DOOR_SHUT_X = 0;
     public static final int DOOR_SHUT_Y = 0;
-    public static final int DOOR_OPEN_X = 54;
+    public static final int DOOR_OPEN_X = 44;
     public static final int DOOR_OPEN_Y = 0;
-    public static final int DOOR_W = 54;
+    public static final int DOOR_W = 44;
     public static final int DOOR_H = 56;
     
     private TextureRegion doorShut; // Open door sprite
@@ -30,11 +29,12 @@ public class Door implements GameEntity {
     private int x; // x-coord
     private int y; // y coord
     private DoorState doorStatus; // Door-specific status variable
+    private Sound openSound;
+    private Sound closeSound;
     
-    private static final Sound DOOR_OPEN_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
-    private static final Sound DOOR_SHUT_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg")); 
-    
-    public Door(Texture spriteSheet, int x, int y) {
+    public Door(Texture spriteSheet, Sound openSound, Sound closeSound, int x, int y) {
+        this.openSound = openSound;
+        this.closeSound = closeSound;
         this.doorShut = new TextureRegion(spriteSheet, DOOR_SHUT_X, DOOR_SHUT_Y, DOOR_W, DOOR_H);
         this.doorOpen = new TextureRegion(spriteSheet, DOOR_OPEN_X, DOOR_OPEN_Y, DOOR_W, DOOR_H);
         this.x = x; this.y = y;
@@ -83,20 +83,17 @@ public class Door implements GameEntity {
         return this.doorStatus;
     }
     
-    /** Opens the door, should be called when refractor is obtained */
-    public void onOpen() {
-        if (this.doorStatus == DoorState.SHUT) {
-            DOOR_OPEN_SFX.play();
-            this.doorStatus = DoorState.OPEN;
-        }
-    }
-    
     /** CLOSE THE HATCH! */
-    public void onShut() {
-        // Even though this one never really gets called..
-        if (this.doorStatus == DoorState.OPEN) {
-            DOOR_SHUT_SFX.play();
-            this.doorStatus = DoorState.SHUT;
+    public void setIsOpen(DoorState state, boolean playSound) {
+        if (this.doorStatus != state) {
+            this.doorStatus = state;
+            if (playSound) {
+                if (state == DoorState.OPEN) {
+                    this.openSound.play();
+                } else {
+                    this.closeSound.play();
+                }
+            }
         }
     }
     
