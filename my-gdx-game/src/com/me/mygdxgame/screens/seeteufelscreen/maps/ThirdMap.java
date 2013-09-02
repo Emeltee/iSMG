@@ -150,10 +150,10 @@ public class ThirdMap extends GameMap {
         tileXY(this.largeMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 5, 3);
         
         // Draw the border
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 5* GROUND_DIM - 8, GROUND_START_Y, 14);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 3*GROUND_DIM - 2, GROUND_START_Y + GROUND_DIM, 9);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 2*GROUND_DIM - 6, GROUND_START_Y + 2*GROUND_DIM, 5);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 1*GROUND_DIM - 6, GROUND_START_Y + 3*GROUND_DIM, 5);
+        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 5*GROUND_DIM-5, GROUND_START_Y, 14);
+        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 3*GROUND_DIM, GROUND_START_Y + GROUND_DIM, 9);
+        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 2*GROUND_DIM-5, GROUND_START_Y + 2*GROUND_DIM, 5);
+        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 1*GROUND_DIM-5, GROUND_START_Y + 3*GROUND_DIM, 5);
          
         // tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 9 * GROUND_DIM, GROUND_START_Y, 22);
         
@@ -174,7 +174,7 @@ public class ThirdMap extends GameMap {
         MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarBottomBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
         MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarTopBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
  
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM - 1, GROUND_START_Y + 7 * GROUND_DIM - 10, 53);
+        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y + 7 * GROUND_DIM - 10, 54);
         
         // Draw /a Waterfall
         MyGdxGame.currentGame.spriteBatch.draw(this.idkSprite, GROUND_ORIGIN_X + 9 * GROUND_DIM + 10, GROUND_START_Y + 12);
