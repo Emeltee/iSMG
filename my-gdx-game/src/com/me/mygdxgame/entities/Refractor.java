@@ -2,18 +2,16 @@ package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -24,6 +22,8 @@ public class Refractor implements GameEntity {
     public static final int REFRACTOR_Y = 210;
     public static final int REFRACTOR_W = 18;
     public static final int REFRACTOR_H = 46;
+    public static final Color BOX_COLOR = new Color(0, 0, 1, 0.35f);
+    public static final Color LINE_COLOR = new Color(1, 1, 1, 0.5f);
 
     private int x, y; // Coordinates
     private EntityState status; // Running/Destroyed
@@ -59,40 +59,26 @@ public class Refractor implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {        
+    public void draw(Renderer renderer) {        
         if (this.status == EntityState.Running && !this.taken) {
-            // Refractor is neither taken nor destroyed, show refractor
-            // Prepare the game's spriteBatch for drawing.
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-            MyGdxGame.currentGame.spriteBatch.begin();
-            MyGdxGame.currentGame.spriteBatch.draw(this.refractor, this.x, this.y);
-            MyGdxGame.currentGame.spriteBatch.end();
+            // Refractor is neither taken nor destroyed, show refractor.
+            renderer.drawRegion(this.refractor, this.x, this.y);
         } else if (this.taken && (this.mesgDuration < MESG_DELAY)) {
             // Using emulogic, an imitation of the original NES font
             BitmapFont nesFont = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"), Gdx.files.internal("data/emulogic.png"), false);
             CharSequence mesg = "YOU GOT BLUE REFRACTOR";
             
             // Once refractor is taken, show mesg until destroyed
-            Gdx.gl.glEnable(GL10.GL_BLEND);
-            Gdx.gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-            MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(transformMatrix);
-            MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
-            MyGdxGame.currentGame.shapeRenderer.setColor(new Color(0, 0, 1, 0.35f));
-            MyGdxGame.currentGame.shapeRenderer.rect(this.x - (int)((mesg.length() + 2) / 2 * 8), this.y + REFRACTOR_H + 16, (mesg.length() + 5) * 8, 24);
-            MyGdxGame.currentGame.shapeRenderer.end();
-            MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Line);
-            MyGdxGame.currentGame.shapeRenderer.setColor(new Color(1, 1, 1, 0.5f));
-            MyGdxGame.currentGame.shapeRenderer.rect(this.x - (int)((mesg.length() + 2) / 2 * 8), this.y + REFRACTOR_H + 16, (mesg.length() + 5) * 8, 24);
-            MyGdxGame.currentGame.shapeRenderer.end();
-            Gdx.gl.glDisable(GL10.GL_BLEND);
-            
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-            MyGdxGame.currentGame.spriteBatch.begin();
+            float posX = this.x - (int)((mesg.length() + 2) / 2 * 8);
+            float posY = this.y + REFRACTOR_H + 16;
+            float width = (mesg.length() + 5) * 8;
+            float height = 24;
+            renderer.drawRect(ShapeType.Filled, BOX_COLOR, posX, posY, width, height);
+            renderer.drawRect(ShapeType.Line, LINE_COLOR, posX, posY, width, height);
             
             // This centers the text above wherever the refractor is.
             // TODO Maybe make this a fixed coord, but I like it this way.
-            nesFont.draw(MyGdxGame.currentGame.spriteBatch, mesg, this.x - (int)(mesg.length() / 2 * 8), this.y + REFRACTOR_H + 32);            
-            MyGdxGame.currentGame.spriteBatch.end();
+            renderer.drawText(nesFont, mesg, this.x - (int)(mesg.length() / 2 * 8), this.y + REFRACTOR_H + 32);           
         }
     }
 

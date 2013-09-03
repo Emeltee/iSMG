@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class BusterShot implements GameEntity {
     
@@ -122,20 +122,13 @@ public class BusterShot implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
+    public void draw(Renderer renderer) {
         
         if (this.status == EntityState.Running) {
             // Every call, increment the animationTimer.
             this.animationTimer++;
             
-            // Prepare the game's spriteBatch for drawing.
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-            
-            MyGdxGame.currentGame.spriteBatch.begin();
-            
-            MyGdxGame.currentGame.spriteBatch.draw(bullet, this.position.x, this.position.y, this.bullet.getRegionWidth() / 2.0f, this.bullet.getRegionHeight() / 2.0f, BULLET_W, BULLET_H, 1, 1, 30 * this.animationTimer);
-            
-            MyGdxGame.currentGame.spriteBatch.end();
+            renderer.drawRegion(bullet, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
         }
     }
 

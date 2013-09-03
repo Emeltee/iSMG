@@ -4,9 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Matrix4;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.ProgressBar;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class MegaHealthBar implements ProgressBar {
 
@@ -66,19 +65,13 @@ public class MegaHealthBar implements ProgressBar {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {        
+    public void draw(Renderer renderer) {        
         // Draw the bar
-        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
-        MyGdxGame.currentGame.shapeRenderer.rect(this.x + BAR_X, this.y + BAR_Y, BAR_W, this.barSize, BAR_COLOR, BAR_COLOR, BAR_COLOR, BAR_COLOR);
-        MyGdxGame.currentGame.shapeRenderer.end();
+        renderer.drawRect(ShapeType.Filled, BAR_COLOR, this.x + BAR_X, this.y + BAR_Y, BAR_W, this.barSize);
         
         // Draw the chrome and signal light
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
-        MyGdxGame.currentGame.spriteBatch.draw(this.chrome, this.x, this.y);
-        MyGdxGame.currentGame.spriteBatch.draw((this.inDanger) ? this.dangerSignal : this.safetySignal, this.x + SIGNAL_X, this.y + SIGNAL_Y);
-        MyGdxGame.currentGame.spriteBatch.end();
+        renderer.drawRegion(this.chrome, this.x, this.y);
+        renderer.drawRegion((this.inDanger) ? this.dangerSignal : this.safetySignal, this.x + SIGNAL_X, this.y + SIGNAL_Y);
     }
 
     @Override

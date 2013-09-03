@@ -2,8 +2,6 @@ package com.me.mygdxgame.utilities;
 
 import java.util.NoSuchElementException;
 
-import com.badlogic.gdx.math.Matrix4;
-
 /**
  * Interface to be followed by dynamic entities managed by {@link GameScreen}.
  * Allows for a uniform way to access some necessary state data, and for
@@ -37,16 +35,14 @@ public interface GameEntity extends Updatable {
      * same frame, but no such guarantee is made. The draw method may be called
      * at any during a frame, or not at all. As such, all critical logic should
      * go in update.
-     * <p>
-     * The matrix passed to this method should be prepared beforehand.
      * 
-     * @param transformMatrix
-     *            The matrix this object should use to render. This should be
-     *            the same argument that would be passed down to a SpriteBatch
-     *            or ShapeRenderer.
+     * @param renderer
+     *            The Renderer this object should use to render. This should
+     *            already be properly set up with the desired transformation
+     *            matrix.
      */
     @Override
-    public void draw(Matrix4 transformMatrix);
+    public void draw(Renderer renderer);
 
     /**
      * Retrieves this GameEntity's current state. The state returned will

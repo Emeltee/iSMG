@@ -9,7 +9,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -35,6 +34,7 @@ import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
+import com.me.mygdxgame.utilities.Renderer;
 
 /**
  * TODO
@@ -107,6 +107,7 @@ public class SeeteufelScreen implements GameScreen {
     private Door room2Exit;
     private WatchNadia bonus;
     private SeeteufelFront seeFront;
+    private Renderer hudRenderer;
     
     private LinkedList<Rectangle> obstacles = new LinkedList<Rectangle>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
@@ -121,6 +122,7 @@ public class SeeteufelScreen implements GameScreen {
         this.map2 = new SecondMap(SeeteufelScreen.MAP2_HEIGHT);
         this.map3 = new ThirdMap();
         this.currentMap = this.map1;
+        this.hudRenderer = new Renderer(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).combined);
     }
     
     @Override
@@ -195,8 +197,14 @@ public class SeeteufelScreen implements GameScreen {
         // Unload other recs.
         this.playerResources.unload();
         this.explosion.dispose();
+        this.explosion.dispose();
+        this.splash.dispose();
+        this.seeSplash.dispose();
+        this.bombShoot.dispose();
         this.music1.dispose();
         this.music2.dispose();
+        this.doorOpen.dispose();
+        this.doorClose.dispose(); 
     }
 
     @Override
@@ -210,6 +218,8 @@ public class SeeteufelScreen implements GameScreen {
         } else {
             this.updateMap3(deltaTime, difficulty, perspCam, orthoCam);
         }
+        
+        Renderer.flush();
         
         // Check if you've lost.
         if (this.player.getState() == EntityState.Destroyed) {
@@ -284,15 +294,18 @@ public class SeeteufelScreen implements GameScreen {
         orthoCam.update();
         
         // Clear screen.
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);   
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+        // Make renderer.
+        Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.currentMap.render(deltaTime, orthoCam.combined);        
+        this.currentMap.render(deltaTime, renderer);
         
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
-            e.draw(orthoCam.combined);            
+            e.draw(renderer);            
             if (e.getState() == EntityState.Destroyed) {
                 if (e instanceof WatchNadia) {
                     this.player.setGeminiEnabled(true);
@@ -309,7 +322,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Player.
         this.player.update(deltaTime);
-        this.player.draw(orthoCam.combined);
+        this.player.draw(renderer);
         if (this.player.hasCreatedEntities()) {
             this.toAdd.addFirst(this.player.getCreatedEntities());
         }
@@ -317,9 +330,7 @@ public class SeeteufelScreen implements GameScreen {
         // Health bar.
         this.playerHealth.setInDanger(false);
         this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
-        orthoCam.position.set(0, 0, 0);
-        orthoCam.update();
-        this.playerHealth.draw(orthoCam.combined);
+        this.playerHealth.draw(this.hudRenderer);
         
         // Remove or add to generic entity list as needed.
         this.entities.removeAll(this.toRemove);
@@ -562,16 +573,19 @@ public class SeeteufelScreen implements GameScreen {
         this.map2Ceiling.setPosition(0, orthoCam.position.y + Gdx.graphics.getHeight() / 2);
         
         // Clear screen.
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);   
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+        // Create Renderer.
+        Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.currentMap.render(deltaTime, orthoCam.combined);
+        this.currentMap.render(deltaTime, renderer);
         
         // Update Seeteufel only after water starts rising.
         if (this.isMap2Flooding) {
             this.seeFront.setTargetY((int)this.map2WaterY);
             this.seeFront.update(deltaTime);
-            this.seeFront.draw(orthoCam.combined);
+            this.seeFront.draw(renderer);
             
             // Attack if water level is one block below the next staircase.
             if (!this.seeteufelTargetLevels.isEmpty()) {
@@ -601,7 +615,7 @@ public class SeeteufelScreen implements GameScreen {
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
-            e.draw(orthoCam.combined);            
+            e.draw(renderer);            
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
             }
@@ -627,7 +641,7 @@ public class SeeteufelScreen implements GameScreen {
         }
         // Update internal logic and draw.
         this.player.update(deltaTime);
-        this.player.draw(orthoCam.combined);
+        this.player.draw(renderer);
         if (this.player.hasCreatedEntities()) {
             this.toAdd.addFirst(this.player.getCreatedEntities());
         }
@@ -640,20 +654,13 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Water, which follows just below the camera.
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        
-        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
-        MyGdxGame.currentGame.shapeRenderer.setColor(SeeteufelScreen.WATER_COLOR);
-        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(orthoCam.combined);
-        MyGdxGame.currentGame.shapeRenderer.rect(orthoCam.position.x - Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth(), this.map2WaterY);
-        MyGdxGame.currentGame.shapeRenderer.end();
+        renderer.drawRect(ShapeType.Filled, SeeteufelScreen.WATER_COLOR,
+                orthoCam.position.x - Gdx.graphics.getWidth() / 2, 0,
+                Gdx.graphics.getWidth(), this.map2WaterY);
         
         // Health bar.
         this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
-        orthoCam.position.set(0, 0, 0);
-        orthoCam.update();
-        this.playerHealth.draw(orthoCam.combined);
+        this.playerHealth.draw(this.hudRenderer);
         
         // Remove or add to generic entity list as needed.
         this.entities.removeAll(this.toRemove);
@@ -679,10 +686,13 @@ public class SeeteufelScreen implements GameScreen {
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Clear screen.
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);   
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+        // Create Renderer.
+        Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.currentMap.render(deltaTime, orthoCam.combined);
+        this.currentMap.render(deltaTime, renderer);
     }
     
 }

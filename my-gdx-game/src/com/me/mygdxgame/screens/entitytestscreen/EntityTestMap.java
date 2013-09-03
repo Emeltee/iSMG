@@ -1,10 +1,11 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.Renderer;
 
 /**
  * Simple {@link GameMap} used for testing {@link GameEntity} objects. Creates
@@ -71,8 +72,8 @@ public class EntityTestMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Matrix4 transformMatrix) {
-        GameMap.drawObstacles(transformMatrix, obstacles, Color.RED);
+    public void render(float deltaTime, Renderer renderer) {
+        GameMap.drawObstacles(renderer, obstacles, Color.RED);
     }
 
 }

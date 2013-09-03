@@ -6,14 +6,13 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.projectiles.Rocket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class SeeteufelFront implements GameEntity {
     
@@ -134,13 +133,10 @@ public class SeeteufelFront implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
-
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
+    public void draw(Renderer renderer) {
         
         // Draw the front. Always the same.
-        MyGdxGame.currentGame.spriteBatch.draw(this.front, this.position.x, this.position.y);
+        renderer.drawRegion(this.front, this.position.x, this.position.y);
         
         // Draw the long tentacles on the sides.
         this.backArmTimer++;
@@ -149,14 +145,14 @@ public class SeeteufelFront implements GameEntity {
             this.backArmTimer = 0;
         }
         if (this.backArmFrame == 0) {
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmLeft[0], this.position.x - 81, this.position.y + 20);
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmRight[0], this.position.x + 65, this.position.y + 20);
+            renderer.drawRegion(this.backArmLeft[0], this.position.x - 81, this.position.y + 20);
+            renderer.drawRegion(this.backArmRight[0], this.position.x + 65, this.position.y + 20);
         } else if (this.backArmFrame == 1) {
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmLeft[1], this.position.x - 81, this.position.y + 24);
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmRight[1], this.position.x + 65, this.position.y + 24);
+            renderer.drawRegion(this.backArmLeft[1], this.position.x - 81, this.position.y + 24);
+            renderer.drawRegion(this.backArmRight[1], this.position.x + 65, this.position.y + 24);
         } else {
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmLeft[2], this.position.x - 81, this.position.y + 27);
-            MyGdxGame.currentGame.spriteBatch.draw(this.backArmRight[2], this.position.x + 65, this.position.y + 27);
+            renderer.drawRegion(this.backArmLeft[2], this.position.x - 81, this.position.y + 27);
+            renderer.drawRegion(this.backArmRight[2], this.position.x + 65, this.position.y + 27);
         }
         
         // Draw the front tentacles.
@@ -166,14 +162,12 @@ public class SeeteufelFront implements GameEntity {
             this.frontArmTimer = 0;
         }
         if (this.frontArmFrame) {
-            MyGdxGame.currentGame.spriteBatch.draw(this.frontArmLeft[0], this.position.x - 48, this.position.y + 8);
-            MyGdxGame.currentGame.spriteBatch.draw(this.frontArmRight[0], this.position.x + 58, this.position.y + 8);
+            renderer.drawRegion(this.frontArmRight[0], this.position.x + 58, this.position.y + 8);
+            renderer.drawRegion(this.frontArmLeft[0], this.position.x - 48, this.position.y + 8);
         } else {
-            MyGdxGame.currentGame.spriteBatch.draw(this.frontArmLeft[1], this.position.x - 42, this.position.y + 11);
-            MyGdxGame.currentGame.spriteBatch.draw(this.frontArmRight[1], this.position.x + 58, this.position.y + 11);
+            renderer.drawRegion(this.frontArmLeft[1], this.position.x - 42, this.position.y + 11);
+            renderer.drawRegion(this.frontArmRight[1], this.position.x + 58, this.position.y + 11);
         }
-        
-        MyGdxGame.currentGame.spriteBatch.end();
     }
 
     @Override
