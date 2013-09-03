@@ -4,13 +4,12 @@ import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class WatchNadia implements Damageable, GameEntity {
 
@@ -58,12 +57,9 @@ public class WatchNadia implements Damageable, GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
+    public void draw(Renderer renderer) {
         if (this.getState() == EntityState.Running) {
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-            MyGdxGame.currentGame.spriteBatch.begin();
-            MyGdxGame.currentGame.spriteBatch.draw(this.watchNadia, this.x, this.y);
-            MyGdxGame.currentGame.spriteBatch.end();
+            renderer.drawRegion(this.watchNadia, this.x, this.y);
         }
     }
 
@@ -79,7 +75,7 @@ public class WatchNadia implements Damageable, GameEntity {
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        return null;
+        throw new NoSuchElementException();
     }
 
     @Override

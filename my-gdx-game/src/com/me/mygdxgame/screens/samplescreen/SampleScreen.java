@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
+import com.me.mygdxgame.utilities.Renderer;
 
 /**
  * Screen for testing. Roughly analogous to a game "level".
@@ -78,7 +79,7 @@ public class SampleScreen implements GameScreen {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
         // Draw player.
-        this.player.draw(perspCam.combined);
+        this.player.draw(new Renderer(perspCam.combined));
     }
 
     @Override

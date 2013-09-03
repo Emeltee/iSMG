@@ -2,14 +2,13 @@ package com.me.mygdxgame.entities.particles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class Explosion implements GameEntity {
 
@@ -26,7 +25,6 @@ public class Explosion implements GameEntity {
     
     private TextureRegion[] splode;
     private Vector3 position;
-    private Vector2 originPosition;
     private EntityState status;
     private short animationTimer;
     private int frame;
@@ -35,7 +33,6 @@ public class Explosion implements GameEntity {
     public Explosion(Texture spriteSheet, Vector3 position) {
         float centerOffset = Explosion.SPLODE_DIM / 2;
         this.position = new Vector3(position.x - centerOffset, position.y - centerOffset, position.x);
-        this.originPosition = new Vector2(centerOffset, centerOffset);
         
         this.splode = new TextureRegion[4];
         this.splode[0] = new TextureRegion(spriteSheet, SPLODE_1_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
@@ -65,31 +62,25 @@ public class Explosion implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
+    public void draw(Renderer renderer) {
         if (this.status == EntityState.Running) {
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);          
-            MyGdxGame.currentGame.spriteBatch.begin();
-            MyGdxGame.currentGame.spriteBatch.draw(splode[this.frame], this.position.x, this.position.y, this.originPosition.x, this.originPosition.y, Explosion.SPLODE_DIM, Explosion.SPLODE_DIM, spriteScale, spriteScale, 0);
-            MyGdxGame.currentGame.spriteBatch.end();
+            renderer.drawRegion(splode[this.frame], this.position.x, this.position.y, Color.WHITE, spriteScale, spriteScale, 0);
         }
     }
 
     @Override
     public EntityState getState() {
-        // TODO Auto-generated method stub
         return this.status;
     }
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NoSuchElementException();
     }
 
 }

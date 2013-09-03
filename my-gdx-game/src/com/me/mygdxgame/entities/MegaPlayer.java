@@ -9,16 +9,15 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.entities.projectiles.GeminiShot;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class MegaPlayer implements GameEntity, Damageable {
 
@@ -98,6 +97,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         public Sound jumpSound = null;
         public Sound landSound = null;
         public Sound hurtSound = null;
+        public Sound geminiSound = null;
         
         private boolean isLoaded = false;
         
@@ -110,6 +110,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.jumpSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-jump1.ogg"));
                 this.landSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-land1.ogg"));
                 this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-fire1.ogg"));
+                this.geminiSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-gemini-shot.ogg"));
                 this.shotMissSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-miss1.ogg"));
                 
                 this.isLoaded = true;
@@ -125,6 +126,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.jumpSound.dispose();
                 this.landSound.dispose();
                 this.shootSound.dispose();
+                this.geminiSound.dispose();
                 this.shotMissSound.dispose();
                 
                 this.isLoaded = false;
@@ -243,11 +245,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
-        if (geminiEnabled) {
-            this.resources.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-gemini-shot.ogg"));
-        } else {
-            this.resources.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-fire1.ogg"));
-        }
     }
     
     public void applyForce(Vector3 force) {
@@ -323,47 +320,44 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
+    public void draw(Renderer renderer) {
         
         float drawPositionX = this.position.x - MegaPlayer.HITBOX_OFFSET_X;
         float drawPositionY = this.position.y - MegaPlayer.HITBOX_OFFSET_Y;
-        
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
         
         // Facing right.
         if (this.isFacingRight) {
             if (this.flinchTimer > 0) {
                 if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.damageRight[0],
-                            drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.damageRight[0], drawPositionX,
+                            drawPositionY);
                 } else {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.damageRight[1],
-                            drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.damageRight[1], drawPositionX,
+                            drawPositionY);
                 }
             } else if (this.isInAir) {
                 if (this.velocity.y > 0) {
                     if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                            MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootRight[0],
-                                    drawPositionX, drawPositionY);
+                        renderer.drawRegion(this.jumpShootRight[0],
+                                drawPositionX, drawPositionY);
                     } else {
-                        MyGdxGame.currentGame.spriteBatch.draw(this.jumpRight[0],
+                        renderer.drawRegion(this.jumpRight[0],
                                 drawPositionX, drawPositionY);
                     }
                 } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootRight[1],
+                    renderer.drawRegion(this.jumpShootRight[1],
                             drawPositionX, drawPositionY);
                 } else {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpRight[1],
+                    renderer.drawRegion(this.jumpRight[1],
                             drawPositionX, drawPositionY);
                 }
             } else if (this.velocity.x == 0) {
                 if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.standShootRight,
-                            drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.standShootRight, drawPositionX,
+                            drawPositionY);
                 } else {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.standRight,
-                            drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.standRight, drawPositionX,
+                            drawPositionY);
                 }
             } else {
                 
@@ -383,10 +377,10 @@ public class MegaPlayer implements GameEntity, Damageable {
                 }
                 
                 if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.runShootRight[currentFrame],
+                    renderer.drawRegion(this.runShootRight[currentFrame],
                             drawPositionX, drawPositionY);
                 } else {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.runRight[currentFrame],
+                    renderer.drawRegion(this.runRight[currentFrame],
                             drawPositionX, drawPositionY);
                 }
                 
@@ -395,35 +389,35 @@ public class MegaPlayer implements GameEntity, Damageable {
         // Facing left.
         } else if (this.flinchTimer > 0) {
             if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
-                MyGdxGame.currentGame.spriteBatch.draw(this.damageLeft[0],
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.damageLeft[0], drawPositionX,
+                        drawPositionY);
             } else {
-                MyGdxGame.currentGame.spriteBatch.draw(this.damageLeft[1],
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.damageLeft[1], drawPositionX,
+                        drawPositionY);
             }
         } else if (this.isInAir) {
             if (this.velocity.y > 0) {
                 if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                        MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootLeft[0],
-                                drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.jumpShootLeft[0], drawPositionX,
+                            drawPositionY);
                 } else {
-                    MyGdxGame.currentGame.spriteBatch.draw(this.jumpLeft[0],
-                            drawPositionX, drawPositionY);
+                    renderer.drawRegion(this.jumpLeft[0], drawPositionX,
+                            drawPositionY);
                 }
             } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                MyGdxGame.currentGame.spriteBatch.draw(this.jumpShootLeft[1],
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.jumpShootLeft[1], drawPositionX,
+                        drawPositionY);
             } else {
-                MyGdxGame.currentGame.spriteBatch.draw(this.jumpLeft[1],
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.jumpLeft[1], drawPositionX,
+                        drawPositionY);
             }
         } else if (this.velocity.x == 0) {
             if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                MyGdxGame.currentGame.spriteBatch.draw(this.standShootLeft,
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.standShootLeft, drawPositionX,
+                        drawPositionY);
             } else {
-                MyGdxGame.currentGame.spriteBatch.draw(this.standLeft,
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.standLeft, drawPositionX,
+                        drawPositionY);
             }
         } else {
             
@@ -443,17 +437,15 @@ public class MegaPlayer implements GameEntity, Damageable {
             }
             
             if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                MyGdxGame.currentGame.spriteBatch.draw(this.runShootLeft[currentFrame],
+                renderer.drawRegion(this.runShootLeft[currentFrame],
                         drawPositionX, drawPositionY);
             } else {
-                MyGdxGame.currentGame.spriteBatch.draw(this.runLeft[currentFrame],
-                        drawPositionX, drawPositionY);
+                renderer.drawRegion(this.runLeft[currentFrame], drawPositionX,
+                        drawPositionY);
             }
-            
+
             this.prevFrame = currentFrame;
         }
-        
-        MyGdxGame.currentGame.spriteBatch.end();
         
 //        // Test code. Draws hitbox as overlay.
 //        Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -646,8 +638,6 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.busterCooldown = Math.max(this.busterCooldown - deltaTime, 0);
         } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
             
-            this.resources.shootSound.play(0.75f);
-
             this.shotOrigin.set(this.position);
             this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
 
@@ -655,12 +645,14 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
+                    this.resources.geminiSound.play(0.75f);
                     this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
+                    this.resources.shootSound.play(0.75f);
                     this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
@@ -669,12 +661,14 @@ public class MegaPlayer implements GameEntity, Damageable {
                 }
             } else {
                 if (geminiEnabled) {
+                    this.resources.geminiSound.play(0.75f);
                     this.newShots.offer(new GeminiShot(this.resources.busterTexture,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
+                    this.resources.shootSound.play(0.75f);
                     this.newShots.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,

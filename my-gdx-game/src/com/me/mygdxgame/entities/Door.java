@@ -5,11 +5,10 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class Door implements GameEntity {
     
@@ -47,17 +46,12 @@ public class Door implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
-        MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
-        
+    public void draw(Renderer renderer) {
         if (this.doorStatus == DoorState.SHUT) {
-            MyGdxGame.currentGame.spriteBatch.draw(this.doorShut, this.x, this.y);
+            renderer.drawRegion(this.doorShut, this.x, this.y);
         } else {
-            MyGdxGame.currentGame.spriteBatch.draw(this.doorOpen, this.x, this.y);
+            renderer.drawRegion(this.doorOpen, this.x, this.y);
         }
-
-        MyGdxGame.currentGame.spriteBatch.end();
     }
 
     @Override

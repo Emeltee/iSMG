@@ -6,8 +6,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
@@ -28,12 +26,6 @@ public class MyGdxGame implements ApplicationListener {
     public static final int SCREEN_HEIGHT = 376;
     /** Initial number of player lives. */
     public static final int MAX_LIVES = 3;
-
-    // Public communal resources. Probably bad practice, but works for now.
-    /** Communal SpriteBatch for drawing. */
-    public SpriteBatch spriteBatch;
-    /** Communal ShapeRenderer for primitives.*/
-    public ShapeRenderer shapeRenderer;
     
     /** OrthographicCamera for adjusting view. */
     private OrthographicCamera orthoCamera;
@@ -92,10 +84,6 @@ public class MyGdxGame implements ApplicationListener {
             this.perspectiveCamera.far = 5000.0f;
             this.perspectiveCamera.position.z = 256.0f;
             this.perspectiveCamera.update();
-
-            // Set up SpriteBatch and shapeRenderer.
-            this.spriteBatch = new SpriteBatch();
-            this.shapeRenderer = new ShapeRenderer();
 
         } catch (Exception e) {
             e.printStackTrace();

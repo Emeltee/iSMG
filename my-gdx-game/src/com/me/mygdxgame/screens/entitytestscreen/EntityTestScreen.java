@@ -1,6 +1,7 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
 import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
@@ -12,6 +13,7 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
+import com.me.mygdxgame.utilities.Renderer;
 
 /**
  * {@link GameScreen} used to test {@link GameEntity} objects. Uses {@link EntityTestMap}.
@@ -109,11 +111,14 @@ public class EntityTestScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        // Create Renderer.
+        Renderer renderer = new Renderer(perspCam.combined);
+        
         // Update and draw all current entities.
         for (GameEntity e : this.entities) {
             
             e.update(deltaTime);
-            e.draw(perspCam.combined);
+            e.draw(renderer);
             
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
@@ -134,7 +139,7 @@ public class EntityTestScreen implements GameScreen {
         this.toRemove.clear();
 
         // Render obstacles.
-        this.map.render(deltaTime, perspCam.combined);
+        this.map.render(deltaTime, renderer);
     }
 
     @Override

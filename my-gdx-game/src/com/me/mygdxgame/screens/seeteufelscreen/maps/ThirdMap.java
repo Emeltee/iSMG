@@ -4,11 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class ThirdMap extends GameMap {
 
@@ -140,69 +139,62 @@ public class ThirdMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Matrix4 transformMatrix) {
-        // Prepare the game's spriteBatch for drawing.
-        MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
+    public void render(float deltaTime, Renderer renderer) {
         
         // Draw the bg
-        tileXY(this.largeMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 5, 3);
+        tileXY(renderer, this.largeMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 5, 3);
         
         // Draw the border
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 5*GROUND_DIM-5, GROUND_START_Y, 14);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 3*GROUND_DIM, GROUND_START_Y + GROUND_DIM, 9);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 2*GROUND_DIM-5, GROUND_START_Y + 2*GROUND_DIM, 5);
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 1*GROUND_DIM-5, GROUND_START_Y + 3*GROUND_DIM, 5);
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 5*GROUND_DIM-5, GROUND_START_Y, 14);
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 3*GROUND_DIM, GROUND_START_Y + GROUND_DIM, 9);
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 2*GROUND_DIM-5, GROUND_START_Y + 2*GROUND_DIM, 5);
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 1*GROUND_DIM-5, GROUND_START_Y + 3*GROUND_DIM, 5);
          
         // tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 9 * GROUND_DIM, GROUND_START_Y, 22);
         
         // Draw some light pillars
-        tileY(lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10, 18);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarBottomBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarTopBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
+        tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10, 18);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
         
-        tileY(lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10, 24);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarBottomBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarTopBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
+        tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10, 24);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
         
-        tileY(lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarBottomBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarTopBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
+        tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
 
-        tileY(lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarBottomBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
-        MyGdxGame.currentGame.spriteBatch.draw(this.lightPillarTopBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
+        tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
  
-        tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y + 7 * GROUND_DIM - 10, 54);
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y + 7 * GROUND_DIM - 10, 54);
         
         // Draw /a Waterfall
-        MyGdxGame.currentGame.spriteBatch.draw(this.idkSprite, GROUND_ORIGIN_X + 9 * GROUND_DIM + 10, GROUND_START_Y + 12);
-        MyGdxGame.currentGame.spriteBatch.draw(this.grate, (int)Math.ceil(GROUND_ORIGIN_X + 9.5 * GROUND_DIM), GROUND_START_Y + 20);
-        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], (int)Math.ceil(GROUND_ORIGIN_X + 9.5 * GROUND_DIM -4), GROUND_ORIGIN_Y);
+        renderer.drawRegion(this.idkSprite, GROUND_ORIGIN_X + 9 * GROUND_DIM + 10, GROUND_START_Y + 12);
+        renderer.drawRegion(this.grate, (int)Math.ceil(GROUND_ORIGIN_X + 9.5 * GROUND_DIM), GROUND_START_Y + 20);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], (int)Math.ceil(GROUND_ORIGIN_X + 9.5 * GROUND_DIM -4), GROUND_ORIGIN_Y);
         
-        MyGdxGame.currentGame.spriteBatch.draw(this.idkSprite, GROUND_ORIGIN_X + 11 * GROUND_DIM + 11, GROUND_START_Y + 12);
-        MyGdxGame.currentGame.spriteBatch.draw(this.grate, (int)(GROUND_ORIGIN_X + 11.5 * GROUND_DIM), GROUND_START_Y + 20);
-        MyGdxGame.currentGame.spriteBatch.draw(this.waterfall[animationFrame / 4 % 5], (int)Math.ceil(GROUND_ORIGIN_X + 11.5 * GROUND_DIM -4), GROUND_ORIGIN_Y);
+        renderer.drawRegion(this.idkSprite, GROUND_ORIGIN_X + 11 * GROUND_DIM + 11, GROUND_START_Y + 12);
+        renderer.drawRegion(this.grate, (int)(GROUND_ORIGIN_X + 11.5 * GROUND_DIM), GROUND_START_Y + 20);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], (int)Math.ceil(GROUND_ORIGIN_X + 11.5 * GROUND_DIM -4), GROUND_ORIGIN_Y);
         
         // Draw the stage on top of everything.
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 8);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM, 5);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 2*GROUND_DIM, 3);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 3* GROUND_DIM, 2);
-        tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 8 * GROUND_DIM, 13);
-        tileY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 9);
-        tileY(this.wallSprite, GROUND_ORIGIN_X + 13 * GROUND_DIM, GROUND_ORIGIN_Y, 9);
+        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 8);
+        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM, 5);
+        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 2*GROUND_DIM, 3);
+        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 3* GROUND_DIM, 2);
+        tileX(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 8 * GROUND_DIM, 13);
+        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 9);
+        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X + 13 * GROUND_DIM, GROUND_ORIGIN_Y, 9);
 
         // Update animation frame
         animationFrame = (animationFrame < 96) ? animationFrame + 1 : 0;
         
-        // Finalize drawing.
-        MyGdxGame.currentGame.spriteBatch.end();
-        
         // Debug
         if (this.debugMode) {
-            drawObstacles(transformMatrix, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 

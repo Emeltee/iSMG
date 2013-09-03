@@ -1,7 +1,5 @@
 package com.me.mygdxgame.utilities;
 
-import com.badlogic.gdx.math.Matrix4;
-
 /**
  * Simple interface indicating that an object can be updated and drawn by
  * {@link GameScreen}s, or other managing entities.
@@ -18,13 +16,12 @@ public interface Updatable {
     public void update(float deltaTime);
 
     /**
-     * Renders object to screen. The matrix passed to this method should be
-     * prepared beforehand.
+     * Renders object to screen.
      * 
-     * @param transformMatrix
-     *            The matrix this object should use to render. This should be
-     *            the same argument that would be passed down to a SpriteBatch
-     *            or ShapeRenderer.
+     * @param renderer
+     *            The Renderer this object should use to render. This should
+     *            already be properly set up with the desired transformation
+     *            matrix.
      */
-    public void draw(Matrix4 transformMatrix);
+    public void draw(Renderer renderer);
 }

@@ -4,11 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class SecondMap extends GameMap {
 
@@ -91,27 +90,20 @@ public class SecondMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Matrix4 transformMatrix) {
-        // Prepare the game's spriteBatch for drawing.
-        MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(transformMatrix);
-        MyGdxGame.currentGame.spriteBatch.begin();
+    public void render(float deltaTime, Renderer renderer) {
 
-        tileXY(this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
-        tileY(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
-        tileY(this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
-        tileX(this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
-        tileX(this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
+        tileXY(renderer, this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
+        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
+        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
+        tileX(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
+        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
         
         // Update animation frame
         animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
         
-        // Finalize drawing.
-        MyGdxGame.currentGame.spriteBatch.end();
-        
         // Debug
         if (this.debugMode) {
-            drawObstacles(transformMatrix, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 

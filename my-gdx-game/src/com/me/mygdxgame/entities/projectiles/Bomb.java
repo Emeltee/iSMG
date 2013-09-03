@@ -3,16 +3,16 @@ package com.me.mygdxgame.entities.projectiles;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.particles.Explosion;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
+import com.me.mygdxgame.utilities.Renderer;
 
 public class Bomb implements GameEntity {
     
@@ -29,7 +29,7 @@ public class Bomb implements GameEntity {
     /** Tracks the number of frames that have passed. Used to time animation. */
     private short animationTimer = 0;
     /** General-purpose sprite sheet. */
-    private Texture spriteSheet = null;    
+    private Texture spriteSheet = null;
 
     /** Current position in 3D space. */
     private Vector3 position = new Vector3(0, 0, 0);
@@ -111,19 +111,14 @@ public class Bomb implements GameEntity {
     }
 
     @Override
-    public void draw(Matrix4 transformMatrix) {
+    public void draw(Renderer renderer) {
         if (this.status == EntityState.Running){
             // Every call, increment the animationTimer.
             this.animationTimer++;
             
-            // Prepare the game's spriteBatch for drawing.
-            MyGdxGame.currentGame.spriteBatch.setProjectionMatrix(transformMatrix);            
-            MyGdxGame.currentGame.spriteBatch.begin();
-            
+            renderer.drawRegion(bomb, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
             // TODO spriteBatch's draw() function won't manage the z-axis automatically. Fix manually with scaleX/scaleY params? 
-            MyGdxGame.currentGame.spriteBatch.draw(bomb, this.position.x, this.position.y, this.bomb.getRegionWidth() / 2.0f, this.bomb.getRegionHeight() / 2.0f, BOMB_W, BOMB_H, 1, 1, 30 * this.animationTimer);
-            
-            MyGdxGame.currentGame.spriteBatch.end();
+            //MyGdxGame.currentGame.spriteBatch.draw(bomb, this.position.x, this.position.y, this.bomb.getRegionWidth() / 2.0f, this.bomb.getRegionHeight() / 2.0f, BOMB_W, BOMB_H, 1, 1, 30 * this.animationTimer);
         }
     }
 

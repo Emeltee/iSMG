@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
+import com.me.mygdxgame.utilities.Renderer;
 
 /** Just loads some GameMap and lets you view it.*/
 public class MapTestScreen implements GameScreen {
@@ -69,8 +70,11 @@ public class MapTestScreen implements GameScreen {
 
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+        // Make a renderer.
+        Renderer renderer = new Renderer(perspCam.combined);
 
-        this.map.render(deltaTime, perspCam.combined);
+        this.map.render(deltaTime, renderer);
     }
 
     @Override

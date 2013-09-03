@@ -6,9 +6,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.utilities.Renderer;
 
 /**
  * Simple class representing the player.
@@ -101,12 +100,7 @@ public class SamplePlayer {
     /**
      * Render object to screen.
      */
-    public void draw(Matrix4 transMat) {
-
-        // Prepare the game's spriteBatch for drawing.
-        MyGdxGame.currentGame.spriteBatch
-        .setProjectionMatrix(transMat);
-        MyGdxGame.currentGame.spriteBatch.begin();
+    public void draw(Renderer renderer) {
 
         // If player is running, current frame and sound effects need to be
         // managed.
@@ -129,8 +123,8 @@ public class SamplePlayer {
             }
 
             // Draw current sprite frame at current position.
-            MyGdxGame.currentGame.spriteBatch.draw(this.runFrames[frame],
-                    this.position.x, this.position.y);
+            renderer.drawRegion(this.runFrames[frame],
+                    (int)this.position.x, (int)this.position.y);
 
             // If a new frame has just been switched to and that frame is one of
             // the ones where the sprite
@@ -155,12 +149,9 @@ public class SamplePlayer {
             if (this.isFlipped != this.standFrame.isFlipX()) {
                 this.standFrame.flip(true, false);
             }
-            MyGdxGame.currentGame.spriteBatch.draw(this.standFrame,
-                    this.position.x, this.position.y);
+            renderer.drawRegion(this.standFrame,
+                    (int)this.position.x, (int)this.position.y);
         }
-
-        // Finalize drawing.
-        MyGdxGame.currentGame.spriteBatch.end();
     }
 
     /**
