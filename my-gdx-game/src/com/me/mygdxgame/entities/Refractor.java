@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,6 +23,7 @@ public class Refractor implements GameEntity {
     public static final int REFRACTOR_H = 46;
     public static final Color BOX_COLOR = new Color(0, 0, 1, 0.35f);
     public static final Color LINE_COLOR = new Color(1, 1, 1, 0.5f);
+    public static final CharSequence MESG = "YOU GOT BLUE REFRACTOR";
 
     private int x, y; // Coordinates
     private EntityState status; // Running/Destroyed
@@ -31,9 +31,12 @@ public class Refractor implements GameEntity {
     private boolean taken; // Whether or not player has taken refractor
     private static final float MESG_DELAY = 1.5f; // Time for message to be on-screen
     private float mesgDuration; // 
-    private static final Sound ITEM_GET_SFX = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
+    private Sound itemGetSound = null;
+    private BitmapFont font = null;
     
-    public Refractor(Texture spriteSheet, int x, int y) {
+    public Refractor(Texture spriteSheet, Sound getSound, BitmapFont font, int x, int y) {
+        this.itemGetSound = getSound;
+        this.font = font;
         this.refractor = new TextureRegion(spriteSheet, REFRACTOR_X, REFRACTOR_Y, REFRACTOR_W, REFRACTOR_H);
         this.x = x; 
         this.y = y;
@@ -64,21 +67,18 @@ public class Refractor implements GameEntity {
             // Refractor is neither taken nor destroyed, show refractor.
             renderer.drawRegion(this.refractor, this.x, this.y);
         } else if (this.taken && (this.mesgDuration < MESG_DELAY)) {
-            // Using emulogic, an imitation of the original NES font
-            BitmapFont nesFont = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"), Gdx.files.internal("data/emulogic.png"), false);
-            CharSequence mesg = "YOU GOT BLUE REFRACTOR";
             
             // Once refractor is taken, show mesg until destroyed
-            float posX = this.x - (int)((mesg.length() + 2) / 2 * 8);
+            float posX = this.x - (int)((Refractor.MESG.length() + 2) / 2 * 8);
             float posY = this.y + REFRACTOR_H + 16;
-            float width = (mesg.length() + 5) * 8;
+            float width = (Refractor.MESG.length() + 5) * 8;
             float height = 24;
             renderer.drawRect(ShapeType.Filled, BOX_COLOR, posX, posY, width, height);
             renderer.drawRect(ShapeType.Line, LINE_COLOR, posX, posY, width, height);
             
             // This centers the text above wherever the refractor is.
             // TODO Maybe make this a fixed coord, but I like it this way.
-            renderer.drawText(nesFont, mesg, this.x - (int)(mesg.length() / 2 * 8), this.y + REFRACTOR_H + 32);           
+            renderer.drawText(this.font, Refractor.MESG, this.x - (int)(Refractor.MESG.length() / 2 * 8), this.y + REFRACTOR_H + 32);           
         }
     }
 
@@ -108,7 +108,7 @@ public class Refractor implements GameEntity {
         // Originally this was going to have more logic, but it makes more sense
         // to put it in update().
         if (!this.taken) {
-            ITEM_GET_SFX.play();
+            itemGetSound.play();
             this.taken = true;
         }
     }

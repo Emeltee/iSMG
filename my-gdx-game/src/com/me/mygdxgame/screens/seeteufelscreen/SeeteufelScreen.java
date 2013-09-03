@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -83,6 +84,7 @@ public class SeeteufelScreen implements GameScreen {
     private Texture t_tiles2;
     private Texture t_player;
     private Texture t_seeteufel;
+    private BitmapFont font;
     private MegaPlayer.MegaPlayerResources playerResources = new MegaPlayer.MegaPlayerResources();
     private Sound explosion;
     private Sound splash;
@@ -90,6 +92,7 @@ public class SeeteufelScreen implements GameScreen {
     private Sound bombShoot;
     private Sound doorOpen;
     private Sound doorClose;
+    private Sound itemGet;
     private Music music1;
     private Music music2;
     
@@ -142,7 +145,9 @@ public class SeeteufelScreen implements GameScreen {
         this.music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_1.ogg"));
         this.music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_2.ogg"));
         this.doorOpen = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
-        this.doorClose = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg")); 
+        this.doorClose = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg"));
+        this.itemGet = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
+        this.font = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"), Gdx.files.internal("data/emulogic.png"), false);
         
         // Play all sounds once to force them to be loaded, since the HTML
         // version does some kind of lazy loading.
@@ -205,6 +210,8 @@ public class SeeteufelScreen implements GameScreen {
         this.music2.dispose();
         this.doorOpen.dispose();
         this.doorClose.dispose(); 
+        this.itemGet.dispose();
+        this.font.dispose();
     }
 
     @Override
@@ -253,7 +260,7 @@ public class SeeteufelScreen implements GameScreen {
         this.playerHealth = new MegaHealthBar(this.t_tiles2,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.x,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
-        this.refractor = new Refractor(this.t_tiles1,
+        this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,
                 (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
                         * 1.5 - Refractor.REFRACTOR_W / 2),
                 (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM
@@ -350,9 +357,9 @@ public class SeeteufelScreen implements GameScreen {
             }
             
             // Exit the room. Do setup for room 2.
-            if (room1Exit.getHitBox().overlaps(box)) {
-                if (room1Exit.getDoorState() == Door.DoorState.OPEN
-                    && Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            if (room1Exit.getDoorState() == Door.DoorState.OPEN) {
+                if (room1Exit.getHitBox().overlaps(box) &&
+                        Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                     this.currentMap = map2;
                     this.setupMap2();
                 }
