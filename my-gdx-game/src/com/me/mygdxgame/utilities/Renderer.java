@@ -3,7 +3,9 @@ package com.me.mygdxgame.utilities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -53,21 +55,34 @@ public class Renderer {
         } else {
             Renderer.shapeRenderer.flush();
         }
+        
+        System.out.println(Renderer.spriteBatch.maxSpritesInBatch);
     }
     
     public void drawRect(ShapeType shapeType, Color color, float x, float y, float width, float height) {
-        
         this.prepareShapeRendererState(shapeType);
-        
         Renderer.shapeRenderer.setColor(color);
         Renderer.shapeRenderer.rect(x, y, width, height);
     }
     
-    public void drawRegion(TextureRegion region, float x, float y) {
-        
+    public void drawSprite(Sprite sprite) {
         this.prepareSpriteBatchState();
-        
-        spriteBatch.draw(region, x, y);
+        sprite.draw(Renderer.spriteBatch);
+    }
+    
+    public void drawTexture(Texture texture, float x, float y) {
+        this.prepareSpriteBatchState();
+        Renderer.spriteBatch.draw(texture, x, y);
+    }
+    
+    public void drawTexture(Texture texture, float x, float y, float width, float height) {
+        this.prepareSpriteBatchState();
+        Renderer.spriteBatch.draw(texture, x, y, width, height);
+    }
+    
+    public void drawRegion(TextureRegion region, float x, float y) {
+        this.prepareSpriteBatchState();
+        Renderer.spriteBatch.draw(region, x, y);
     }
 
     public void drawRegion(TextureRegion region, float x, float y, Color tint,
@@ -83,9 +98,7 @@ public class Renderer {
     }
     
     public void drawText(BitmapFont font, CharSequence mesg, float x, float y) {
-        
         this.prepareSpriteBatchState();
-        
         font.draw(Renderer.spriteBatch, mesg, x, y);
     }
     
