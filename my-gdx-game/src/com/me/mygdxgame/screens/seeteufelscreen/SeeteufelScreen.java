@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -119,6 +120,8 @@ public class SeeteufelScreen implements GameScreen {
     private Rectangle map2Ceiling = null;
     
     private boolean isMap2Flooding = false;
+    private boolean displayFps = false;
+    private boolean displayFpsButtonTrigger = false;
     
     public SeeteufelScreen() {
         this.map1 = new FirstMap();
@@ -226,6 +229,19 @@ public class SeeteufelScreen implements GameScreen {
             this.updateMap3(deltaTime, difficulty, perspCam, orthoCam);
         }
         
+        // Draw fps for testing, if enabled.
+        if (!Gdx.input.isKeyPressed(Keys.TAB)) {
+            this.displayFpsButtonTrigger = true;
+        }
+        if (this.displayFpsButtonTrigger && Gdx.input.isKeyPressed(Keys.TAB)) {
+            this.displayFps = !this.displayFps;
+            this.displayFpsButtonTrigger = false;
+        }
+        if (this.displayFps) {
+           this.hudRenderer.drawText(this.font, Integer.toString(Gdx.graphics.getFramesPerSecond()), 0, 0);
+        }
+        
+        // Flush renderer.
         Renderer.flush();
         
         // Check if you've lost.
