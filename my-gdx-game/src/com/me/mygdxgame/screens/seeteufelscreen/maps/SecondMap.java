@@ -1,29 +1,27 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class SecondMap extends GameMap {
-
-    private static final String TEXTURE_PATH = "img/seeTiles1.png";
+    
     private Texture spriteSheet;
     private boolean resourcesLoaded;
-    private int animationFrame;
     private int height;
     
-    private TextureRegion rockSprite;
-    private TextureRegion wallSprite;
-    private TextureRegion smallMazeSprite;
-    private TextureRegion largeMazeSprite;
-    private TextureRegion idkSprite;
-
-    private TextureRegion[] borderFrames;    
+    private Texture rockTex;
+    private Sprite rockSprite;
+    private Texture wallTex;
+    private Sprite wallSprite;
+    private Texture smallMazeTex;
+    private Sprite smallMazeSprite;;
 
     public static final int GROUND_DIM = 45; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
@@ -35,29 +33,40 @@ public class SecondMap extends GameMap {
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
     
-    public SecondMap(int height) {
-        this.height=height;
+    public SecondMap(Texture spriteSheet, int height) {
+        this.spriteSheet = spriteSheet;
+        this.height = height;
     }
     
     @Override
     public void load() {
         if (!this.resourcesLoaded) {
-            this.spriteSheet = new Texture(Gdx.files.internal(TEXTURE_PATH));
-            this.spriteSheet.setFilter(TextureFilter.Linear, TextureFilter.Nearest);
-            this.rockSprite = new TextureRegion(spriteSheet, 0, 57, GROUND_DIM, GROUND_DIM);
-            this.wallSprite = new TextureRegion(spriteSheet, 210, 17, GROUND_DIM, GROUND_DIM);
-            this.smallMazeSprite = new TextureRegion(spriteSheet, 165, 17, GROUND_DIM, GROUND_DIM);
-            this.largeMazeSprite = new TextureRegion(spriteSheet, 45, 0, 120, 120);
-            this.idkSprite = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
             
-            this.borderFrames = new TextureRegion[5];
-            this.borderFrames[0] = new TextureRegion(spriteSheet, 35, 3, 10, 10);
-            this.borderFrames[1] = new TextureRegion(spriteSheet, 35, 14, 10, 10);
-            this.borderFrames[2] = new TextureRegion(spriteSheet, 35, 25, 10, 10);
-            this.borderFrames[3] = new TextureRegion(spriteSheet, 35, 36, 10, 10);
-            this.borderFrames[4] = new TextureRegion(spriteSheet, 35, 47, 10, 10);
+            Pixmap rockMap = new Pixmap(GROUND_DIM, GROUND_DIM, Format.RGBA8888);
+            this.spriteSheet.getTextureData().prepare();
+            rockMap.drawPixmap(this.spriteSheet.getTextureData().consumePixmap(), 0, 0, 0, 57, GROUND_DIM, GROUND_DIM);
+            this.rockTex = new Texture(rockMap);
+            this.rockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+            this.rockSprite = new Sprite(this.rockTex);
+            this.rockSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_WIDTH * GROUND_DIM, GROUND_DIM);
+            this.rockSprite.setU2(GROUND_WIDTH);
             
-            this.animationFrame = 0;
+            Pixmap wallMap = new Pixmap(GROUND_DIM, GROUND_DIM, Format.RGBA8888);
+            this.spriteSheet.getTextureData().prepare();
+            wallMap.drawPixmap(this.spriteSheet.getTextureData().consumePixmap(), 0, 0, 210, 17, GROUND_DIM, GROUND_DIM);
+            this.wallTex = new Texture(wallMap);
+            this.wallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+            this.wallSprite = new Sprite(this.wallTex);
+            
+            Pixmap smallMazeMap = new Pixmap(GROUND_DIM, GROUND_DIM, Format.RGBA8888);
+            this.spriteSheet.getTextureData().prepare();
+            smallMazeMap.drawPixmap(this.spriteSheet.getTextureData().consumePixmap(), 0, 0, 165, 17, GROUND_DIM, GROUND_DIM);
+            this.smallMazeTex = new Texture(smallMazeMap);
+            this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+            this.smallMazeSprite = new Sprite(this.smallMazeTex);
+            this.smallMazeSprite.setBounds(GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y, (GROUND_WIDTH - 2) * GROUND_DIM, (this.height - 1) * GROUND_DIM);
+            this.smallMazeSprite.setU2(GROUND_WIDTH - 2);
+            this.smallMazeSprite.setV2(this.height - 1);
 
             this.resourcesLoaded = true;
         }
@@ -67,7 +76,9 @@ public class SecondMap extends GameMap {
     @Override
     public void unload() {
         if (this.resourcesLoaded) {
-            this.spriteSheet.dispose();
+            this.rockTex.dispose();
+            this.smallMazeTex.dispose();
+            this.wallTex.dispose();
             this.resourcesLoaded = false;
         }
     }
@@ -92,15 +103,29 @@ public class SecondMap extends GameMap {
     @Override
     public void render(float deltaTime, Renderer renderer) {
 
-        tileXY(renderer, this.smallMazeSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH, height);
-        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, this.height);
-        tileY(renderer, this.wallSprite, GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, this.height);
-        tileX(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH);
-        tileX(renderer, this.rockSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * height, GROUND_WIDTH);
-        
-        // Update animation frame
-        animationFrame = (animationFrame < 60) ? animationFrame + 1 : 0;
-        
+        // Background.
+        renderer.drawSprite(this.smallMazeSprite);
+
+        // Floor.
+        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM);
+        this.wallSprite.setU2(GROUND_WIDTH);
+        this.wallSprite.setV2(1);
+        renderer.drawSprite(this.wallSprite);
+
+        // Walls.
+        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM, GROUND_DIM, (this.height - 1) * GROUND_DIM);
+        this.wallSprite.setU2(1);
+        this.wallSprite.setV2(this.height - 1);
+        renderer.drawSprite(this.wallSprite);
+        this.wallSprite.setBounds(GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH - 1), GROUND_ORIGIN_Y + GROUND_DIM, GROUND_DIM, (this.height - 1) * GROUND_DIM);
+        renderer.drawSprite(this.wallSprite);
+
+        // Ceiling.
+        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * this.height, GROUND_DIM * GROUND_WIDTH, GROUND_DIM);
+        this.wallSprite.setU2(GROUND_WIDTH);
+        this.wallSprite.setV2(1);
+        renderer.drawSprite(this.wallSprite);
+
         // Debug
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);

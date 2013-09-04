@@ -124,10 +124,9 @@ public class SeeteufelScreen implements GameScreen {
     private boolean displayFpsButtonTrigger = false;
     
     public SeeteufelScreen() {
-        this.map1 = new FirstMap();
-        this.map2 = new SecondMap(SeeteufelScreen.MAP2_HEIGHT);
+        this.map1 = new FirstMap(null);
+        this.map2 = new SecondMap(null, SeeteufelScreen.MAP2_HEIGHT);
         this.map3 = new ThirdMap();
-        this.currentMap = this.map1;
         this.hudRenderer = new Renderer(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).combined);
     }
     
@@ -184,8 +183,15 @@ public class SeeteufelScreen implements GameScreen {
         music2.stop();
         
         // Load maps.
+        this.map1.unload();
+        this.map1 = new FirstMap(this.t_tiles1);
         this.map1.load();
+        this.currentMap = this.map1;
+        
+        this.map2.unload();
+        this.map2 = new SecondMap(this.t_tiles1, SeeteufelScreen.MAP2_HEIGHT);
         this.map2.load();
+        
         this.map3.load();
     }
 
@@ -230,10 +236,10 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Draw fps for testing, if enabled.
-        if (!Gdx.input.isKeyPressed(Keys.TAB)) {
+        if (!Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
             this.displayFpsButtonTrigger = true;
         }
-        if (this.displayFpsButtonTrigger && Gdx.input.isKeyPressed(Keys.TAB)) {
+        if (this.displayFpsButtonTrigger && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
             this.displayFps = !this.displayFps;
             this.displayFpsButtonTrigger = false;
         }
