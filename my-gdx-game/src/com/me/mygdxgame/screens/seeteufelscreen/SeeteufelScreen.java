@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Door.DoorState;
+import com.me.mygdxgame.entities.InfinityWaterfall;
 import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
@@ -86,6 +88,8 @@ public class SeeteufelScreen implements GameScreen {
     private Texture t_tiles2;
     private Texture t_player;
     private Texture t_seeteufel;
+    private Texture waterfall;
+    private Texture waterfallEnd;
     private BitmapFont font;
     private MegaPlayer.MegaPlayerResources playerResources = new MegaPlayer.MegaPlayerResources();
     private MapTiles mapTiles = new MapTiles();
@@ -114,6 +118,7 @@ public class SeeteufelScreen implements GameScreen {
     private WatchNadia bonus;
     private SeeteufelFront seeFront;
     private Renderer hudRenderer;
+    private InfinityWaterfall room2Fall;
     
     private LinkedList<Rectangle> obstacles = new LinkedList<Rectangle>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
@@ -129,7 +134,6 @@ public class SeeteufelScreen implements GameScreen {
     public static class MapTiles {
         public Texture rockTex = null;
         public Texture wallTex = null;
-        public Texture waterfallTex = null;
         public Texture smallMazeTex = null;
         public Texture stairTex = null;
         public Texture pillarTex = null;
@@ -144,9 +148,6 @@ public class SeeteufelScreen implements GameScreen {
                 
                 this.wallTex = new Texture("img/tile2.png");
                 this.wallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-                
-                this.waterfallTex = new Texture("img/waterfall1.png");
-                this.waterfallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
                 
                 this.smallMazeTex = new Texture("img/tile4.png");
                 this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
@@ -190,6 +191,10 @@ public class SeeteufelScreen implements GameScreen {
         this.t_tiles2 = new Texture("img/seeTiles2.png");
         this.t_player = new Texture("img/mmd.png");
         this.t_seeteufel = new Texture("img/seeteufel.png");
+        this.waterfall = new Texture("img/waterfall1.png");
+        this.waterfall.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+        this.waterfall.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        this.waterfallEnd = new Texture("img/waterfallEnd.png");
         
         this.playerResources.load();
         
@@ -251,6 +256,7 @@ public class SeeteufelScreen implements GameScreen {
         this.t_tiles2.dispose();
         this.t_player.dispose();
         this.t_seeteufel.dispose();
+        this.waterfall.dispose();
         
         // Unload other recs.
         this.playerResources.unload();
@@ -484,6 +490,11 @@ public class SeeteufelScreen implements GameScreen {
         this.room2Exit.setIsOpen(DoorState.OPEN, false);
         this.entities.add(this.room2Entrance);
         this.entities.add(this.room2Exit);
+        
+        // Create decorative waterfall.
+        this.room2Fall = new InfinityWaterfall(
+                this.waterfall, this.waterfallEnd, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT, 
+                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_WATER_Y));
     }
     
     /** Add player dynamic obstacles. Also generates Seeteufel target list(s).*/
@@ -663,6 +674,11 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw the map
         this.currentMap.render(deltaTime, renderer);
+        
+        // Draw falls.
+        this.room2Fall.update(deltaTime);
+        this.room2Fall.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY);
+        this.room2Fall.draw(renderer);
         
         // Update Seeteufel only after water starts rising.
         if (this.isMap2Flooding) {
