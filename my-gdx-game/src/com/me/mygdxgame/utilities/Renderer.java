@@ -55,8 +55,6 @@ public class Renderer {
         } else {
             Renderer.shapeRenderer.flush();
         }
-        
-        System.out.println(Renderer.spriteBatch.maxSpritesInBatch);
     }
     
     public void drawRect(ShapeType shapeType, Color color, float x, float y, float width, float height) {

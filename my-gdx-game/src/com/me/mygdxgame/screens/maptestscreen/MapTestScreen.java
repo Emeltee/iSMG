@@ -32,12 +32,10 @@ public class MapTestScreen implements GameScreen {
 
     @Override
     public void load() {
-        this.map.load();
     }
 
     @Override
     public void unload() {
-        this.map.unload();
     }
 
     @Override

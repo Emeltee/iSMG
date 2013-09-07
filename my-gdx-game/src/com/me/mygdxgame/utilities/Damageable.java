@@ -1,12 +1,11 @@
 package com.me.mygdxgame.utilities;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
  * Interface for objects that have some health value.
  */
-public interface Damageable {
+public interface Damageable extends GameEntity {
 
     /**
      * Inflict some amount of damage on this object. May be negative; how this
@@ -41,12 +40,4 @@ public interface Damageable {
      * @return Object's max health.
      */
     public int getMaxHealth();
-    
-    /**
-     * Retrieves this objects vulnerable areas.
-     * 
-     * @return An array of Rectangles indicating areas attacks may affect. May
-     *         be empty, but should not be null.
-     */
-    public Rectangle[] getHitArea();
 }

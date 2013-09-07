@@ -19,8 +19,8 @@ public class SeeteufelFront implements GameEntity {
     public static final int BASE_WIDTH = 98;
     public static final int TARGET_Y_OFFSET = 20;
     
-    private static final int FRONT_ARM_FRAMERATE = 30;
-    private static final int BACK_ARM_FRAMERATE = 15;
+    private static final int FRONT_ARM_FRAMERATE = 15;
+    private static final int BACK_ARM_FRAMERATE = 7;
     private static final int GRAVITY_FACTOR = 400;
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
@@ -49,6 +49,8 @@ public class SeeteufelFront implements GameEntity {
     
     private float attackDelayTimer = 0;
     private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
+    
+    private Rectangle[] hitArea = new Rectangle[0];
     
     public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet,
             Sound explosion, Sound splash, Sound shoot, Vector3 position) {
@@ -190,5 +192,16 @@ public class SeeteufelFront implements GameEntity {
             this.createdEntities.clear();
             return entities;
         }
+    }
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.hitArea;
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 }

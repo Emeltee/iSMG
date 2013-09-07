@@ -147,4 +147,15 @@ public class BusterShot implements GameEntity {
         throw new NoSuchElementException();
     }
 
+    @Override
+    public Rectangle[] getHitArea() {
+        return new Rectangle[] {this.hitBox};
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

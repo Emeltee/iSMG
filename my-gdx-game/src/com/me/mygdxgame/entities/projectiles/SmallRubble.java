@@ -15,6 +15,7 @@ public class SmallRubble extends Rubble {
     public static final int RUBBLE_H = 15;
     
     public SmallRubble(Texture spriteSheet, Vector3 position, Vector3 velocity, int damage, Rectangle[] obstacles, Damageable[] targets) {
+        super((int)position.x, (int)position.y, RUBBLE_W, RUBBLE_H);
         this.rubble = new TextureRegion(spriteSheet, RUBBLE_X, RUBBLE_Y, RUBBLE_W, RUBBLE_H);
         this.y = RUBBLE_Y;
         this.x = RUBBLE_X;
@@ -26,5 +27,11 @@ public class SmallRubble extends Rubble {
         this.targets = targets;
         this.damage = damage;
         this.status = EntityState.Running;
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 }

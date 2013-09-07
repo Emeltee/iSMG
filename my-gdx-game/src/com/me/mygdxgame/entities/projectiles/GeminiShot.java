@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
@@ -17,6 +16,9 @@ public class GeminiShot extends BusterShot {
     public static final int GEMINI_W = 7;
     public static final int GEMINI_H = 5;
     public static final float MAX_MOVEMEMT = Math.min(GEMINI_W, GEMINI_H);
+    
+    private static final int MAX_SHOTS = 6;
+    private static int currentShots = 0;
 
     public static final int MAX_DEFLECTS = 6;
 
@@ -31,10 +33,15 @@ public class GeminiShot extends BusterShot {
     public GeminiShot(Texture spriteSheet, Sound missSound, Vector3 position,
             int speed, BusterShot.ShotDirection dir, int power, float range,
             Collection<Rectangle> obstacles, Collection<Damageable> targets) {
+        
         super(spriteSheet, missSound, position, speed, dir, 2 * power,
-                5 * range, obstacles, targets);
-        super.bullet = new TextureRegion(spriteSheet, GEMINI_X, GEMINI_Y,
-                GEMINI_W, GEMINI_H);
+                3 * range, obstacles, targets);
+        
+        GeminiShot.currentShots++;
+        if (GeminiShot.currentShots >= GeminiShot.MAX_SHOTS) {
+            this.range = 0;
+        }
+        
         this.isDeflected = false;
         this.numDeflects = 0;
     }
@@ -45,10 +52,12 @@ public class GeminiShot extends BusterShot {
         if (this.status == EntityState.Running) {
             
             //Calculate distance to travel and check if range has been traveled.
-            float toTravel = Math.min(this.speed * deltaTime, GeminiShot.MAX_MOVEMEMT);
+            //float toTravel = Math.min(this.speed * deltaTime, GeminiShot.MAX_MOVEMEMT);
+            float toTravel = this.speed * deltaTime;
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
                 this.status = EntityState.Destroyed;
+                GeminiShot.currentShots--;
                 this.missSound.play();
                 return;
             }
@@ -88,6 +97,7 @@ public class GeminiShot extends BusterShot {
                     if (hitBox.overlaps(this.hitBox)) {
                         target.damage(this.power);
                         this.status = EntityState.Destroyed;
+                        GeminiShot.currentShots--;
                         return;
                     }
                 }
@@ -143,5 +153,10 @@ public class GeminiShot extends BusterShot {
                 return;
             }
         }
+    }
+    
+    @Override
+    public void destroy() {
+        GeminiShot.currentShots--;
     }
 }

@@ -31,20 +31,20 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float MAX_BUSTER_COOLDOWN = 0.3f;
     private static final float MAX_FLINCH_TIME = 0.4f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
-    private static final float MAX_SPEED = 4.0f;
-    private static final float MAX_FALL_SPEED = 9.0f;
-    private static final float MAX_UNDERWATER_FALL_SPEED = 3.0f;
-    private static final float MAX_JUMP_THRUST_TIME = 0.25f;
+    private static final float MAX_SPEED = 8.0f;
+    private static final float MAX_FALL_SPEED = 18.0f;
+    private static final float MAX_UNDERWATER_FALL_SPEED = 6.0f;
+    private static final float MAX_JUMP_THRUST_TIME = 0.225f;
     private static final float ACCELERATION = 80.0f;
-    private static final float DECELERATION = 40.0f;
-    private static final short RUN_FRAMERATE = 10;
+    private static final float DECELERATION = 60.0f;
+    private static final short RUN_FRAMERATE = 5;
     private static final short MAX_RUN_FRAMES = 4;
-    private static int BASE_SHOT_SPEED = 300;
-    private static int BASE_SHOT_POWER = 1;
-    private static float SHOT_OFFSET_Y = 16;
-    private static float SHOT_OFFSET_X = 16;
-    private static float BASE_SHOT_RANGE = 300;
-    private static float WATER_MOVEMENT_FACTOR = 1.5f;
+    private static final int BASE_SHOT_SPEED = 300;
+    private static final int BASE_SHOT_POWER = 1;
+    private static final float SHOT_OFFSET_Y = 16;
+    private static final float SHOT_OFFSET_X = 16;
+    private static final float BASE_SHOT_RANGE = 300;
+    private static final float WATER_MOVEMENT_FACTOR = 1.5f;
     
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
@@ -252,7 +252,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     public Vector3 getPosition() {
-        return this.position;
+        return new Vector3(this.position.x, this.position.y, this.position.z);
     }
     
     public void setIsUnderwater(boolean isUnderwater) {
@@ -622,11 +622,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         // If already jumping, ascend upwards for as long as indicated by the
         // timer.
         if (this.isJumping) {
-            this.jumpThrustTimer += deltaTime;
             if (this.jumpThrustTimer < MegaPlayer.MAX_JUMP_THRUST_TIME) {
                 this.velocity.y = Math.max(this.velocity.y
                         + (MegaPlayer.ACCELERATION * deltaTime),
                         MegaPlayer.MAX_SPEED);
+                this.jumpThrustTimer += deltaTime;
             } else {
                 this.isJumping = false;
                 this.jumpThrustTimer = 0;
@@ -707,5 +707,11 @@ public class MegaPlayer implements GameEntity, Damageable {
                         -MegaPlayer.MAX_FALL_SPEED);
             }
         }
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -33,8 +33,12 @@ public class Refractor implements GameEntity {
     private float mesgDuration; // 
     private Sound itemGetSound = null;
     private BitmapFont font = null;
+    private Rectangle hitbox = null;
+    private Rectangle[] allHitAreas = null;
     
     public Refractor(Texture spriteSheet, Sound getSound, BitmapFont font, int x, int y) {
+        this.hitbox = new Rectangle(this.x, this.y, REFRACTOR_W, REFRACTOR_H);
+        this.allHitAreas = new Rectangle[] {this.hitbox};
         this.itemGetSound = getSound;
         this.font = font;
         this.refractor = new TextureRegion(spriteSheet, REFRACTOR_X, REFRACTOR_Y, REFRACTOR_W, REFRACTOR_H);
@@ -108,9 +112,20 @@ public class Refractor implements GameEntity {
         // Originally this was going to have more logic, but it makes more sense
         // to put it in update().
         if (!this.taken) {
-            itemGetSound.play();
+            itemGetSound.play(0.5f);
             this.taken = true;
         }
+    }
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.allHitAreas;
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

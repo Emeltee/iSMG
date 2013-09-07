@@ -21,21 +21,6 @@ public abstract class GameMap {
     /** A semi-transparent red GameMaps can pass to drawObstacles.*/
     public static final Color DEFAULT_OBSTACLE_COLOR = new Color(1.0f, 0.0f, 0.0f, 0.5f);
 
-    /**
-     * Loads all resources (textures and sounds) specific to this game. Does
-     * nothing if resources have already been loaded. TODO Probably a good idea
-     * to pull out common resources and place them into some separate pool to
-     * avoid having multiple copies of resources in memory at once.
-     */
-    public abstract void load();
-
-    /**
-     * Unloads all resources (textures and sounds) that have been previously
-     * loaded by this game through load(). Does nothing if no resources are
-     * currently loaded.
-     */
-    public abstract void unload();
-
     /** Retrieves the initial position of the player.
      * 
      * @return A Vector3 containing the desired initial player position.

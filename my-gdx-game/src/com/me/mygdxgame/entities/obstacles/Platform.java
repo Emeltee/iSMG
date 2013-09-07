@@ -125,4 +125,10 @@ public class Platform implements GameEntity, Damageable {
     public void applyForce(Vector3 force) {
         // Do nothing.
     }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
+    }
 }

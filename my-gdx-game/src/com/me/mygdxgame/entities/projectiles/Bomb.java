@@ -22,7 +22,7 @@ public class Bomb implements GameEntity {
     public static final int BOMB_W = 16;
     public static final int BOMB_H = 16;
 
-    private static final float GRAVITY = 30; 
+    private static final float GRAVITY = 30;
     
     /** TextureRegion representing the idle frame. */
     private TextureRegion bomb;
@@ -162,5 +162,18 @@ public class Bomb implements GameEntity {
         
         // Set object state.
         this.status = EntityState.Destroyed;
+    }
+
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return new Rectangle[] {this.hitBox};
+    }
+
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 }

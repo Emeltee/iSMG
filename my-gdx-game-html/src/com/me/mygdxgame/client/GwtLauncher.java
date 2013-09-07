@@ -8,7 +8,9 @@ import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 public class GwtLauncher extends GwtApplication {
 	@Override
 	public GwtApplicationConfiguration getConfig () {
-		GwtApplicationConfiguration cfg = new GwtApplicationConfiguration(500, 500);
+		GwtApplicationConfiguration cfg = new GwtApplicationConfiguration(MyGdxGame.SCREEN_WIDTH, MyGdxGame.SCREEN_HEIGHT);
+		cfg.fps = 30;
+		
 		return cfg;
 	}
 
