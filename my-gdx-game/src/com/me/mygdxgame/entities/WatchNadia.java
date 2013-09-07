@@ -83,4 +83,10 @@ public class WatchNadia implements Damageable, GameEntity {
         // Do nothing.
     }
 
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

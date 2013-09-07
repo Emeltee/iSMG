@@ -49,17 +49,6 @@ public class EntityTestMap extends GameMap {
         obstacles[3].width = thickness;
         obstacles[3].height = height;
     }
-    
-    
-    @Override
-    public void load() {
-        // N/A
-    }
-
-    @Override
-    public void unload() {
-        // N/A
-    }
 
     @Override
     public Vector3 getInitialPosition() {

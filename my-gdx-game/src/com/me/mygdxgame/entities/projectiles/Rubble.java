@@ -25,7 +25,10 @@ public abstract class Rubble implements GameEntity {
     /** List of damageable objects stopping rubble */
     protected Damageable [] targets;
     /** Time to remain active before automatically being destroyed.*/
-    protected float lifetime = 10.0f;
+    protected float lifetime = 2.0f;
+    
+    protected Rectangle hitbox = new Rectangle(0, 0, 0, 0);
+    protected Rectangle[] area = new Rectangle[] {this.hitbox};
     
     /** Factor for creating descending motion of rubble */
     protected static final int GRAVITY = 800;
@@ -38,7 +41,11 @@ public abstract class Rubble implements GameEntity {
     /** Texture-control variables (can't be constants because of superclass/subclass relationship) */
     protected int x, y, w, h;
     /** Damage factor for falling rubble */
-    protected int damage;    
+    protected int damage;
+    
+    public Rubble(int x, int y, int width, int height) {
+        this.hitbox.set(x, y, width, height);
+    }
     
     @Override
     public void update(float deltaTime) {
@@ -58,6 +65,7 @@ public abstract class Rubble implements GameEntity {
                     this.velocity.x += Rubble.INERTIA * deltaTime;
                 }
             }
+            this.hitbox.setPosition(this.position.x, this.position.y);
             
             // Destroy if lifetime has been reached.
             this.lifetime -= deltaTime;
@@ -107,7 +115,12 @@ public abstract class Rubble implements GameEntity {
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        return null;
+        throw new NoSuchElementException();
+    }
+    
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.area;
     }
 
 }

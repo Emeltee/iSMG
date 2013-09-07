@@ -44,6 +44,7 @@ public class Rocket implements GameEntity {
     private float prevZ;
     /** Hit box. */
     private Rectangle hitBox = null;
+    private Rectangle[] allHitAreas = null;
     /** Damage done to targets. */
     private int power = 0;
     /** Force to apply upon hitting a target. */
@@ -66,6 +67,7 @@ public class Rocket implements GameEntity {
         this.power = power;
         this.knockback = knockback;
         this.hitBox = new Rectangle(position.x, position.y, Rocket.ROCKET_W, Rocket.ROCKET_H);
+        this.allHitAreas = new Rectangle[] {this.hitBox};
     }
     
     
@@ -161,5 +163,18 @@ public class Rocket implements GameEntity {
         
         // Set object state.
         this.status = EntityState.Destroyed;
+    }
+
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.allHitAreas;
+    }
+
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 }

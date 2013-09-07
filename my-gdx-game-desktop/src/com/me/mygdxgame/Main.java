@@ -10,8 +10,8 @@ public class Main {
         cfg.useGL20 = true;
         cfg.width = MyGdxGame.SCREEN_WIDTH;
         cfg.height = MyGdxGame.SCREEN_HEIGHT;
-        cfg.foregroundFPS = 60;
-        cfg.backgroundFPS = 60;
+        cfg.foregroundFPS = 30;
+        cfg.backgroundFPS = -1;
         cfg.resizable = false;
 
         new LwjglApplication(new MyGdxGame(), cfg);

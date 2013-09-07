@@ -2,6 +2,8 @@ package com.me.mygdxgame.utilities;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.math.Rectangle;
+
 /**
  * Interface to be followed by dynamic entities managed by {@link GameScreen}.
  * Allows for a uniform way to access some necessary state data, and for
@@ -64,6 +66,25 @@ public interface GameEntity extends Updatable {
      *         getCreatedEntities, false otherwise.
      */
     public boolean hasCreatedEntities();
+    
+    /**
+     * Retrieves this objects bounding boxes.
+     * 
+     * @return An array of Rectangles indicating the object's effective area(s).
+     *         May be empty, but should not be null.
+     */
+    public Rectangle[] getHitArea();
+    
+    /**
+     * Called when the screen would like to remove an entity manually. This
+     * method gives the entity an opportunity to finish any outstanding work it
+     * may need to do.
+     * 
+     * This method is called at the discretion of the screen, usually in
+     * special cases. Entity logic should therefore not depend upon this method
+     * being called by the screen.
+     */
+    public void destroy();
     
     /**
      * Retrieves any new GameEntities created by this GameEntity which have yet

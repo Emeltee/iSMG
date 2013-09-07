@@ -1,7 +1,7 @@
 package com.me.mygdxgame.screens.seeteufelscreen;
 
-import java.util.LinkedList;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
@@ -20,11 +21,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.Door;
+import com.me.mygdxgame.entities.Door.DoorState;
 import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.WatchNadia;
-import com.me.mygdxgame.entities.Door.DoorState;
 import com.me.mygdxgame.entities.obstacles.Platform;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
@@ -45,14 +46,14 @@ public class SeeteufelScreen implements GameScreen {
     
     // Edge constants, for use only in 2D
     private static final int SCREEN_ORIGIN = 0;    
-    private static final int SCREEN_TOP = MyGdxGame.currentGame.SCREEN_HEIGHT / 2;
-    private static final int SCREEN_BOTTOM = -MyGdxGame.currentGame.SCREEN_HEIGHT / 2;
-    private static final int SCREEN_LEFT = -MyGdxGame.currentGame.SCREEN_WIDTH / 2;
-    private static final int SCREEN_RIGHT = MyGdxGame.currentGame.SCREEN_WIDTH / 2;
+    private static final int SCREEN_TOP = MyGdxGame.SCREEN_HEIGHT / 2;
+    private static final int SCREEN_BOTTOM = -MyGdxGame.SCREEN_HEIGHT / 2;
+    private static final int SCREEN_LEFT = -MyGdxGame.SCREEN_WIDTH / 2;
+    private static final int SCREEN_RIGHT = MyGdxGame.SCREEN_WIDTH / 2;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static final float MAP2_CAM_SPEED_1 = 0.6f;
-    private static final float MAP2_CAM_SPEED_2 = 0.9f;
+    private static final float MAP2_CAM_SPEED_1 = 36f;
+    private static final float MAP2_CAM_SPEED_2 = 54f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -87,6 +88,7 @@ public class SeeteufelScreen implements GameScreen {
     private Texture t_seeteufel;
     private BitmapFont font;
     private MegaPlayer.MegaPlayerResources playerResources = new MegaPlayer.MegaPlayerResources();
+    private MapTiles mapTiles = new MapTiles();
     private Sound explosion;
     private Sound splash;
     private Sound seeSplash;
@@ -123,16 +125,67 @@ public class SeeteufelScreen implements GameScreen {
     private boolean displayFps = false;
     private boolean displayFpsButtonTrigger = false;
     
+    /** Container class for textures used by the SeeteufelScreen maps.*/
+    public static class MapTiles {
+        public Texture rockTex = null;
+        public Texture wallTex = null;
+        public Texture waterfallTex = null;
+        public Texture smallMazeTex = null;
+        public Texture stairTex = null;
+        public Texture pillarTex = null;
+        
+        private boolean isLoaded = false;
+        
+        public void load() {
+            if (!this.isLoaded) {
+                
+                this.rockTex = new Texture("img/tile1.png");
+                this.rockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.wallTex = new Texture("img/tile2.png");
+                this.wallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.waterfallTex = new Texture("img/waterfall1.png");
+                this.waterfallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.smallMazeTex = new Texture("img/tile4.png");
+                this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.pillarTex = new Texture("img/tile3.png");
+                this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+
+                this.isLoaded = true;
+            }
+        }
+        
+        public void unload() {
+            if (this.isLoaded) {
+                
+                this.rockTex = new Texture("img/tile1.png");
+                this.rockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.wallTex = new Texture("img/tile2.png");
+                this.wallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.smallMazeTex = new Texture("img/tile4.png");
+                this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.pillarTex = new Texture("img/tile3.png");
+                this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+
+                this.isLoaded = false;
+            }
+        }
+    }
+    
     public SeeteufelScreen() {
-        this.map1 = new FirstMap(null);
-        this.map2 = new SecondMap(null, SeeteufelScreen.MAP2_HEIGHT);
-        this.map3 = new ThirdMap();
         this.hudRenderer = new Renderer(new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()).combined);
     }
     
     @Override
     public void load() {
         
+        this.mapTiles.load();
         this.t_tiles1 = new Texture("img/seeTiles1.png");
         this.t_tiles2 = new Texture("img/seeTiles2.png");
         this.t_player = new Texture("img/mmd.png");
@@ -183,30 +236,21 @@ public class SeeteufelScreen implements GameScreen {
         music2.stop();
         
         // Load maps.
-        this.map1.unload();
-        this.map1 = new FirstMap(this.t_tiles1);
-        this.map1.load();
+        this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
+        this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
+        this.map3 = new ThirdMap(this.t_tiles1, this.mapTiles);
+        
         this.currentMap = this.map1;
-        
-        this.map2.unload();
-        this.map2 = new SecondMap(this.t_tiles1, SeeteufelScreen.MAP2_HEIGHT);
-        this.map2.load();
-        
-        this.map3.load();
     }
 
     @Override
     public void unload() {
         // Dispose of Textures
+        this.mapTiles.unload();
         this.t_tiles1.dispose();
         this.t_tiles2.dispose();
         this.t_player.dispose();
         this.t_seeteufel.dispose();
-        
-        // Unload Maps
-        this.map1.unload();
-        this.map2.unload();
-        this.map3.unload();
         
         // Unload other recs.
         this.playerResources.unload();
@@ -262,7 +306,6 @@ public class SeeteufelScreen implements GameScreen {
     public void initialize() {
         // Reset values.
         this.currentMap = this.map1;
-        this.entities.clear();
         this.obstacles.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
@@ -273,6 +316,11 @@ public class SeeteufelScreen implements GameScreen {
         this.seeteufelTargets.clear();
         this.seeteufelTargetLevels.clear();
         this.map2CameraShake = 0;
+        
+        for (GameEntity e : this.entities) {
+            e.destroy();
+        }
+        this.entities.clear();
         
         // Create fresh instances of vital objects.
         this.player = new MegaPlayer(this.playerResources,
@@ -397,6 +445,9 @@ public class SeeteufelScreen implements GameScreen {
     
     private void setupMap2() {
         // Clear lists.
+        for (GameEntity e : this.entities) {
+            e.destroy();
+        }
         this.entities.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
@@ -579,11 +630,13 @@ public class SeeteufelScreen implements GameScreen {
             if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                 // Move cam faster once you reach a certain point.
                 if (this.map2Y > SeeteufelScreen.MAP2_CAM_MAX_Y / 2) {
-                    this.map2Y += SeeteufelScreen.MAP2_CAM_SPEED_2;
-                    this.map2WaterY += SeeteufelScreen.MAP2_CAM_SPEED_2;
+                    float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
+                    this.map2Y += movement;
+                    this.map2WaterY += movement;
                 } else {
-                    this.map2Y += SeeteufelScreen.MAP2_CAM_SPEED_1;
-                    this.map2WaterY += SeeteufelScreen.MAP2_CAM_SPEED_1;
+                    float movement = SeeteufelScreen.MAP2_CAM_SPEED_1 * deltaTime;
+                    this.map2Y += movement;
+                    this.map2WaterY += movement;
                 }
             }
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
@@ -599,7 +652,8 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Update moving barrier at the top of the screen.
-        this.map2Ceiling.setPosition(0, orthoCam.position.y + Gdx.graphics.getHeight() / 2);
+        float screenTop = orthoCam.position.y + Gdx.graphics.getHeight() / 2;
+        this.map2Ceiling.setPosition(0, screenTop);
         
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
@@ -642,9 +696,15 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Update and draw all generic entities.
+        float entityY = 0;
+        float screenBottom = orthoCam.position.y - (Gdx.graphics.getHeight() / 2) - Door.DOOR_H;
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
-            e.draw(renderer);            
+            entityY = e.getHitArea()[0].y;
+            if (entityY < screenTop && entityY > screenBottom) {
+                e.draw(renderer); 
+            }
+                
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
             }

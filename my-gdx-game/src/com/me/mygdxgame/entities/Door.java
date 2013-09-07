@@ -30,13 +30,20 @@ public class Door implements GameEntity {
     private DoorState doorStatus; // Door-specific status variable
     private Sound openSound;
     private Sound closeSound;
+    private Rectangle hitbox = null;
+    private Rectangle[] allHitAreas = null;
+    
+    
     
     public Door(Texture spriteSheet, Sound openSound, Sound closeSound, int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.hitbox = new Rectangle(x, y, DOOR_W, DOOR_H);
+        this.allHitAreas = new Rectangle[] {this.hitbox};
         this.openSound = openSound;
         this.closeSound = closeSound;
         this.doorShut = new TextureRegion(spriteSheet, DOOR_SHUT_X, DOOR_SHUT_Y, DOOR_W, DOOR_H);
         this.doorOpen = new TextureRegion(spriteSheet, DOOR_OPEN_X, DOOR_OPEN_Y, DOOR_W, DOOR_H);
-        this.x = x; this.y = y;
         doorStatus = DoorState.SHUT;
     }
     
@@ -68,8 +75,7 @@ public class Door implements GameEntity {
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NoSuchElementException();
     }
 
     /** Return the door-specific state value, because regular state is always Running. */
@@ -92,7 +98,18 @@ public class Door implements GameEntity {
     }
     
     public Rectangle getHitBox() {
-        return new Rectangle(this.x, this.y, DOOR_W, DOOR_H);
+        return this.hitbox;
+    }
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.allHitAreas;
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
     
     

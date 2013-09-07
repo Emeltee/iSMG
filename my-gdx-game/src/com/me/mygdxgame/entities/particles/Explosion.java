@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -20,7 +21,7 @@ public class Explosion implements GameEntity {
     private static final int SPLODE_Y = 209;
     private static final int SPLODE_DIM = 32;
     
-    private static final int FRAMERATE = 6;
+    private static final int FRAMERATE = 3;
     private static final int NUM_FRAMES = 4;
     
     private TextureRegion[] splode;
@@ -30,9 +31,14 @@ public class Explosion implements GameEntity {
     private int frame;
     private float spriteScale = 1.0f;
     
+    private Rectangle hitbox = null;
+    private Rectangle[] hitArea = null;
+    
     public Explosion(Texture spriteSheet, Vector3 position) {
         float centerOffset = Explosion.SPLODE_DIM / 2;
         this.position = new Vector3(position.x - centerOffset, position.y - centerOffset, position.x);
+        this.hitbox = new Rectangle(position.x, position.y, SPLODE_DIM, SPLODE_DIM);
+        this.hitArea = new Rectangle[] {this.hitbox};
         
         this.splode = new TextureRegion[4];
         this.splode[0] = new TextureRegion(spriteSheet, SPLODE_1_X, SPLODE_Y, SPLODE_DIM, SPLODE_DIM);
@@ -81,6 +87,17 @@ public class Explosion implements GameEntity {
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public Rectangle[] getHitArea() {
+        return this.hitArea;
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -2,6 +2,7 @@ package com.me.mygdxgame;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,13 +14,8 @@ import com.me.mygdxgame.utilities.GameState;
 /**
  * Some game. Uses libGDX.
  */
-public class MyGdxGame implements ApplicationListener {
-
-    /**
-     * Static link to the last created game, set upon create(). Probably bad
-     * practice, but convenient.
-     */
-    public static MyGdxGame currentGame = null;
+public class MyGdxGame implements ApplicationListener 
+{
     /** Width of the screen.*/
     public static final int SCREEN_WIDTH = 700;
     /** Height of the screen.*/
@@ -54,10 +50,9 @@ public class MyGdxGame implements ApplicationListener {
     @Override
     public void create() {
         try {
-            // Set static link to this Game for easy access to communal
-            // resources.
-            MyGdxGame.currentGame = this;
-
+            // Turn off logging due to HTML performance concerns.
+            Gdx.app.setLogLevel(Application.LOG_NONE);
+            
             // Load GameScreens and all resources.
             // TODO May want to load resources lazily, and pull out common
             // resources for storage in a public place. Also, can do this with
@@ -75,7 +70,7 @@ public class MyGdxGame implements ApplicationListener {
             this.currentGameScreen = this.games.get((int)(Math.random() * this.games.size()));
 
             // Set up Cameras.
-            Gdx.graphics.setDisplayMode(1, 1, true);
+            //Gdx.graphics.setDisplayMode(1, 1, true);
             this.orthoCamera = new OrthographicCamera(Gdx.graphics.getWidth(),
                     Gdx.graphics.getHeight());
             this.orthoCamera.update();
