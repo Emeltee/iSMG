@@ -14,11 +14,11 @@ public class SecondMap extends GameMap {
     private Sprite wallSprite;
     private Sprite smallMazeSprite;;
 
-    public static final int GROUND_DIM = 45; // Width of ground tile
+    public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
             GROUND_ORIGIN_Y = 0, // Origin Y point
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 15; // Columns of ground tile
+            GROUND_WIDTH = 20; // Columns of ground tile
     
     private Rectangle[] obstacles = null;
     private static final Vector3 INIT_POS = new Vector3(FirstMap.GROUND_DIM, FirstMap.GROUND_DIM / 2, 0); 

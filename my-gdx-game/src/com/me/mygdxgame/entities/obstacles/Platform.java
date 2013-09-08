@@ -19,8 +19,8 @@ public class Platform implements GameEntity, Damageable {
 
     public static final int PLATFORM_X = 0;
     public static final int PLATFORM_Y = 57;
-    public static final int PLATFORM_W = 45;
-    public static final int PLATFORM_H = 45;
+    public static final int PLATFORM_W = 32;
+    public static final int PLATFORM_H = 32;
     
     public static final int MAX_HEALTH = 1;
     
