@@ -54,8 +54,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final int SCREEN_RIGHT = MyGdxGame.SCREEN_WIDTH / 2;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static final float MAP2_CAM_SPEED_1 = 36f;
-    private static final float MAP2_CAM_SPEED_2 = 54f;
+    private static final float MAP2_CAM_SPEED_1 = 30f;
+    private static final float MAP2_CAM_SPEED_2 = 46f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -64,16 +64,18 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
     private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 5);
     private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
-    private static final int MAP2_ENEMY_ATTACK_OFFSET = (int) (SecondMap.GROUND_DIM * 2.5);
+    private static final float MAP2_CAM_INCREASE_SPEED_TIRGGER_Y = MAP2_PIXEL_HEIGHT - (MAP2_CAM_MAX_Y / 2);
+    private static final int MAP2_ENEMY_ATTACK_OFFSET = (SecondMap.GROUND_DIM * 3);
     private static final int MAP2_PLAYER_DROWN_OFFSET = MegaPlayer.HITBOX_HEIGHT * 2;
     private static final float MAP2_INITIAL_CAM_Y = -SCREEN_BOTTOM;
     private static final float MAP2_INITIAL_WATER_Y = MAP2_INITIAL_CAM_Y - 75;
     private static final int MAP2_CAMERA_SHAKE = 15;
     private static final float MAP2_CAMERA_SHAKE_FALLOFF = 0.5f;
     private static final float MAP2_STAIR_STEP_HEIGHT = 0.5f;
-    private static final float MAP2_STAIR_FLIGHT_HEIGHT = 4;
+    private static final float MAP2_STAIR_FLIGHT_HEIGHT = 4.5f;
     private static final int MAP2_STAIR_FLIGHT_X_OFFSET = 5;
-    private static final int MAP2_STAIR_STEP_LENGTH = 2;
+    private static final int MAP2_STAIR_STEP_LENGTH = 3;
+    private static final int MAP2_STAIR_IGNORE_LAST_TARGETS = 2;
     
     // State.
     private GameState state = GameState.Running;
@@ -248,7 +250,6 @@ public class SeeteufelScreen implements GameScreen {
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
         this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
         this.map3 = new ThirdMap(this.t_tiles1, this.mapTiles);
-        
         this.currentMap = this.map1;
     }
 
@@ -567,63 +568,65 @@ public class SeeteufelScreen implements GameScreen {
             }
         }
         
-        // Remove the second staircase (the first "real" one) from being
-        // targeted, to give the player a moment to adapt. Remove the very last
-        // stairs since they will only be partially finished.
+        // Remove the second and third staircases (the first two "real" one)
+        // from being targeted, to give the player a moment to adapt. Remove
+        // the very last stairs since they will only be partially finished.
         this.seeteufelTargets.removeLast();
+        this.seeteufelTargets.removeLast();
+        this.seeteufelTargetLevels.removeLast();
+        this.seeteufelTargetLevels.removeLast();
+        
         LinkedList<Damageable> topStairs = this.seeteufelTargets.removeFirst();
         for (Damageable d : topStairs) {
             this.obstacles.remove(d.getHitArea()[0]);
             this.entities.remove(d);
         }
-        //this.seeteufelTargets.peek().removeLast();
-        this.seeteufelTargetLevels.removeLast();
         this.seeteufelTargetLevels.removeFirst();
     }
     
     private int[] getSeeteufelTargets(Damageable[] currentTargets) {
         
-        int[] targets = new int[3];
-        
+        int[] targets = new int[4];
+
         // First target, random platform that isn't the first one on the
         // stairs (so as not to create a ledge that can't be jumped up).
-        // Also, don't destroy 3, as this results in a tricky jump given the
-        // way the room is currently laid out. May need to change this condition
-        // if the room size or platform generation algorithm changes.
-       targets[0] = Math.max(1, (int) (Math.random() * currentTargets.length));
-        while (targets[0] == 3) {
-            targets[0] = Math.max(1, (int) (Math.random() * currentTargets.length));
-        }
-        
+        // Also, leave the last MAP2_STAIR_IGNORE_LAST_TARGETS alone.
+        // Destroying them has little effect on difficulty, and the
+        // door goes there on the last flight.
+        targets[0] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+
         // Second target, random platform that isn't first target or the
-        // first block of a staircase or 3 or adjacent to the first block.
-        targets[1] = (int) (Math.random() * currentTargets.length);
-        while (targets[1] == 0 || targets[1] == 3 || Math.abs(targets[0] - targets[1]) < 2) {
-            targets[1] = (int) (Math.random() * currentTargets.length);
+        // first block of a staircase. Also, don't destroy both 8 and 9,
+        // as this results in an overly tricky jump.
+        do {
+            targets[1] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
         }
+        while (targets[1] == targets[0] ||
+                (targets[0] == 8 && targets[1] == 9) ||
+                (targets[0] == 9 && targets[1] == 8));
 
         // Third target. Random platform that isn't first or second
-        // target, isn't step 0 or 3, and isn't adjacent to 0 or 1 in such a way
-        // that an entire level of stairs is destroyed (making the room
-        // impossible, since the player can only jump one block at a time).
-        // Should also not be adjacent to targets 0 or 1 in such a way that
-        // destroys both platforms 1 and 2, as this results in a tricky jump
-        // given the current setup. May want to remove this third target if the
-        // room is made smaller.
-        targets[2] = (int) (Math.random() * currentTargets.length);
-       while (targets[2] == 3 ||
-                targets[2] == targets[1] ||
-                targets[2] == targets[0] ||
-                targets[2] == 0 ||
-                (Math.abs(targets[2] - targets[0]) == 1 && targets[0] % 2 == 0 && targets[2] > targets[0]) ||
-                (Math.abs(targets[2] - targets[0]) == 1 && targets[0] % 2 == 1 && targets[2] < targets[0]) ||
-                (Math.abs(targets[2] - targets[1]) == 1 && targets[1] % 2 == 0 && targets[2] > targets[1]) ||
-                (Math.abs(targets[2] - targets[1]) == 1 && targets[1] % 2 == 1 && targets[2] < targets[1]) ||
-                (targets[0] == 1 && targets[2] == 2 || targets[0] == 2 && targets[2] == 1) ||
-                (targets[1] == 1 && targets[2] == 2 || targets[1] == 2 && targets[2] == 1)) {
-            targets[2] = (int) (Math.random() * currentTargets.length);
+        // target, isn't step 0, and isn't adjacent to both 0 and 1.
+        do {
+            targets[2] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
         }
-        
+        while (targets[2] == targets[1] ||
+                targets[2] == targets[0] ||
+                Math.abs(targets[2] - targets[0]) == 1 ||
+                Math.abs(targets[2] - targets[1]) == 1);
+
+        // Fourth target. Random platform that isn't first or second or third
+        // target, isn't step 0, and isn't adjacent to both 0 and 1 and 2.
+        do {
+            targets[3] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+        }
+        while (targets[3] == targets[0] ||
+                targets[3] == targets[1] ||
+                targets[3] == targets[2] ||
+                Math.abs(targets[3] - targets[0]) == 1 ||
+                Math.abs(targets[3] - targets[1]) == 1 ||
+                Math.abs(targets[3] - targets[2]) == 1);
+
         return targets;
     }
     
@@ -649,7 +652,7 @@ public class SeeteufelScreen implements GameScreen {
             }
             if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                 // Move cam faster once you reach a certain point.
-                if (this.map2Y > SeeteufelScreen.MAP2_CAM_MAX_Y / 2) {
+                if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
                     float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
                     this.map2Y += movement;
                     this.map2WaterY += movement;

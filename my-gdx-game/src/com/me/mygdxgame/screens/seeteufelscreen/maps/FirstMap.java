@@ -42,7 +42,7 @@ public class FirstMap extends GameMap {
     public static final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
             GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2) - OFFSET, // Origin Y point, off-screen below
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 30, // Columns of ground tile
+            GROUND_WIDTH = 26, // Columns of ground tile
             ROOM_HEIGHT = 7;
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
@@ -117,14 +117,14 @@ public class FirstMap extends GameMap {
             renderer.drawSprite(this.pillarSprite);
         }
         float collumnStartX = PLATFORM_START_X + GROUND_DIM * 7;
-        for (int i = 0; i < 11; i++) {
+        for (int i = 0; i < 9; i++) {
             this.pillarSprite.setPosition(collumnStartX - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
             renderer.drawSprite(this.pillarSprite);
         }
         checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 3, 1);
         checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 3, 1);
-        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 7, GROUND_START_Y, 11, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *7, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 11, 1);
+        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 7, GROUND_START_Y, 9, 1);
+        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *7, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 9, 1);
         
         // Ceiling and floor.
         renderer.drawSprite(this.rockSprite);
