@@ -257,6 +257,7 @@ public class SeeteufelScreen implements GameScreen {
         this.t_player.dispose();
         this.t_seeteufel.dispose();
         this.waterfall.dispose();
+        this.waterfallEnd.dispose();
         
         // Unload other recs.
         this.playerResources.unload();

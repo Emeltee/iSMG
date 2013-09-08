@@ -14,7 +14,7 @@ public class InfinityWaterfall implements GameEntity {
 
     public static final int MIN_HEIGHT = 1;
     public static final int ANIMATION_SPEED = 4;
-    private static final float TEX_V_DELTA = ANIMATION_SPEED / 50.0f;
+    private static final float TEX_V_DELTA = ANIMATION_SPEED / 30.0f;
     
     private final int y;
     private final int x;
