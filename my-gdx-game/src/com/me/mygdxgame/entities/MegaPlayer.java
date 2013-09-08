@@ -308,11 +308,11 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.position.y += this.velocity.y;
 //        }
         this.checkCollisionsY();
-        if (this.isUnderwater) {
-            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
-        } else {
+//        if (this.isUnderwater) {
+//            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
+//        } else {
             this.position.x += this.velocity.x;
-        }
+//        }
         this.checkCollionsX();
 
         // Apply constant forces.
@@ -486,12 +486,14 @@ public class MegaPlayer implements GameEntity, Damageable {
      */
     private void checkCollisionsY() {
         // Check collisions with obstacles on y. Move box down by one to ensure you
-        // detect collisions with the floor you may be standing on.
+        // detect collisions with the floor you may be standing on. Increase height
+        // by 1 to compensate for this for ceiling collisions.
         this.hitBox.x = this.position.x;
         this.hitBox.y = this.position.y - 1;
+        this.hitBox.height = MegaPlayer.HITBOX_HEIGHT + 1;
         
         float obstacleTop = 0;
-        float hitBoxTop = this.hitBox.y + MegaPlayer.HITBOX_HEIGHT;
+        float hitBoxTop = this.hitBox.y + this.hitBox.height;
         boolean floorCollision = false;
         
         // Brute force it. We've got a deadline here.
@@ -531,6 +533,9 @@ public class MegaPlayer implements GameEntity, Damageable {
         if (!floorCollision) {
             this.isInAir = true;
         }
+        
+        // Revert hitbox height.
+        this.hitBox.height = MegaPlayer.HITBOX_HEIGHT;
     }
     
     /**
