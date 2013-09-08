@@ -70,6 +70,10 @@ public class SeeteufelScreen implements GameScreen {
     private static final float MAP2_INITIAL_WATER_Y = MAP2_INITIAL_CAM_Y - 75;
     private static final int MAP2_CAMERA_SHAKE = 15;
     private static final float MAP2_CAMERA_SHAKE_FALLOFF = 0.5f;
+    private static final float MAP2_STAIR_STEP_HEIGHT = 0.5f;
+    private static final float MAP2_STAIR_FLIGHT_HEIGHT = 4;
+    private static final int MAP2_STAIR_FLIGHT_X_OFFSET = 5;
+    private static final int MAP2_STAIR_STEP_LENGTH = 2;
     
     // State.
     private GameState state = GameState.Running;
@@ -351,7 +355,7 @@ public class SeeteufelScreen implements GameScreen {
         // Set up first map.
         this.entities.add(this.refractor);
         this.entities.add(this.room1Exit);
-        this.entities.add(this.bonus);
+//        this.entities.add(this.bonus);
         Rectangle[] mapObstacles = this.map1.getObstacles();
         for (Rectangle rect : mapObstacles) {
             this.obstacles.add(rect);
@@ -502,28 +506,30 @@ public class SeeteufelScreen implements GameScreen {
     private void generateMap2Stairs() {
         
         // First flight of stairs. Do not add these to seeteufelTargets, no need to destroy them.
-        int currentTileX = 0;
-        int currentTileY = 1;
+        int currentTileX = SecondMap.GROUND_WIDTH / 2;
+        int currentTileY = (int) (1.0f / SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT);
         int maxTileX = SecondMap.GROUND_WIDTH - 1;
+        Platform destructableTile = null;
         for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
-            Platform destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentTileY * SecondMap.GROUND_DIM);
+            destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
             
-            if (currentTileX % 2 == 0) {
+            if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
                 currentTileY++;
             }
         }
         
         // The rest up to the ceiling.
         boolean platformDirection = false;
-        currentTileX -= 5;
+        currentTileX -= SeeteufelScreen.MAP2_STAIR_FLIGHT_X_OFFSET;
+        currentTileY += SeeteufelScreen.MAP2_STAIR_FLIGHT_HEIGHT; 
         this.seeteufelTargets.addFirst(new LinkedList<Damageable>());
-        this.seeteufelTargetLevels.addFirst(currentTileY * SecondMap.GROUND_DIM);
-        while (currentTileY < SeeteufelScreen.MAP2_HEIGHT) {
+        this.seeteufelTargetLevels.addFirst(currentTileY * (SecondMap.GROUND_DIM / 2));
+        while (currentTileY * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT < SeeteufelScreen.MAP2_HEIGHT) {
             
-            int currentYCoord = currentTileY * SecondMap.GROUND_DIM;
-            Platform destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
+            int currentYCoord = (int) (currentTileY * (SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
+            destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
             this.seeteufelTargets.peek().add(destructableTile);
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
@@ -531,29 +537,31 @@ public class SeeteufelScreen implements GameScreen {
             if (platformDirection) {
                 currentTileX++;
                 if (currentTileX == maxTileX) {
-                    if (currentTileX % 2 == 0) {
-                        currentTileX -= 6;
+                    if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
+                        currentTileX -= SeeteufelScreen.MAP2_STAIR_FLIGHT_X_OFFSET + 1;
                     } else {
-                        currentTileX -= 5;
+                        currentTileX -= SeeteufelScreen.MAP2_STAIR_FLIGHT_X_OFFSET;
                     }
+                    currentTileY += SeeteufelScreen.MAP2_STAIR_FLIGHT_HEIGHT;
                     platformDirection = !platformDirection;
                     this.seeteufelTargets.addFirst(new LinkedList<Damageable>());
                     this.seeteufelTargetLevels.addFirst(currentYCoord);
-                } else if (currentTileX % 2 == 0) {
+                } else if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
                     currentTileY++;
                 }
             } else {
                 currentTileX--;
                 if (currentTileX == 0) {
-                    if (currentTileX % 2 == 0) {
-                        currentTileX += 6;
+                    if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
+                        currentTileX += SeeteufelScreen.MAP2_STAIR_FLIGHT_X_OFFSET + 1;
                     } else {
-                        currentTileX += 5;
+                        currentTileX += SeeteufelScreen.MAP2_STAIR_FLIGHT_X_OFFSET;
                     }
+                    currentTileY += SeeteufelScreen.MAP2_STAIR_FLIGHT_HEIGHT;
                     platformDirection = !platformDirection;
                     this.seeteufelTargets.addFirst(new LinkedList<Damageable>());
                     this.seeteufelTargetLevels.addFirst(currentYCoord);
-                } else if (currentTileX % 2 == 0) {
+                } else if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
                     currentTileY++;
                 }
             }

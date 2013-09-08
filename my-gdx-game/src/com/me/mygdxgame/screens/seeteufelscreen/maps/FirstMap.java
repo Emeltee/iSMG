@@ -37,29 +37,30 @@ public class FirstMap extends GameMap {
     // as everything makes sense relative to everything else, all you have to do is put
     // the camera in the right spot, and you can kind of get it to look the way you want..
 
-    public static final int GROUND_DIM = 45; // Width of ground tile
+    public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
     public static final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
             GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2) - OFFSET, // Origin Y point, off-screen below
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 20; // Columns of ground tile
+            GROUND_WIDTH = 30, // Columns of ground tile
+            ROOM_HEIGHT = 7;
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
 
-    public static final int PLATFORM_START_X = GROUND_ORIGIN_X + (6 * GROUND_DIM);
+    public static final int PLATFORM_START_X = GROUND_ORIGIN_X + (7 * GROUND_DIM);
     
     public static final Vector3 INIT_POS = new Vector3(GROUND_END_X - GROUND_DIM, GROUND_START_Y, 0);
 
     public FirstMap(Texture spriteSheet, SeeteufelScreen.MapTiles tiles) {
         
         this.rockSprite = new Sprite(tiles.rockTex);
-        this.rockSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_WIDTH * GROUND_DIM, GROUND_DIM);
+        this.rockSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM), GROUND_WIDTH * GROUND_DIM, GROUND_DIM);
         this.rockSprite.setU2(GROUND_WIDTH);
         this.wallSprite = new Sprite(tiles.wallTex);
         this.smallMazeSprite = new Sprite(tiles.smallMazeTex);
-        this.smallMazeSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH * GROUND_DIM, 5 * GROUND_DIM);
+        this.smallMazeSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH * GROUND_DIM, ROOM_HEIGHT * GROUND_DIM);
         this.smallMazeSprite.setU2(GROUND_WIDTH);
         this.smallMazeSprite.setV2(5);
         this.pillarSprite = new Sprite(tiles.pillarTex);
@@ -82,11 +83,11 @@ public class FirstMap extends GameMap {
         // Obstacles.
         this.obstacles = new Rectangle[] {
             new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT), // Ground
-            new Rectangle(PLATFORM_START_X, GROUND_START_Y, GROUND_DIM * 3, GROUND_DIM * 1), // Platform
-            new Rectangle(PLATFORM_START_X + GROUND_DIM - 5, GROUND_START_Y + GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
+            new Rectangle(PLATFORM_START_X, GROUND_START_Y, GROUND_DIM * 3, GROUND_DIM), // Platform
+            new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
             new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
-            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * 7), // Left boundary
-            new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * 7) // Right boundary
+            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
+            new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
         };
     }
     
@@ -111,19 +112,19 @@ public class FirstMap extends GameMap {
         diagonalLeft(renderer, this.greyBlockRegion, PLATFORM_START_X + (4 * GROUND_DIM), GROUND_START_Y, 3);
         
         // Pillars.
-        for (int i = 0; i < 4; i++) { 
+        for (int i = 0; i < 3; i++) { 
             this.pillarSprite.setPosition(GROUND_ORIGIN_X - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
             renderer.drawSprite(this.pillarSprite);
         }
-        float collumnStartX = PLATFORM_START_X + GROUND_DIM * 6;
-        for (int i = 0; i < 8; i++) {
+        float collumnStartX = PLATFORM_START_X + GROUND_DIM * 7;
+        for (int i = 0; i < 11; i++) {
             this.pillarSprite.setPosition(collumnStartX - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
             renderer.drawSprite(this.pillarSprite);
         }
-        checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 4, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 4, 1);
-        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 6, GROUND_START_Y, 8, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM * 6, GROUND_START_Y + (5 * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 8, 1);
+        checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 3, 1);
+        checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 3, 1);
+        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 7, GROUND_START_Y, 11, 1);
+        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *7, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 11, 1);
         
         // Ceiling and floor.
         renderer.drawSprite(this.rockSprite);
@@ -136,13 +137,13 @@ public class FirstMap extends GameMap {
         this.wallSprite.setU2(3);
         renderer.drawSprite(this.wallSprite);
         renderer.drawRegion(this.greyBlockRegion, PLATFORM_START_X + GROUND_DIM, GROUND_START_Y + GROUND_DIM);
-        renderer.drawRegion(this.pedistalRegion, PLATFORM_START_X + GROUND_DIM - 5, GROUND_START_Y + GROUND_DIM);
+        renderer.drawRegion(this.pedistalRegion, PLATFORM_START_X + 20, GROUND_START_Y + GROUND_DIM);
         
         // Draw the waterfalls.
-        renderer.drawRegion(this.grateRegion, PLATFORM_START_X - (3 * GROUND_DIM) + 12, GROUND_START_Y + 64);
-        renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (3 * GROUND_DIM) + 8, GROUND_START_Y);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (5 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.grateRegion, PLATFORM_START_X - (int)(3.5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (int)(5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(3.5 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(5 * GROUND_DIM) + 8, GROUND_START_Y);
         
         // Update animation frame
         animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
