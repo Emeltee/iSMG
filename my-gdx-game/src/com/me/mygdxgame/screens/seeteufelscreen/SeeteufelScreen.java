@@ -358,7 +358,7 @@ public class SeeteufelScreen implements GameScreen {
         this.room1Exit = new Door(this.t_tiles2, this.doorOpen, this.doorClose,
                 FirstMap.GROUND_END_X - (int) (FirstMap.GROUND_DIM * 1.5),
                 FirstMap.GROUND_START_Y);
-        this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X,
+        this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
                 FirstMap.GROUND_START_Y);
         
         // Set up first map.
