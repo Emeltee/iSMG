@@ -143,6 +143,8 @@ public class SeeteufelScreen implements GameScreen {
         public Texture smallMazeTex = null;
         public Texture stairTex = null;
         public Texture pillarTex = null;
+        public Texture greyBlockTex = null;
+        public Texture bonusTex = null;
         
         private boolean isLoaded = false;
         
@@ -160,6 +162,12 @@ public class SeeteufelScreen implements GameScreen {
                 
                 this.pillarTex = new Texture("img/tile3.png");
                 this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.greyBlockTex = new Texture("img/idk.png");
+                this.greyBlockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.bonusTex  = new Texture("img/nadia.png");
+                this.bonusTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
 
                 this.isLoaded = true;
             }
@@ -345,18 +353,18 @@ public class SeeteufelScreen implements GameScreen {
         this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,
                 (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
                         * 1.5 - Refractor.REFRACTOR_W / 2),
-                (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM
+                (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM * 2
                         + 22));
         this.room1Exit = new Door(this.t_tiles2, this.doorOpen, this.doorClose,
                 FirstMap.GROUND_END_X - (int) (FirstMap.GROUND_DIM * 1.5),
                 FirstMap.GROUND_START_Y);
-        this.bonus = new WatchNadia(this.t_tiles1, FirstMap.PLATFORM_START_X,
+        this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X,
                 FirstMap.GROUND_START_Y);
         
         // Set up first map.
         this.entities.add(this.refractor);
         this.entities.add(this.room1Exit);
-//        this.entities.add(this.bonus);
+        this.entities.add(this.bonus);
         Rectangle[] mapObstacles = this.map1.getObstacles();
         for (Rectangle rect : mapObstacles) {
             this.obstacles.add(rect);
@@ -512,7 +520,7 @@ public class SeeteufelScreen implements GameScreen {
         int maxTileX = SecondMap.GROUND_WIDTH - 1;
         Platform destructableTile = null;
         for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
-            destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
+            destructableTile = new Platform(this.mapTiles.rockTex, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
             
@@ -530,7 +538,7 @@ public class SeeteufelScreen implements GameScreen {
         while (currentTileY * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT < SeeteufelScreen.MAP2_HEIGHT) {
             
             int currentYCoord = (int) (currentTileY * (SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
-            destructableTile = new Platform(this.t_tiles1, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
+            destructableTile = new Platform(this.mapTiles.rockTex, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
             this.seeteufelTargets.peek().add(destructableTile);
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);

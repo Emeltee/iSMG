@@ -67,7 +67,7 @@ public class FirstMap extends GameMap {
         this.pillarSprite.setSize(32, 36 * 6);
         this.pillarSprite.setV2(6);
         
-        this.greyBlockRegion = new TextureRegion(spriteSheet, 165, 120, GROUND_DIM, GROUND_DIM);
+        this.greyBlockRegion = new TextureRegion(tiles.greyBlockTex, 0, 0, GROUND_DIM, GROUND_DIM); // This could be a sprite but diagonalLeft/Right need to be updated..
         this.pedistalRegion = new TextureRegion(spriteSheet, 165, 0, 55, 17);
         this.grateRegion = new TextureRegion(spriteSheet, 22, 102, 23, 23);
         this.pillarBottomBaseRegion = new TextureRegion(spriteSheet, 224, 160, 19, 15);
@@ -83,8 +83,9 @@ public class FirstMap extends GameMap {
         // Obstacles.
         this.obstacles = new Rectangle[] {
             new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT), // Ground
-            new Rectangle(PLATFORM_START_X, GROUND_START_Y, GROUND_DIM * 3, GROUND_DIM), // Platform
-            new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
+            new Rectangle(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, GROUND_DIM * 5, GROUND_DIM), // Platform I
+            new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM), // Platform I
+            new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + 2 * GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
             new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
             new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
             new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
@@ -108,23 +109,23 @@ public class FirstMap extends GameMap {
         renderer.drawSprite(this.smallMazeSprite);
         
         // Alternate background for refractor.
-        diagonalRight(renderer, this.greyBlockRegion, PLATFORM_START_X - (2 * GROUND_DIM), GROUND_START_Y, 4);
-        diagonalLeft(renderer, this.greyBlockRegion, PLATFORM_START_X + (4 * GROUND_DIM), GROUND_START_Y, 3);
+        diagonalRight(renderer, this.greyBlockRegion, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 5);
+        diagonalLeft(renderer, this.greyBlockRegion, PLATFORM_START_X + (5 * GROUND_DIM), GROUND_START_Y, 4);
         
         // Pillars.
-        for (int i = 0; i < 3; i++) { 
+        for (int i = 0; i < 2; i++) { 
             this.pillarSprite.setPosition(GROUND_ORIGIN_X - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
             renderer.drawSprite(this.pillarSprite);
         }
-        float collumnStartX = PLATFORM_START_X + GROUND_DIM * 7;
-        for (int i = 0; i < 9; i++) {
+        float collumnStartX = PLATFORM_START_X + GROUND_DIM * 8;
+        for (int i = 0; i < 8; i++) {
             this.pillarSprite.setPosition(collumnStartX - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
             renderer.drawSprite(this.pillarSprite);
         }
-        checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 3, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 3, 1);
-        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 7, GROUND_START_Y, 9, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *7, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 9, 1);
+        checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 2, 1);
+        checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 2, 1);
+        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 8, GROUND_START_Y, 8, 1);
+        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *8, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 8, 1);
         
         // Ceiling and floor.
         renderer.drawSprite(this.rockSprite);
@@ -133,17 +134,20 @@ public class FirstMap extends GameMap {
         renderer.drawSprite(this.wallSprite);
         
         // Refractor and platform.
-        this.wallSprite.setBounds(PLATFORM_START_X, GROUND_START_Y, 3 * GROUND_DIM, GROUND_DIM);
+        this.wallSprite.setBounds(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, 5 * GROUND_DIM, GROUND_DIM);
+        this.wallSprite.setU2(5);
+        renderer.drawSprite(this.wallSprite);
+        this.wallSprite.setBounds(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, 3 * GROUND_DIM, GROUND_DIM);
         this.wallSprite.setU2(3);
         renderer.drawSprite(this.wallSprite);
-        renderer.drawRegion(this.greyBlockRegion, PLATFORM_START_X + GROUND_DIM, GROUND_START_Y + GROUND_DIM);
-        renderer.drawRegion(this.pedistalRegion, PLATFORM_START_X + 20, GROUND_START_Y + GROUND_DIM);
+        renderer.drawRegion(this.greyBlockRegion, PLATFORM_START_X + GROUND_DIM, GROUND_START_Y + 2 * GROUND_DIM);
+        renderer.drawRegion(this.pedistalRegion, PLATFORM_START_X + 20, GROUND_START_Y + GROUND_DIM * 2);
         
         // Draw the waterfalls.
-        renderer.drawRegion(this.grateRegion, PLATFORM_START_X - (int)(3.5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
-        renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (int)(5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(3.5 * GROUND_DIM) + 8, GROUND_START_Y);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(5 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.grateRegion, PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (int)(6 * GROUND_DIM) + 12, GROUND_START_Y + 64);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
         
         // Update animation frame
         animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
