@@ -55,7 +55,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
     private static final float MAP2_CAM_SPEED_1 = 30f;
-    private static final float MAP2_CAM_SPEED_2 = 46f;
+    private static final float MAP2_CAM_SPEED_2 = 50f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -65,7 +65,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 5);
     private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
     private static final float MAP2_CAM_INCREASE_SPEED_TIRGGER_Y = MAP2_PIXEL_HEIGHT - (MAP2_CAM_MAX_Y / 2);
-    private static final int MAP2_ENEMY_ATTACK_OFFSET = (SecondMap.GROUND_DIM * 3);
+    private static final int MAP2_ENEMY_ATTACK_OFFSET = (SecondMap.GROUND_DIM * 4);
     private static final int MAP2_PLAYER_DROWN_OFFSET = MegaPlayer.HITBOX_HEIGHT * 2;
     private static final float MAP2_INITIAL_CAM_Y = -SCREEN_BOTTOM;
     private static final float MAP2_INITIAL_WATER_Y = MAP2_INITIAL_CAM_Y - 75;
@@ -798,15 +798,18 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void setupMap3() {
-        // TODO
     }
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        
+        perspCam.position.z = 1000;
+        perspCam.update(false);
+        
         // Create Renderer.
-        Renderer renderer = new Renderer(orthoCam.combined);
+        Renderer renderer = new Renderer(perspCam.combined);
         
         // Draw the map
         this.currentMap.render(deltaTime, renderer);

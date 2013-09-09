@@ -308,11 +308,11 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.position.y += this.velocity.y;
 //        }
         this.checkCollisionsY();
-//        if (this.isUnderwater) {
-//            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
-//        } else {
+        if (this.isUnderwater) {
+            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
+        } else {
             this.position.x += this.velocity.x;
-//        }
+        }
         this.checkCollionsX();
 
         // Apply constant forces.
