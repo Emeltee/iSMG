@@ -86,7 +86,7 @@ public class FirstMap extends GameMap {
             new Rectangle(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, GROUND_DIM * 5, GROUND_DIM), // Platform I
             new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM), // Platform I
             new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + 2 * GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
-            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (5 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
+            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (7 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
             new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
             new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
         };
