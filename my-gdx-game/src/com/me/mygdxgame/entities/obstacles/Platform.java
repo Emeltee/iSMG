@@ -18,7 +18,7 @@ import com.me.mygdxgame.utilities.Renderer;
 public class Platform implements GameEntity, Damageable {
 
     public static final int PLATFORM_X = 0;
-    public static final int PLATFORM_Y = 57;
+    public static final int PLATFORM_Y = 0;
     public static final int PLATFORM_W = 32;
     public static final int PLATFORM_H = 32;
     

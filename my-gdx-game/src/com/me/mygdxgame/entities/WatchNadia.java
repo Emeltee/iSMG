@@ -3,6 +3,7 @@ package com.me.mygdxgame.entities;
 import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -14,18 +15,18 @@ import com.me.mygdxgame.utilities.Renderer;
 public class WatchNadia implements Damageable, GameEntity {
 
     /* WATCH NADIA */
-    public static final int WATCH_NADIA_X = 165;
+    /*public static final int WATCH_NADIA_X = 165;
     public static final int WATCH_NADIA_Y = 165;
-    public static final int WATCH_NADIA_W = 45;
-    public static final int WATCH_NADIA_H = 45;
+    public static final int WATCH_NADIA_W = 32;
+    public static final int WATCH_NADIA_H = 32;*/
     
-    private TextureRegion watchNadia;
+    private Sprite watchNadia;
     public static final int MAX_HEALTH = 1;
     private int health;
     private int x, y;
     
-    public WatchNadia(Texture spriteSheet, int x, int y) {
-        this.watchNadia = new TextureRegion(spriteSheet, WATCH_NADIA_X, WATCH_NADIA_Y, WATCH_NADIA_W, WATCH_NADIA_H);
+    public WatchNadia(Texture sprite, int x, int y) {
+        this.watchNadia = new Sprite(sprite);
         this.health = MAX_HEALTH;
         this.x = x;
         this.y = y;
@@ -48,7 +49,7 @@ public class WatchNadia implements Damageable, GameEntity {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle [] { new Rectangle(this.x, this.y, WATCH_NADIA_W, WATCH_NADIA_H) };
+        return new Rectangle [] { new Rectangle(this.x, this.y, this.watchNadia.getWidth(), this.watchNadia.getHeight()) };
     }
 
     @Override

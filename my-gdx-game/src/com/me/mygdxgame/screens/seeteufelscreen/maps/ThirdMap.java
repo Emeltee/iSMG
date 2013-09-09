@@ -121,24 +121,24 @@ public class ThirdMap extends GameMap {
          
         // tileX(this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + 9 * GROUND_DIM, GROUND_START_Y, 22);
         
+        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y + 7 * GROUND_DIM - 10, 54);
+        
         // Draw some light pillars
         tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10, 18);
-        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3 + 10);
-        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 3);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 10);
         
         tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10, 24);
-        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1 + 10);
-        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 20);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 1);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 3*GROUND_DIM + 5, GROUND_START_Y + 7 * GROUND_DIM - 10);
         
         tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
-        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
-        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 5*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 10);
 
         tileY(renderer, lightPillar[animationFrame / 6 % 6], GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10, 28);
-        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0 + 10);
-        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 20);
- 
-        tileX(renderer, this.borderFrames[animationFrame / 6 % 8], GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y + 7 * GROUND_DIM - 10, 54);
+        renderer.drawRegion(this.lightPillarBottomBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 0);
+        renderer.drawRegion(this.lightPillarTopBase, GROUND_ORIGIN_X + 7*GROUND_DIM + 5, GROUND_START_Y + GROUND_DIM * 7 - 10);
         
         // Draw /a Waterfall
         renderer.drawRegion(this.idkSprite, GROUND_ORIGIN_X + 9 * GROUND_DIM + 10, GROUND_START_Y + 12);
