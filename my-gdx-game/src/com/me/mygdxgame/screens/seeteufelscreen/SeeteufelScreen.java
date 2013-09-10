@@ -176,17 +176,10 @@ public class SeeteufelScreen implements GameScreen {
         public void unload() {
             if (this.isLoaded) {
                 
-                this.rockTex = new Texture("img/tile1.png");
-                this.rockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-                
-                this.wallTex = new Texture("img/tile2.png");
-                this.wallTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-                
-                this.smallMazeTex = new Texture("img/tile4.png");
-                this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
-                
-                this.pillarTex = new Texture("img/tile3.png");
-                this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                this.rockTex.dispose();
+                this.wallTex.dispose();
+                this.smallMazeTex.dispose();
+                this.pillarTex.dispose();
 
                 this.isLoaded = false;
             }
