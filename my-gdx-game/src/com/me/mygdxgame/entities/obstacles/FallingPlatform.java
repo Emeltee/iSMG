@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities.obstacles;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.EntityState;
 
 public class FallingPlatform extends Platform {
@@ -15,8 +16,8 @@ public class FallingPlatform extends Platform {
     private int destinationY;
     private boolean hasLanded;
     
-    public FallingPlatform(Texture spriteSheet, int x, int y, int destinationY) {
-        super(spriteSheet, x, y);
+    public FallingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int x, int y, int destinationY) {
+        super(spriteSheet, tiles, x, y);
         this.destinationY = destinationY;
         this.hasLanded = false;
     }

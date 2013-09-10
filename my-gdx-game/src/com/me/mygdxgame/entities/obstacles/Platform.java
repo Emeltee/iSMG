@@ -10,6 +10,7 @@ import com.me.mygdxgame.entities.projectiles.FatRubble;
 import com.me.mygdxgame.entities.projectiles.Rubble;
 import com.me.mygdxgame.entities.projectiles.SmallRubble;
 import com.me.mygdxgame.entities.projectiles.TallRubble;
+import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -33,9 +34,9 @@ public class Platform implements GameEntity, Damageable {
     protected Rubble[] rubble = null;
     protected static final int RUBBLE_LIFE = 500;
     
-    public Platform(Texture spriteSheet, int x, int y) {
+    public Platform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int x, int y) {
         this.spriteSheet = spriteSheet;
-        this.platform = new TextureRegion(spriteSheet, PLATFORM_X, PLATFORM_Y, PLATFORM_H, PLATFORM_W);
+        this.platform = new TextureRegion(tiles.rockTex, PLATFORM_X, PLATFORM_Y, PLATFORM_H, PLATFORM_W);
         this.status = EntityState.Running;
         this.x = x;
         this.y = y;
