@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.Rocket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
@@ -110,6 +111,23 @@ public class SeeteufelFront implements GameEntity {
             
             if (this.isFalling) {
                 this.splash.play();
+                float middleX = this.position.x + SeeteufelFront.BASE_WIDTH / 2;
+                float leftX = middleX - 15;
+                float rightX = middleX + 15;
+                for (int x = 0; x < 15; x ++) {
+                    this.createdEntities.add(new Splash(leftX, this.position.y,
+                            (float) Math.random() * Splash.MIN_INIT_X_VEL * 2,
+                            (Splash.MIN_INIT_Y_VEL * 4) + (float) Math.random() * Splash.MAX_INIT_Y_VEL,
+                            6));
+                    this.createdEntities.add(new Splash(middleX, this.position.y,
+                            ((float) Math.random() * (Splash.MAX_INIT_X_VEL - Splash.MAX_INIT_X_VEL)) + Splash.MIN_INIT_X_VEL,
+                            (Splash.MIN_INIT_Y_VEL * 4) + (float) Math.random() * Splash.MAX_INIT_Y_VEL,
+                            6));
+                    this.createdEntities.add(new Splash(rightX, this.position.y,
+                            (float) Math.random() * Splash.MAX_INIT_X_VEL * 2,
+                            (Splash.MIN_INIT_Y_VEL * 4) + (float) Math.random() * Splash.MAX_INIT_Y_VEL,
+                            6));
+                }
             }
             this.isFalling = false;
         }

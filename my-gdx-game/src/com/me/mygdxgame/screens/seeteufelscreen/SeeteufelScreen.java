@@ -482,7 +482,7 @@ public class SeeteufelScreen implements GameScreen {
         // Set player state and initial position.
         Vector3 map2InitPos = this.map2.getInitialPosition();
         this.player.setPosition(map2InitPos);
-        this.player.setIsUnderwater(true);
+        this.player.setIsUnderwater(true, false);
 
         // Add doors. Also, remove the highest block on the last staircase,
         // since the exit will be there.
@@ -751,11 +751,11 @@ public class SeeteufelScreen implements GameScreen {
         if (playerPos.y < this.map2WaterY) {
             if (!this.player.getIsUnderwater()) {
                 this.splash.play();
-                this.player.setIsUnderwater(true);
+                this.player.setIsUnderwater(true, true);
             }
         } else if (this.player.getIsUnderwater()) {
             this.splash.play();
-            this.player.setIsUnderwater(false);
+            this.player.setIsUnderwater(false, true);
         }
         // Update internal logic and draw.
         this.player.update(deltaTime);
