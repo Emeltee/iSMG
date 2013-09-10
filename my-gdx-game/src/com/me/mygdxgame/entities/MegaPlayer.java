@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.entities.projectiles.GeminiShot;
@@ -83,7 +84,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
 
 
-    private LinkedList<BusterShot> newShots = new LinkedList<BusterShot>();
+    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
     
     /**
      * Simple storage class to manage the resources required by MegaPlayer.
@@ -255,7 +256,13 @@ public class MegaPlayer implements GameEntity, Damageable {
         return new Vector3(this.position.x, this.position.y, this.position.z);
     }
     
-    public void setIsUnderwater(boolean isUnderwater) {
+    public void setIsUnderwater(boolean isUnderwater, boolean createSplash) {
+        if (createSplash && this.isUnderwater != isUnderwater) {
+            float adjustedX = this.position.x + MegaPlayer.SPRITE_WIDTH / 2;
+            for (int x = 0; x < 8; x++) {
+                this.createdEntities.add(new Splash(adjustedX, this.position.y));
+            }
+        }
         this.isUnderwater = isUnderwater;
     }
     
@@ -468,15 +475,15 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     @Override
     public boolean hasCreatedEntities() {
-        return !this.newShots.isEmpty();
+        return !this.createdEntities.isEmpty();
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         
-        GameEntity[] returnList = new GameEntity[this.newShots.size()];
-        this.newShots.toArray(returnList);
-        this.newShots.clear();
+        GameEntity[] returnList = new GameEntity[this.createdEntities.size()];
+        this.createdEntities.toArray(returnList);
+        this.createdEntities.clear();
         return returnList;
     }
     
@@ -651,14 +658,14 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
                     this.resources.geminiSound.play(0.75f);
-                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new GeminiShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
                     this.resources.shootSound.play(0.75f);
-                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
@@ -667,14 +674,14 @@ public class MegaPlayer implements GameEntity, Damageable {
             } else {
                 if (geminiEnabled) {
                     this.resources.geminiSound.play(0.75f);
-                    this.newShots.offer(new GeminiShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new GeminiShot(this.resources.busterTexture,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
                     this.resources.shootSound.play(0.75f);
-                    this.newShots.offer(new BusterShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new BusterShot(this.resources.busterTexture,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,

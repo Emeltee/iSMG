@@ -63,6 +63,12 @@ public class Renderer {
         Renderer.shapeRenderer.rect(x, y, width, height);
     }
     
+    public void drawCircle(ShapeType shapeType, Color color, float x, float y, int radius) {
+        this.prepareShapeRendererState(shapeType);
+        Renderer.shapeRenderer.setColor(color);
+        Renderer.shapeRenderer.circle(x, y, radius);
+    }
+    
     public void drawSprite(Sprite sprite) {
         this.prepareSpriteBatchState();
         sprite.draw(Renderer.spriteBatch);
