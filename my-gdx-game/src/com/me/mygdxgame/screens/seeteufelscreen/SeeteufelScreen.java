@@ -513,7 +513,7 @@ public class SeeteufelScreen implements GameScreen {
         int maxTileX = SecondMap.GROUND_WIDTH - 1;
         Platform destructableTile = null;
         for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
-            destructableTile = new Platform(this.mapTiles.rockTex, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
+            destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
             
@@ -531,7 +531,7 @@ public class SeeteufelScreen implements GameScreen {
         while (currentTileY * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT < SeeteufelScreen.MAP2_HEIGHT) {
             
             int currentYCoord = (int) (currentTileY * (SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
-            destructableTile = new Platform(this.mapTiles.rockTex, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
+            destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
             this.seeteufelTargets.peek().add(destructableTile);
             this.obstacles.add(destructableTile.getHitArea()[0]);
             this.entities.add(destructableTile);
