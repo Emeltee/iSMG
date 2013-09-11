@@ -1,14 +1,20 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.entities.StonePillar;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.Renderer;
+import com.me.mygdxgame.utilities.Updatable;
 
 //TODO Horizontally tiled wallTex appear to have gaps between them.
 public class FirstMap extends GameMap {
@@ -26,6 +32,7 @@ public class FirstMap extends GameMap {
 
     private TextureRegion grateRegion;
     private TextureRegion[] waterfall;
+    private Updatable [] updatables;
     
     private Rectangle[] obstacles = null;
 
@@ -84,12 +91,23 @@ public class FirstMap extends GameMap {
         this.obstacles = new Rectangle[] {
             new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT), // Ground
             new Rectangle(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, GROUND_DIM * 5, GROUND_DIM), // Platform I
-            new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM), // Platform I
+            new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM), // Platform II
             new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + 2 * GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
             new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (7 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
             new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
             new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
         };
+        
+        List<Updatable> temp = new LinkedList<Updatable>();        
+        for (int i = 0; i < 2; i++) {
+            temp.add(new StonePillar(spriteSheet, tiles, GROUND_ORIGIN_X + (2*i+1) * (GROUND_DIM/2) - (StonePillar.PILLAR_BASE_W / 2), GROUND_START_Y, 7*GROUND_DIM));
+        }
+        for (int i = 0; i < 8; i++) {
+            temp.add(new StonePillar(spriteSheet, tiles,PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i), GROUND_START_Y, 7*GROUND_DIM));
+        }
+        this.updatables = temp.toArray(new Updatable[temp.size()]);
+        temp.clear();
+        
     }
     
     @Override
@@ -111,7 +129,8 @@ public class FirstMap extends GameMap {
         // Alternate background for refractor.
         diagonalRight(renderer, this.greyBlockRegion, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 5);
         diagonalLeft(renderer, this.greyBlockRegion, PLATFORM_START_X + (5 * GROUND_DIM), GROUND_START_Y, 4);
-        
+             
+        /*
         // Pillars.
         for (int i = 0; i < 2; i++) { 
             this.pillarSprite.setPosition(GROUND_ORIGIN_X - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
@@ -126,6 +145,7 @@ public class FirstMap extends GameMap {
         checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 2, 1);
         checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 8, GROUND_START_Y, 8, 1);
         checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *8, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 8, 1);
+        */
         
         // Ceiling and floor.
         renderer.drawSprite(this.rockSprite);
@@ -148,6 +168,10 @@ public class FirstMap extends GameMap {
         renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (int)(6 * GROUND_DIM) + 12, GROUND_START_Y + 64);
         renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
         renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
+        
+        for (Updatable u: this.updatables) {
+            u.draw(renderer);
+        }
         
         // Update animation frame
         animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
