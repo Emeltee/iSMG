@@ -33,7 +33,7 @@ public class LightPillar implements GameEntity {
     
     public static final int FRAMERATE = 3;
     
-    private TextureRegion [] pillarFrames;
+    private Sprite [] pillarFrames;
     private TextureRegion lowerBase, upperBase;
     private int animationTimer;
     private int frame;
@@ -48,11 +48,11 @@ public class LightPillar implements GameEntity {
         this.upperBase = new TextureRegion(lowerBase);
         this.upperBase.flip(false, true);
         
-        this.pillarFrames = new TextureRegion[6];
-        this.pillarFrames[0] = new TextureRegion(spriteSheet, FRAMES_X, FRAME1_Y, BEAM_W, BEAM_H);
-        this.pillarFrames[1] = new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BEAM_W, BEAM_H);
-        this.pillarFrames[2] = new TextureRegion(spriteSheet, FRAMES_X, FRAME3_Y, BEAM_W, BEAM_H);
-        this.pillarFrames[3] = new TextureRegion(spriteSheet, FRAMES_X, FRAME4_Y, BEAM_W, BEAM_H);
+        this.pillarFrames = new Sprite[6];
+        this.pillarFrames[0] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME1_Y, BEAM_W, BEAM_H));
+        this.pillarFrames[1] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BEAM_W, BEAM_H));
+        this.pillarFrames[2] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME3_Y, BEAM_W, BEAM_H));
+        this.pillarFrames[3] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME4_Y, BEAM_W, BEAM_H));
         this.pillarFrames[4] = this.pillarFrames[3];
         this.pillarFrames[5] = this.pillarFrames[2];
                 
@@ -75,8 +75,7 @@ public class LightPillar implements GameEntity {
 
     @Override
     public void draw(Renderer renderer) {            
-            TextureRegion currentFrame = this.pillarFrames[frame];
-            Sprite currentSprite = new Sprite(currentFrame);
+            Sprite currentSprite = this.pillarFrames[frame];
             currentSprite.setBounds(this.x, this.y + BEAM_OFFSET_Y, BEAM_W, this.height - (2 * BEAM_OFFSET_Y));
             renderer.drawSprite(currentSprite);
             renderer.drawRegion(this.lowerBase, this.x, this.y);
