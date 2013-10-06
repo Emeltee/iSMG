@@ -170,6 +170,7 @@ public class FirstMap extends GameMap {
         renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
         
         for (Updatable u: this.updatables) {
+            u.update(deltaTime);
             u.draw(renderer);
         }
         

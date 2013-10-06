@@ -28,7 +28,7 @@ public class LightBorder implements GameEntity {
     
     public static final int FRAMERATE = 3;
     
-    private TextureRegion [] borderFrames;
+    private Sprite [] borderFrames;
     private int animationTimer;
     private int frame;
     private int x;
@@ -36,12 +36,12 @@ public class LightBorder implements GameEntity {
     private int width;
     
     public LightBorder(Texture spriteSheet, int x, int y, int width) {
-        this.borderFrames = new TextureRegion[8];
-        this.borderFrames[0] = new TextureRegion(spriteSheet, FRAMES_X, FRAME1_Y, BORDER_W, BORDER_H);
-        this.borderFrames[1] = new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H);
-        this.borderFrames[2] = new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H);
-        this.borderFrames[3] = new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H);
-        this.borderFrames[4] = new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H);
+        this.borderFrames = new Sprite[8];
+        this.borderFrames[0] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME1_Y, BORDER_W, BORDER_H));
+        this.borderFrames[1] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H));
+        this.borderFrames[2] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H));
+        this.borderFrames[3] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H));
+        this.borderFrames[4] = new Sprite(new TextureRegion(spriteSheet, FRAMES_X, FRAME2_Y, BORDER_W, BORDER_H));
         this.borderFrames[5] = this.borderFrames[4];
         this.borderFrames[6] = this.borderFrames[3];
         this.borderFrames[7] = this.borderFrames[2];
@@ -65,8 +65,7 @@ public class LightBorder implements GameEntity {
 
     @Override
     public void draw(Renderer renderer) {
-        TextureRegion currentFrame = borderFrames[frame];
-        Sprite currentSprite = new Sprite(currentFrame);
+        Sprite currentSprite = borderFrames[frame];
         currentSprite.setBounds(this.x, this.y, this.width, BORDER_H);
         renderer.drawSprite(currentSprite);
     }
