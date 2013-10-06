@@ -60,15 +60,15 @@ public class SeeteufelScreen implements GameScreen {
     private static Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
     private static final Color WATER_COLOR_ELECTRIC = new Color(1, 1, 0, 0);
-    private static final int MAP2_HEIGHT = 50;
+    private static final int MAP2_HEIGHT = 48;
     private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
     private static final int MAP2_ACTIVATION_X = SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 5);
-    private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT - Gdx.graphics.getHeight() / 3;
+    private static final float MAP2_CAM_MAX_Y = MAP2_PIXEL_HEIGHT;
     private static final float MAP2_CAM_INCREASE_SPEED_TIRGGER_Y = MAP2_PIXEL_HEIGHT - (MAP2_CAM_MAX_Y / 2);
     private static final int MAP2_ENEMY_ATTACK_OFFSET = (SecondMap.GROUND_DIM * 4);
     private static final int MAP2_PLAYER_DROWN_OFFSET = MegaPlayer.HITBOX_HEIGHT * 2;
     private static final float MAP2_INITIAL_CAM_Y = -SCREEN_BOTTOM;
-    private static final float MAP2_INITIAL_WATER_Y = MAP2_INITIAL_CAM_Y - 75;
+    private static final float MAP2_WATER_Y_OFFSET = 75;
     private static final int MAP2_CAMERA_SHAKE = 15;
     private static final float MAP2_CAMERA_SHAKE_FALLOFF = 0.5f;
     private static final float MAP2_STAIR_STEP_HEIGHT = 0.5f;
@@ -76,6 +76,9 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_STAIR_FLIGHT_X_OFFSET = 5;
     private static final int MAP2_STAIR_STEP_LENGTH = 3;
     private static final int MAP2_STAIR_IGNORE_LAST_TARGETS = 2;
+    private static final int MAP2_WATER_LATENT_RISE_RATE = 3;
+    private static final int MAP2_WATER_WIDTH = SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM;
+    private static final int MAP3_WATER_BASE_X = MAP2_PIXEL_HEIGHT - 500;
     
     // State.
     private GameState state = GameState.Running;
@@ -84,9 +87,9 @@ public class SeeteufelScreen implements GameScreen {
     private FirstMap map1;
     private SecondMap map2;
     private ThirdMap map3;
-    private GameMap currentMap;
+    private int currentMap;
     private float map2Y = MAP2_INITIAL_CAM_Y;
-    private float map2WaterY = MAP2_INITIAL_WATER_Y;
+    private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
     private float map2CameraShake = 0;
     
     // Resource files.
@@ -120,7 +123,6 @@ public class SeeteufelScreen implements GameScreen {
     private Refractor refractor;
     private Door room1Exit;
     private Door room2Entrance;
-    private Door room2Exit;
     private WatchNadia bonus;
     private SeeteufelFront seeFront;
     private Renderer hudRenderer;
@@ -251,7 +253,7 @@ public class SeeteufelScreen implements GameScreen {
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
         this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
         this.map3 = new ThirdMap(this.t_tiles1, this.mapTiles);
-        this.currentMap = this.map1;
+        this.currentMap = 1;
     }
 
     @Override
@@ -284,9 +286,9 @@ public class SeeteufelScreen implements GameScreen {
     public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {   
         
         // Update logic based on current map.
-        if (this.currentMap == this.map1) {
+        if (this.currentMap == 1) {
             this.updateMap1(deltaTime, difficulty, perspCam, orthoCam);
-        } else if (this.currentMap == this.map2) {
+        } else if (this.currentMap == 2) {
             this.updateMap2(deltaTime, difficulty, perspCam, orthoCam);
         } else {
             this.updateMap3(deltaTime, difficulty, perspCam, orthoCam);
@@ -318,14 +320,14 @@ public class SeeteufelScreen implements GameScreen {
     @Override
     public void initialize() {
         // Reset values.
-        this.currentMap = this.map1;
+        this.currentMap = 1;
         this.obstacles.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
         this.isMap2Flooding = false;
         this.state = GameState.Running;
         this.map2Y = SeeteufelScreen.MAP2_INITIAL_CAM_Y;
-        this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_WATER_Y;
+        this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
         this.seeteufelTargets.clear();
         this.seeteufelTargetLevels.clear();
         this.map2CameraShake = 0;
@@ -337,7 +339,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Create fresh instances of vital objects.
         this.player = new MegaPlayer(this.playerResources,
-                this.currentMap.getInitialPosition(),
+                this.map1.getInitialPosition(),
                 Collections.unmodifiableCollection(this.obstacles),
                 Collections.unmodifiableCollection(this.playerTargets));
         this.playerHealth = new MegaHealthBar(this.t_tiles2,
@@ -390,7 +392,7 @@ public class SeeteufelScreen implements GameScreen {
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.currentMap.render(deltaTime, renderer);
+        this.map1.render(deltaTime, renderer);
         
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
@@ -443,7 +445,7 @@ public class SeeteufelScreen implements GameScreen {
             if (room1Exit.getDoorState() == Door.DoorState.OPEN) {
                 if (room1Exit.getHitBox().overlaps(box) &&
                         Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                    this.currentMap = map2;
+                    this.currentMap = 2;
                     this.setupMap2();
                 }
             }
@@ -489,19 +491,12 @@ public class SeeteufelScreen implements GameScreen {
         this.room2Entrance = new Door(this.t_tiles2, this.doorOpen,
                 this.doorClose, (int) map2InitPos.x, SecondMap.GROUND_DIM);
         this.room2Entrance.setIsOpen(DoorState.SHUT, false);
-        Rectangle highestBlock = this.seeteufelTargets.peek().removeLast()
-                .getHitArea()[0];
-        this.room2Exit = new Door(this.t_tiles2, this.doorOpen, this.doorClose,
-                (int) highestBlock.x, (int) highestBlock.y
-                        + SecondMap.GROUND_DIM);
-        this.room2Exit.setIsOpen(DoorState.OPEN, false);
-        this.entities.add(this.room2Entrance);
-        this.entities.add(this.room2Exit);
+        this.seeteufelTargets.peek().removeLast();
         
         // Create decorative waterfall.
         this.room2Fall = new InfinityWaterfall(
                 this.waterfall, this.waterfallEnd, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT, 
-                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_WATER_Y));
+                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET));
     }
     
     /** Add player dynamic obstacles. Also generates Seeteufel target list(s).*/
@@ -656,12 +651,13 @@ public class SeeteufelScreen implements GameScreen {
                 if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
                     float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
                     this.map2Y += movement;
-                    this.map2WaterY += movement;
                 } else {
                     float movement = SeeteufelScreen.MAP2_CAM_SPEED_1 * deltaTime;
                     this.map2Y += movement;
-                    this.map2WaterY += movement;
                 }
+                this.map2WaterY = this.map2Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
+            } else if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
+                this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
             }
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
             // Activate chase sequence.
@@ -686,7 +682,7 @@ public class SeeteufelScreen implements GameScreen {
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.currentMap.render(deltaTime, renderer);
+        this.map2.render(deltaTime, renderer);
         
         // Draw falls.
         this.room2Fall.update(deltaTime);
@@ -765,16 +761,14 @@ public class SeeteufelScreen implements GameScreen {
         }
         // Exit the room. Do setup for room 3.
         if (!this.player.getIsInAir() &&
-                Gdx.input.isKeyPressed(Input.Keys.DOWN) &&
-                room2Exit.getHitBox().overlaps(this.player.getHitArea()[0])) {
-            this.currentMap = this.map3;
+                playerPos.y >= SeeteufelScreen.MAP2_HEIGHT * SecondMap.GROUND_DIM) {
+            this.currentMap = 3;
             this.setupMap3();
         }
         
         // Water, which follows just below the camera.
         renderer.drawRect(ShapeType.Filled, SeeteufelScreen.WATER_COLOR,
-                orthoCam.position.x - Gdx.graphics.getWidth() / 2, 0,
-                Gdx.graphics.getWidth(), this.map2WaterY);
+                0, 0, SeeteufelScreen.MAP2_WATER_WIDTH, this.map2WaterY);
         
         // Health bar.
         this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
@@ -805,15 +799,39 @@ public class SeeteufelScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+//        Vector3 playerPos = this.player.getPosition();
+//        orthoCam.position.x = SeeteufelScreen.MAP2_CAM_X;
+//        orthoCam.position.y = (float) Math.floor(this.map2Y + this.map2CameraShake);
+//        orthoCam.update();
+//        if (this.map2CameraShake > 0) {
+//            this.map2CameraShake = -this.map2CameraShake + SeeteufelScreen.MAP2_CAMERA_SHAKE_FALLOFF;
+//        } else if (this.map2CameraShake < 0) {
+//            this.map2CameraShake = -this.map2CameraShake - SeeteufelScreen.MAP2_CAMERA_SHAKE_FALLOFF;
+//        }
+        
+        if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
+            this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
+        }
         
         perspCam.position.z = 1000;
+        perspCam.position.y = 2000;
         perspCam.update(false);
         
         // Create Renderer.
         Renderer renderer = new Renderer(perspCam.combined);
         
-        // Draw the map
-        this.currentMap.render(deltaTime, renderer);
+        // Draw the map.
+        this.map2.render(deltaTime, renderer);
+        
+        // Draw Seeteufel.
+        this.seeFront.setTargetY((int)this.map2WaterY);
+        this.seeFront.update(deltaTime);
+        this.seeFront.draw(renderer);
+        
+        // Draw water.
+        renderer.drawRect(ShapeType.Filled, SeeteufelScreen.WATER_COLOR,
+                0, SeeteufelScreen.MAP3_WATER_BASE_X, SeeteufelScreen.MAP2_WATER_WIDTH,
+                this.map2WaterY - SeeteufelScreen.MAP3_WATER_BASE_X);
     }
     
 }

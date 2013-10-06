@@ -12,13 +12,16 @@ public class SecondMap extends GameMap {
     
     private int height;
     private Sprite wallSprite;
-    private Sprite smallMazeSprite;;
+    private Sprite shaftBackgroundSprite;
+    private Sprite arenaBackgroundSprite;
 
     public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
             GROUND_ORIGIN_Y = 0, // Origin Y point
             GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 20; // Columns of ground tile
+            GROUND_WIDTH = 20, // Columns of ground tile
+            ARENA_HEIGHT = 20, // Height of upper arena from top of shaft
+            ARENA_WIDTH = 10; // Ground area of upper area
     
     private Rectangle[] obstacles = null;
     private static final Vector3 INIT_POS = new Vector3(FirstMap.GROUND_DIM, FirstMap.GROUND_DIM / 2, 0); 
@@ -32,16 +35,24 @@ public class SecondMap extends GameMap {
         this.height = height;
         
         this.wallSprite = new Sprite(tiles.wallTex);
-        this.smallMazeSprite = new Sprite(tiles.smallMazeTex);
-        this.smallMazeSprite.setBounds(GROUND_ORIGIN_X + GROUND_DIM, GROUND_START_Y, (GROUND_WIDTH - 2) * GROUND_DIM, (this.height - 1) * GROUND_DIM);
-        this.smallMazeSprite.setU2(GROUND_WIDTH - 2);
-        this.smallMazeSprite.setV2(this.height - 1);
+        this.shaftBackgroundSprite = new Sprite(tiles.smallMazeTex);
+        this.shaftBackgroundSprite.setBounds(GROUND_DIM, GROUND_START_Y, (GROUND_WIDTH - 2) * GROUND_DIM, (this.height - 1) * GROUND_DIM);
+        this.shaftBackgroundSprite.setU2(GROUND_WIDTH - 2);
+        this.shaftBackgroundSprite.setV2(this.height - 1);
+        this.arenaBackgroundSprite = new Sprite(tiles.smallMazeTex);
+        this.arenaBackgroundSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, (ARENA_HEIGHT - 1) * GROUND_DIM);
+        this.arenaBackgroundSprite.setU2(GROUND_WIDTH + ARENA_WIDTH - 1);
+        this.arenaBackgroundSprite.setV2(ARENA_HEIGHT - 1);
+        
         
         this.obstacles = new Rectangle [] {
                 new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH * GROUND_DIM, GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM, this.height * GROUND_DIM),
-                new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, GROUND_DIM, this.height * GROUND_DIM),
-                new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y + height * GROUND_DIM, GROUND_DIM * GROUND_WIDTH, GROUND_DIM)
+                new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, GROUND_DIM, (this.height + ARENA_HEIGHT) * GROUND_DIM),
+                //new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y + height * GROUND_DIM, GROUND_DIM * GROUND_WIDTH, GROUND_DIM)
+                new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + 1) * GROUND_DIM, GROUND_DIM),
+                new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, GROUND_DIM, ARENA_HEIGHT * GROUND_DIM),
+                //new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, GROUND_DIM, this.height * GROUND_DIM),
         };
     }
     
@@ -59,28 +70,17 @@ public class SecondMap extends GameMap {
     public void render(float deltaTime, Renderer renderer) {
 
         // Background.
-        renderer.drawSprite(this.smallMazeSprite);
+        renderer.drawSprite(this.shaftBackgroundSprite);
+        renderer.drawSprite(this.arenaBackgroundSprite);
 
-        // Floor.
-        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM);
-        this.wallSprite.setU2(GROUND_WIDTH);
-        this.wallSprite.setV2(1);
-        renderer.drawSprite(this.wallSprite);
-
-        // Walls.
-        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM, GROUND_DIM, (this.height - 1) * GROUND_DIM);
-        this.wallSprite.setU2(1);
-        this.wallSprite.setV2(this.height - 1);
-        renderer.drawSprite(this.wallSprite);
-        this.wallSprite.setBounds(GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH - 1), GROUND_ORIGIN_Y + GROUND_DIM, GROUND_DIM, (this.height - 1) * GROUND_DIM);
-        renderer.drawSprite(this.wallSprite);
-
-        // Ceiling.
-        this.wallSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + GROUND_DIM * this.height, GROUND_DIM * GROUND_WIDTH, GROUND_DIM);
-        this.wallSprite.setU2(GROUND_WIDTH);
-        this.wallSprite.setV2(1);
-        renderer.drawSprite(this.wallSprite);
-
+        // Walls
+        for (Rectangle rect : this.obstacles) {
+            this.wallSprite.setBounds(rect.x, rect.y, rect.width, rect.height);
+            this.wallSprite.setU2(rect.width / GROUND_DIM);
+            this.wallSprite.setV2(rect.height / GROUND_DIM);
+            renderer.drawSprite(this.wallSprite);
+        }
+        
         // Debug
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
