@@ -39,7 +39,6 @@ import com.me.mygdxgame.screens.seeteufelscreen.maps.ThirdMap;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
-import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
 import com.me.mygdxgame.utilities.Renderer;
@@ -114,6 +113,7 @@ public class SeeteufelScreen implements GameScreen {
     private Sound doorOpen;
     private Sound doorClose;
     private Sound itemGet;
+    private Sound enemyDamage;
     private Music music1;
     private Music music2;
     
@@ -223,6 +223,7 @@ public class SeeteufelScreen implements GameScreen {
         this.doorOpen = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
         this.doorClose = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg"));
         this.itemGet = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
+        this.enemyDamage = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-reaverhurt1.ogg"));
         this.font = new BitmapFont(Gdx.files.internal("data/emulogic.fnt"), Gdx.files.internal("data/emulogic.png"), false);
         
         // Play all sounds once to force them to be loaded, since the HTML
@@ -803,10 +804,6 @@ public class SeeteufelScreen implements GameScreen {
         map3CamPos.x = SeeteufelScreen.MAP2_CAM_X;
         map3CamPos.y = this.map2Y;
         this.obstacles.remove(this.map2Ceiling);
-        Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
-        seeSideStartPos.y = this.seeFront.getTargetY() - SeeteufelFront.TARGET_Y_OFFSET;
-        this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
-                this.explosion, this.bombShoot, seeSideStartPos);
         
         for (GameEntity entity : this.entities) {
             // TODO hackish. Get rid of this instanceof.
@@ -823,6 +820,15 @@ public class SeeteufelScreen implements GameScreen {
         this.explosion.play();
         
         this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, ENEMY_HEALTH_Y);
+        
+        this.seeteufelTargets.offer(new LinkedList<Damageable>());
+        this.seeteufelTargets.get(0).add(this.player);
+        Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
+        seeSideStartPos.y = this.seeFront.getTargetY() - SeeteufelFront.TARGET_Y_OFFSET;
+        this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
+                this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos, this.seeteufelTargets.get(0), this.obstacles);
+        
+        this.playerTargets.add(this.seeSide);
     }
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -904,7 +910,7 @@ public class SeeteufelScreen implements GameScreen {
                     ENEMY_HEALTH_TARGET_X - this.enemyHealth.getX());
             this.enemyHealth.setPosition(this.enemyHealth.getX() + moveAmount, this.enemyHealth.getY());
         }
-        this.enemyHealth.setValue(1);
+        this.enemyHealth.setValue((float)this.seeSide.getHealth() / this.seeSide.getMaxHealth());
         this.enemyHealth.draw(this.hudRenderer);
         
         // Remove or add to generic entity list as needed.

@@ -20,7 +20,7 @@ public class SecondMap extends GameMap {
             GROUND_ORIGIN_Y = 0, // Origin Y point
             GROUND_HEIGHT = 1, // Rows of ground tile
             GROUND_WIDTH = 20, // Columns of ground tile
-            ARENA_HEIGHT = 20, // Height of upper arena from top of shaft
+            ARENA_HEIGHT = 10, // Height of upper arena from top of shaft
             ARENA_WIDTH = 10; // Ground area of upper area
     
     private Rectangle[] obstacles = null;
@@ -52,7 +52,7 @@ public class SecondMap extends GameMap {
                 //new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y + height * GROUND_DIM, GROUND_DIM * GROUND_WIDTH, GROUND_DIM)
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + 1) * GROUND_DIM, GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, GROUND_DIM, ARENA_HEIGHT * GROUND_DIM),
-                //new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH-1), GROUND_ORIGIN_Y, GROUND_DIM, this.height * GROUND_DIM),
+                new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + (this.height + ARENA_HEIGHT - 1) * GROUND_DIM, GROUND_DIM * (ARENA_WIDTH + GROUND_WIDTH), GROUND_DIM),
         };
     }
     

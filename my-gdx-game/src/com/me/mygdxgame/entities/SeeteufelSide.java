@@ -1,5 +1,6 @@
 package com.me.mygdxgame.entities;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -8,7 +9,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -21,12 +21,15 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int MAX_HEALTH = 200;
     private static final int FRONT_ARM_FRAMERATE = 6;
     private static final int SIDE_ARM_FRAMERATE = 10;
+    private static final int OBSTACLE_HITBOX_WIDTH = 140;
+    private static final float MOVE_SPEED = 2f;
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
     
     private Vector3 position;
     
-    private LinkedList<Damageable> targets = new LinkedList<Damageable>();
+    private Collection<Damageable> targets;
+    private Collection<Rectangle> obstacles;
     
     private TextureRegion front = null;
     private TextureRegion[] frontArm = new TextureRegion[6];
@@ -36,6 +39,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     
     private Sound explosion = null;
     private Sound shoot = null;
+    private Sound damage = null;
     
     private boolean frontArmAnimDir = true;
     private int frontArmFrame = 0;
@@ -45,20 +49,26 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private int targetY = 0;
     private EntityState state = EntityState.Running;
     private int health = MAX_HEALTH;
+    private boolean moving = true;
     
     private float attackDelayTimer = 0;
-    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
+    private LinkedList<GameEntity> createdEntities;
     
     private Rectangle[] hitArea = new Rectangle[1];
+    private Rectangle movementHitArea = new Rectangle(0, 0, 0, 0);
     
     public SeeteufelSide(Texture spritesheet, Texture rocketSpritesheet,
-            Sound explosion, Sound shoot, Vector3 position) {
+            Sound explosion, Sound shoot, Sound damage, Vector3 position, Collection<Damageable> targets, Collection<Rectangle> obstacles) {
         this.position = new Vector3(position);
+        this.targets = targets;
+        this.obstacles = obstacles;
         
         this.hitArea[0] = new Rectangle(position.x, position.y, 72, 115);
+        this.movementHitArea = new Rectangle(0, 0, OBSTACLE_HITBOX_WIDTH, 115);
         
         this.explosion = explosion;
         this.shoot = shoot;
+        this.damage = damage;
         
         this.front = new TextureRegion(spritesheet, 0, 211, 72, 115);
         
@@ -99,6 +109,22 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 this.state = EntityState.Destroyed;
                 return;
             }
+            
+            if (this.moving) {
+                // Move left until you hit an obstacle.
+                this.position.x -= SeeteufelSide.MOVE_SPEED;
+                this.movementHitArea.x = this.position.x - OBSTACLE_HITBOX_WIDTH / 2;
+                this.movementHitArea.y = this.position.y;
+                for (Rectangle rect : this.obstacles) {
+                    if (this.movementHitArea.overlaps(rect)) {
+                        this.moving = false;
+                        break;
+                    }
+                }
+            }
+            
+            this.hitArea[0].x = this.position.x;
+            this.hitArea[0].y = this.position.y;
         }
     }
 
@@ -219,7 +245,10 @@ public class SeeteufelSide implements GameEntity, Damageable {
 
     @Override
     public void damage(int damage) {
-        this.health -= damage;
+        if (damage > 0) {
+            this.health -= damage;
+            this.damage.play();
+        }
     }
 
 
