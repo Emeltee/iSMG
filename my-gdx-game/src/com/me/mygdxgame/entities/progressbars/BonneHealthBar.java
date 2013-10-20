@@ -68,7 +68,7 @@ public class BonneHealthBar implements ProgressBar {
     @Override
     public void setValue(float value) {
         // Clamp to [0, 1].
-        this.value = Math.max(1, Math.min(0, value));
+        this.value = Math.max(0.0f, Math.min(1.0f, value));
         this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_W));
     }
 

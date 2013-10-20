@@ -77,7 +77,7 @@ public class MegaHealthBar implements ProgressBar {
     @Override
     public void setValue(float value) {
         // Clamp to range [0, 1].
-        this.value = Math.max(1, Math.min(0, value));
+        this.value = Math.max(1, value);
         this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_H));
     }
 
