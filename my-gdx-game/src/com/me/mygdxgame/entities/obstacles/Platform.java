@@ -129,7 +129,6 @@ public class Platform implements GameEntity, Damageable {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        this.status = EntityState.Destroyed;
     }
 }

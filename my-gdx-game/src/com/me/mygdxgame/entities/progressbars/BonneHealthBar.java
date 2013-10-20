@@ -16,10 +16,10 @@ public class BonneHealthBar implements ProgressBar {
     public static final int LOGO_H = 32;
     
     // Offset distance for the healthbar from the extracted TextureRegion
-    private static final int BAR_W = 200;
-    private static final int BAR_H = 6;
-    private static final int BAR_X = 4 - BAR_W;
-    private static final int BAR_Y = 14;    
+    public static final int BAR_W = 600;
+    public static final int BAR_H = 12;
+    public static final int BAR_X = LOGO_W / 2;
+    public static final int BAR_Y = LOGO_W / 2 - BAR_H / 2;    
     
     private static final Color BAR_COLOR = Color.RED;
     private static final Color BAR_OUTLINE = Color.BLACK;
@@ -37,6 +37,19 @@ public class BonneHealthBar implements ProgressBar {
         this.y = y;
     }
     
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public int getX() {
+        return this.x;
+    }
+    
+    public int getY() {
+        return this.y;
+    }
+    
     @Override
     public void update(float deltaTime) {
         // N/A
@@ -44,11 +57,9 @@ public class BonneHealthBar implements ProgressBar {
 
     @Override
     public void draw(Renderer renderer) {
-        // Since the bar draws away from the logo to the left, need to manually adjust coords
-        int temp_offset = BAR_W - this.barSize;
-        
         // Draw the bar
-        renderer.drawRect(ShapeType.Filled, BAR_COLOR, this.x + BAR_X + temp_offset, this.y + BAR_Y, this.barSize, BAR_H);
+        renderer.drawRect(ShapeType.Filled, BAR_COLOR, this.x + BAR_X, this.y + BAR_Y, this.barSize, BAR_H);
+        renderer.drawRect(ShapeType.Line, BAR_OUTLINE, this.x + BAR_X, this.y + BAR_Y, this.barSize, BAR_H);
         
         // Draw the logo
         renderer.drawRegion(this.logo, this.x, this.y);
@@ -58,7 +69,7 @@ public class BonneHealthBar implements ProgressBar {
     public void setValue(float value) {
         // Clamp to [0, 1].
         this.value = Math.max(1, Math.min(0, value));
-        this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_H));
+        this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_W));
     }
 
     @Override

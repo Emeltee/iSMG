@@ -33,7 +33,7 @@ public class Renderer {
     public Renderer(Matrix4 transformMatrix) {
         
         // Save transform matrix.
-        this.transformMatrix = transformMatrix;
+        this.transformMatrix = new Matrix4(transformMatrix);
 
         // Save ID, which is used to track which Renderer's matrix is currently
         // loaded.
