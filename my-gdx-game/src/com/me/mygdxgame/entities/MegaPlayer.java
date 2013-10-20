@@ -32,7 +32,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float MAX_BUSTER_COOLDOWN = 0.3f;
     private static final float MAX_FLINCH_TIME = 0.4f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
-    private static final float MAX_SPEED = 8.0f;
+    public static final float MAX_SPEED = 8.0f;
     private static final float MAX_FALL_SPEED = 18.0f;
     private static final float MAX_UNDERWATER_FALL_SPEED = 6.0f;
     private static final float MAX_JUMP_THRUST_TIME = 0.225f;
@@ -309,11 +309,8 @@ public class MegaPlayer implements GameEntity, Damageable {
         }
         
         // Move according to velocity, and check for obstacle collisions.
-//        if (this.isUnderwater) {
-//            this.position.y += this.velocity.y / MegaPlayer.WATER_MOVEMENT_FACTOR;
-//        } else {
-            this.position.y += this.velocity.y;
-//        }
+        // Vertical movement not affected by water.
+        this.position.y += this.velocity.y;
         this.checkCollisionsY();
         if (this.isUnderwater) {
             this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
