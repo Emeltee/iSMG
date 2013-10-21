@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.projectiles.Bomb;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -23,8 +24,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int SIDE_ARM_FRAMERATE = 10;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
     private static final float MOVE_SPEED = 2f;
-    private static final float ATTACK_DELAY = 0.5f;
-    private static final float ROCKET_SPEED = 200.0f;
+    private static final float ATTACK_DELAY = 0.4f;
+    private static final int ROCKET_POWER = 10;
+    private static final int ROCKET_KNOCKBACK = 15;
     
     private Vector3 position;
     
@@ -52,7 +54,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private boolean moving = true;
     
     private float attackDelayTimer = 0;
-    private LinkedList<GameEntity> createdEntities;
+    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
     
     private Rectangle[] hitArea = new Rectangle[1];
     private Rectangle movementHitArea = new Rectangle(0, 0, 0, 0);
@@ -121,10 +123,25 @@ public class SeeteufelSide implements GameEntity, Damageable {
                         break;
                     }
                 }
+                this.hitArea[0].x = this.position.x;
+                this.hitArea[0].y = this.position.y;
+            } else {
+                // Attack.
+                this.attackDelayTimer += deltaTime;
+                if (this.attackDelayTimer > ATTACK_DELAY) {
+                    this.shoot.play();
+                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 180 - 30), 200.0f, 0);
+                    Damageable[] currentTargets = new Damageable[this.targets.size()];
+                    currentTargets = this.targets.toArray(currentTargets);
+                    Rectangle[] currentObstacles= new Rectangle[this.obstacles.size()];
+                    currentObstacles = this.obstacles.toArray(currentObstacles);
+                    this.createdEntities.offer(
+                            new Bomb(this.rocketSpritesheet, this.explosion, this.position,
+                                    rocketVel, ROCKET_POWER, ROCKET_KNOCKBACK,
+                                    currentObstacles, currentTargets));
+                    this.attackDelayTimer = 0;
+                }
             }
-            
-            this.hitArea[0].x = this.position.x;
-            this.hitArea[0].y = this.position.y;
         }
     }
 
@@ -239,7 +256,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
         if (this.createdEntities.isEmpty()) {
             throw new NoSuchElementException("No entities to return.");
         }
-        return (GameEntity[]) this.createdEntities.toArray();
+        GameEntity[] newEntities = new GameEntity[this.createdEntities.size()];
+        return this.createdEntities.toArray(newEntities);
     }
 
 

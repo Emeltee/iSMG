@@ -22,7 +22,9 @@ public class Bomb implements GameEntity {
     public static final int BOMB_W = 16;
     public static final int BOMB_H = 16;
 
-    private static final float GRAVITY = 30;
+    private static final float GRAVITY = 250;
+    private static final int EXPLOSION_EXPANSION = 30;
+    private static final float MIN_GRAV = -180.0f;
     
     /** TextureRegion representing the idle frame. */
     private TextureRegion bomb;
@@ -44,7 +46,7 @@ public class Bomb implements GameEntity {
     /** Previous z-coord for collision detection */
     private float prevZ;
     /** Hit box. */
-    private Rectangle hitBox = null;
+    private Rectangle hitBox = new Rectangle(0, 0, BOMB_W, BOMB_H);
     /** Damage done to targets. */
     private int power = 0;
     /** Force to apply upon hitting a target. */
@@ -58,11 +60,12 @@ public class Bomb implements GameEntity {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
-        this.velocity = velocity;
+        this.velocity.set(velocity);
         this.bomb = new TextureRegion(this.spriteSheet, BOMB_X, BOMB_Y, BOMB_W, BOMB_H);
         this.obstacles = obstacles;
         this.power = power;
         this.knockback = knockback;
+        this.targets = targets;
         this.status = EntityState.Running;
     }
     
@@ -75,7 +78,7 @@ public class Bomb implements GameEntity {
             // Move.
             this.position.x += this.velocity.x * deltaTime;;
             this.position.y +=  this.velocity.y * deltaTime;
-            this.velocity.y -= GRAVITY * deltaTime;
+            this.velocity.y = Math.max(MIN_GRAV, this.velocity.y - GRAVITY * deltaTime);
             this.position.z += this.velocity.z * deltaTime;
             this.hitBox.setPosition(this.position.x, this.position.y);
             
@@ -86,7 +89,13 @@ public class Bomb implements GameEntity {
                          || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
                          || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
                     explode();
-                    return;
+                    // Expand hitbox on collision for check against targets.
+                    int hitboxOffset = EXPLOSION_EXPANSION / 2;
+                    this.hitBox.x -= hitboxOffset;
+                    this.hitBox.y -= hitboxOffset;
+                    this.hitBox.width += EXPLOSION_EXPANSION;
+                    this.hitBox.height += EXPLOSION_EXPANSION;
+                    break;
                 }
             }
             

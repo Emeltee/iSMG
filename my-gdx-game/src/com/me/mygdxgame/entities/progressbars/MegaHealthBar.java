@@ -15,7 +15,7 @@ public class MegaHealthBar implements ProgressBar {
     public static final int CHROME_H = 68;
     public static final int CHROME_W = 14;
 
-   // Offset distance for the healthbar from the Chrome
+    // Offset distance for the healthbar from the Chrome
     private static final int BAR_X = 4;
     private static final int BAR_Y = 20;
     private static final int BAR_W = 7;
@@ -76,8 +76,8 @@ public class MegaHealthBar implements ProgressBar {
 
     @Override
     public void setValue(float value) {
-        // Clamp to range [0, 1].
-        this.value = Math.max(1, value);
+        // Clamp to [0, 1].
+        this.value = Math.max(0.0f, Math.min(1.0f, value));
         this.barSize = Math.max(0, (int) Math.ceil(this.value * BAR_H));
     }
 
