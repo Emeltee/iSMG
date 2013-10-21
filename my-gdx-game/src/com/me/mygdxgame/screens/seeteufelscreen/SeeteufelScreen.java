@@ -35,7 +35,6 @@ import com.me.mygdxgame.entities.progressbars.BonneHealthBar;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
-import com.me.mygdxgame.screens.seeteufelscreen.maps.ThirdMap;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -89,7 +88,6 @@ public class SeeteufelScreen implements GameScreen {
     // Each of the maps and a holder for the current map
     private FirstMap map1;
     private SecondMap map2;
-    private ThirdMap map3;
     private int currentMap;
     private float map2Y = MAP2_INITIAL_CAM_Y;
     private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
@@ -260,7 +258,6 @@ public class SeeteufelScreen implements GameScreen {
         // Load maps.
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
         this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
-        this.map3 = new ThirdMap(this.t_tiles1, this.mapTiles);
         this.currentMap = 1;
     }
 
@@ -430,7 +427,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Health bar.
         this.playerHealth.setInDanger(false);
-        this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
+        this.playerHealth.setValue((float)this.player.getHealth() / this.player.getMaxHealth());
         this.playerHealth.draw(this.hudRenderer);
         
         // Remove or add to generic entity list as needed.
@@ -774,7 +771,7 @@ public class SeeteufelScreen implements GameScreen {
                 0, 0, SeeteufelScreen.MAP2_WATER_WIDTH, this.map2WaterY);
         
         // Health bar.
-        this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
+        this.playerHealth.setValue((float)this.player.getHealth() / this.player.getMaxHealth());
         this.playerHealth.draw(this.hudRenderer);
         
         // Exit the room. Do setup for room 3.
@@ -896,6 +893,10 @@ public class SeeteufelScreen implements GameScreen {
         this.seeSide.setTargetY((int)this.map2WaterY);
         this.seeSide.update(deltaTime);
         this.seeSide.draw(renderer);
+        if (this.seeSide.hasCreatedEntities()) {
+            GameEntity[] newEntities = this.seeSide.getCreatedEntities();
+            this.toAdd.add(newEntities);
+        }
         
         // Draw water.
         renderer.drawRect(ShapeType.Filled, SeeteufelScreen.WATER_COLOR,
@@ -903,7 +904,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.map2WaterY - SeeteufelScreen.MAP3_WATER_BASE_X);
         
         // Health bars.
-        this.playerHealth.setValue(this.player.getHealth() / this.player.getMaxHealth());
+        this.playerHealth.setValue((float)this.player.getHealth() / this.player.getMaxHealth());
         this.playerHealth.draw(this.hudRenderer);
         if (this.enemyHealth.getX() < ENEMY_HEALTH_TARGET_X) {
             int moveAmount = (int) Math.min(ENEMY_HEALTHBAR_MOVE_SPEED,

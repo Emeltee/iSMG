@@ -1,6 +1,5 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,8 +26,6 @@ public class FirstMap extends GameMap {
     private TextureRegion greyBlockRegion;
     private TextureRegion pedistalRegion;
     private Sprite pillarSprite;
-    private TextureRegion pillarTopBaseRegion;
-    private TextureRegion pillarBottomBaseRegion;
 
     private TextureRegion grateRegion;
     private TextureRegion[] waterfall;
@@ -77,9 +74,6 @@ public class FirstMap extends GameMap {
         this.greyBlockRegion = new TextureRegion(tiles.greyBlockTex, 0, 0, GROUND_DIM, GROUND_DIM); // This could be a sprite but diagonalLeft/Right need to be updated..
         this.pedistalRegion = new TextureRegion(spriteSheet, 165, 0, 55, 17);
         this.grateRegion = new TextureRegion(spriteSheet, 22, 102, 23, 23);
-        this.pillarBottomBaseRegion = new TextureRegion(spriteSheet, 224, 160, 19, 15);
-        this.pillarTopBaseRegion = new TextureRegion(spriteSheet, 224, 160, 19, 15);
-        this.pillarTopBaseRegion.flip(false, true);
         this.waterfall = new TextureRegion[5];
         this.waterfall[0] = new TextureRegion(spriteSheet, 0, 125, 31, 84);
         this.waterfall[1] = new TextureRegion(spriteSheet, 32, 125, 31, 84);
@@ -129,23 +123,6 @@ public class FirstMap extends GameMap {
         // Alternate background for refractor.
         diagonalRight(renderer, this.greyBlockRegion, PLATFORM_START_X - (3 * GROUND_DIM), GROUND_START_Y, 5);
         diagonalLeft(renderer, this.greyBlockRegion, PLATFORM_START_X + (5 * GROUND_DIM), GROUND_START_Y, 4);
-             
-        /*
-        // Pillars.
-        for (int i = 0; i < 2; i++) { 
-            this.pillarSprite.setPosition(GROUND_ORIGIN_X - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
-            renderer.drawSprite(this.pillarSprite);
-        }
-        float collumnStartX = PLATFORM_START_X + GROUND_DIM * 8;
-        for (int i = 0; i < 8; i++) {
-            this.pillarSprite.setPosition(collumnStartX - 6 + this.pillarTopBaseRegion.getRegionWidth() * (2 * i), GROUND_START_Y);
-            renderer.drawSprite(this.pillarSprite);
-        }
-        checkerX(renderer, this.pillarBottomBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y, 2, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 2, 1);
-        checkerX(renderer, this.pillarBottomBaseRegion, PLATFORM_START_X + GROUND_DIM * 8, GROUND_START_Y, 8, 1);
-        checkerX(renderer, this.pillarTopBaseRegion, PLATFORM_START_X + GROUND_DIM *8, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM) - this.pillarTopBaseRegion.getRegionHeight(), 8, 1);
-        */
         
         // Ceiling and floor.
         renderer.drawSprite(this.rockSprite);
