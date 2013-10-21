@@ -920,6 +920,11 @@ public class SeeteufelScreen implements GameScreen {
         }
         this.toAdd.clear();
         this.toRemove.clear();
+        
+        // Victory condition.
+        if (this.seeSide.getState() == EntityState.Destroyed) {
+            this.state = GameState.Win;
+        }
     }
     
 }

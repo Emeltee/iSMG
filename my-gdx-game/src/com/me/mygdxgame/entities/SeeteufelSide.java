@@ -24,7 +24,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int SIDE_ARM_FRAMERATE = 10;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
     private static final float MOVE_SPEED = 2f;
-    private static final float ATTACK_DELAY = 0.4f;
+    private static final float ATTACK_DELAY = 0.25f;
     private static final int ROCKET_POWER = 10;
     private static final int ROCKET_KNOCKBACK = 15;
     
