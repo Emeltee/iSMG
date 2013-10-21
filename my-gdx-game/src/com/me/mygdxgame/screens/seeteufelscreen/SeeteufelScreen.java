@@ -254,6 +254,8 @@ public class SeeteufelScreen implements GameScreen {
         music1.stop();
         music2.play();
         music2.stop();
+        enemyDamage.play();
+        enemyDamage.stop();
         
         // Load maps.
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
