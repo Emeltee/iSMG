@@ -55,6 +55,25 @@ public class StonePillar implements GameEntity {
         renderer.drawRegion(this.lowerPillarBase, this.x, this.y);
         renderer.drawRegion(this.upperPillarBase, this.x, this.y + this.height - PILLAR_BASE_H);
     }
+    
+    /**
+     * Render just the vertical bit. Can be timed to reduce texture binding and
+     * possibly increase performance slightly.
+     * @param renderer Renderer to use.
+     */
+    public void renderBody(Renderer renderer) {
+        renderer.drawSprite(this.pillar);
+    }
+    
+    /**
+     * Render just the top and bottom bit. Can be timed to reduce texture
+     * binding and possibly increase performance slightly.
+     * @param renderer Renderer to use.
+     */
+    public void renderBases(Renderer renderer) {
+        renderer.drawRegion(this.lowerPillarBase, this.x, this.y);
+        renderer.drawRegion(this.upperPillarBase, this.x, this.y + this.height - PILLAR_BASE_H);
+    }
 
     @Override
     public EntityState getState() {

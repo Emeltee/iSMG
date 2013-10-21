@@ -13,7 +13,6 @@ import com.me.mygdxgame.entities.StonePillar;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.Renderer;
-import com.me.mygdxgame.utilities.Updatable;
 
 //TODO Horizontally tiled wallTex appear to have gaps between them.
 public class FirstMap extends GameMap {
@@ -29,7 +28,7 @@ public class FirstMap extends GameMap {
 
     private TextureRegion grateRegion;
     private TextureRegion[] waterfall;
-    private Updatable [] updatables;
+    private StonePillar [] updatables;
     
     private Rectangle[] obstacles = null;
 
@@ -92,14 +91,14 @@ public class FirstMap extends GameMap {
             new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
         };
         
-        List<Updatable> temp = new LinkedList<Updatable>();        
+        List<StonePillar> temp = new LinkedList<StonePillar>();        
         for (int i = 0; i < 2; i++) {
             temp.add(new StonePillar(spriteSheet, tiles, GROUND_ORIGIN_X + (2*i+1) * (GROUND_DIM/2) - (StonePillar.PILLAR_BASE_W / 2), GROUND_START_Y, 7*GROUND_DIM));
         }
         for (int i = 0; i < 8; i++) {
             temp.add(new StonePillar(spriteSheet, tiles,PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i), GROUND_START_Y, 7*GROUND_DIM));
         }
-        this.updatables = temp.toArray(new Updatable[temp.size()]);
+        this.updatables = temp.toArray(new StonePillar[temp.size()]);
         temp.clear();
         
     }
@@ -146,9 +145,11 @@ public class FirstMap extends GameMap {
         renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
         renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
         
-        for (Updatable u: this.updatables) {
-            u.update(deltaTime);
-            u.draw(renderer);
+        for (StonePillar pillar: this.updatables) {
+            pillar.renderBody(renderer);
+        }
+        for (StonePillar pillar: this.updatables) {
+            pillar.renderBases(renderer);
         }
         
         // Update animation frame
