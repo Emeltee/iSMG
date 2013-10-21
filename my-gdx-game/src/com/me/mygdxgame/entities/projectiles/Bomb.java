@@ -110,7 +110,7 @@ public class Bomb implements GameEntity {
                              || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
                         // Apply damage and force, and explode. Don't apply force on z.
                         d.damage(this.power);
-                        d.applyForce(new Vector3(this.position.x - r.x, this.position.y - r.y, 0).nor().scl(this.knockback));
+                        d.applyForce(new Vector3(r.x - this.position.x, r.y - this.position.y, 0).nor().scl(this.knockback));
                         explode();
                         return;
                     }

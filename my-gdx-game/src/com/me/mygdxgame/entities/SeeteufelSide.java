@@ -130,7 +130,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 this.attackDelayTimer += deltaTime;
                 if (this.attackDelayTimer > ATTACK_DELAY) {
                     this.shoot.play();
-                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 180 - 30), 200.0f, 0);
+                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 50), 250.0f, 0);
                     Damageable[] currentTargets = new Damageable[this.targets.size()];
                     currentTargets = this.targets.toArray(currentTargets);
                     Rectangle[] currentObstacles= new Rectangle[this.obstacles.size()];
@@ -257,7 +257,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
             throw new NoSuchElementException("No entities to return.");
         }
         GameEntity[] newEntities = new GameEntity[this.createdEntities.size()];
-        return this.createdEntities.toArray(newEntities);
+        newEntities = this.createdEntities.toArray(newEntities);
+        this.createdEntities.clear();
+        return newEntities;
     }
 
 

@@ -894,8 +894,7 @@ public class SeeteufelScreen implements GameScreen {
         this.seeSide.update(deltaTime);
         this.seeSide.draw(renderer);
         if (this.seeSide.hasCreatedEntities()) {
-            GameEntity[] newEntities = this.seeSide.getCreatedEntities();
-            this.toAdd.add(newEntities);
+            this.toAdd.addFirst(this.seeSide.getCreatedEntities());
         }
         
         // Draw water.
