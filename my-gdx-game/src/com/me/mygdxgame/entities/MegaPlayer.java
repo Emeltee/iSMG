@@ -44,7 +44,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int BASE_SHOT_POWER = 1;
     private static final float SHOT_OFFSET_Y = 16;
     private static final float SHOT_OFFSET_X = 16;
-    private static final float BASE_SHOT_RANGE = 350;
+    private static final float BASE_SHOT_RANGE = 300;
     private static final float WATER_MOVEMENT_FACTOR = 1.5f;
     
     private Vector3 position = new Vector3();
