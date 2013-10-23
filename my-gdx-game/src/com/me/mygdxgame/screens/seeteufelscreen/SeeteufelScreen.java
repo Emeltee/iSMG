@@ -81,6 +81,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_WATER_WIDTH = SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM;
     private static final int MAP3_WATER_BASE_X = MAP2_PIXEL_HEIGHT - 500;
     private static final int MAP3_CAM_Y = 1700;
+    private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
     
     // State.
     private GameState state = GameState.Running;
@@ -287,6 +288,7 @@ public class SeeteufelScreen implements GameScreen {
         this.doorClose.dispose(); 
         this.itemGet.dispose();
         this.font.dispose();
+        this.enemyDamage.dispose();
     }
 
     @Override
@@ -381,9 +383,8 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void updateMap1(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
-        // Update camera.
+        // Update camera. Clamp position at edges of room.
         orthoCam.position.x = this.player.getPosition().x;
-        
         if ((orthoCam.position.x - MyGdxGame.SCREEN_WIDTH / 2.0f) <= FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) {
             orthoCam.position.x = (FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) + MyGdxGame.SCREEN_WIDTH / 2.0f;
         } else if ((orthoCam.position.x + MyGdxGame.SCREEN_WIDTH / 2.0f) >= FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) {
@@ -407,8 +408,10 @@ public class SeeteufelScreen implements GameScreen {
             e.update(deltaTime);
             e.draw(renderer);            
             if (e.getState() == EntityState.Destroyed) {
+                // TODO, Hackish.
                 if (e instanceof WatchNadia) {
                     this.player.setGeminiEnabled(true);
+                    this.itemGet.play(0.5f);
                 }
                 this.toRemove.addFirst(e);              
             }
@@ -492,14 +495,11 @@ public class SeeteufelScreen implements GameScreen {
         // Set player state and initial position.
         Vector3 map2InitPos = this.map2.getInitialPosition();
         this.player.setPosition(map2InitPos);
-        this.player.setIsUnderwater(true, false);
 
-        // Add doors. Also, remove the highest block on the last staircase,
-        // since the exit will be there.
+        // Add doors.
         this.room2Entrance = new Door(this.t_tiles2, this.doorOpen,
-                this.doorClose, (int) map2InitPos.x, SecondMap.GROUND_DIM);
+                this.doorClose, SecondMap.GROUND_DIM, SecondMap.GROUND_DIM * (SecondMap.ENTRANCE_PLAT_HEIGHT + 1));
         this.room2Entrance.setIsOpen(DoorState.SHUT, false);
-        this.seeteufelTargets.peek().removeLast();
         
         // Create decorative waterfall.
         this.room2Fall = new InfinityWaterfall(
@@ -651,8 +651,8 @@ public class SeeteufelScreen implements GameScreen {
         // Activate flooding once player moves above certain x.
         if (this.isMap2Flooding) {
             if (!this.music1.isPlaying() && !this.music2.isPlaying()) {
-                this.music2.setLooping(true);
                 this.music2.play();
+                this.music2.setLooping(true);
             }
             if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                 // Move cam faster once you reach a certain point.
@@ -691,6 +691,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw the map
         this.map2.render(deltaTime, renderer);
+        this.room2Entrance.draw(renderer);
         
         // Draw falls.
         this.room2Fall.update(deltaTime);
@@ -834,13 +835,19 @@ public class SeeteufelScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        // Keep the music playing. Not sure the loop option is working properly.
+        if (!this.music2.isPlaying()) {
+            this.music2.setLooping(true);
+            this.music2.play();
+        }
+        
         // If water has not yet reached the top of the shaft, keep raising it.
         if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
             this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
             this.seeFront.setTargetY((int)map2WaterY);
         }
         
-        // Have camera track player.
+        // Have camera track player. Clamp at edges of room.
         Vector3 playerPos = this.player.getPosition();
         if (map3CamPos.x > playerPos.x) {
             map3CamPos.x -= Math.min(MegaPlayer.MAX_SPEED, map3CamPos.x - playerPos.x);
@@ -849,6 +856,9 @@ public class SeeteufelScreen implements GameScreen {
         }
         if (map3CamPos.y < MAP3_CAM_Y) {
             map3CamPos.y += Math.min(MegaPlayer.MAX_SPEED, MAP3_CAM_Y - map3CamPos.y);
+        }
+        if (map3CamPos.x < MAP3_CAM_MIN_X) {
+            map3CamPos.x = MAP3_CAM_MIN_X;
         }
         orthoCam.position.x = map3CamPos.x;
         orthoCam.position.y = map3CamPos.y;

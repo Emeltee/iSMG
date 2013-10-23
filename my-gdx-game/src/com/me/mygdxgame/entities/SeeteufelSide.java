@@ -19,7 +19,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
 
     public static final int TARGET_Y_OFFSET = 20;
     
-    private static final int MAX_HEALTH = 200;
+    private static final int MAX_HEALTH = 150;
     private static final int FRONT_ARM_FRAMERATE = 6;
     private static final int SIDE_ARM_FRAMERATE = 10;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
