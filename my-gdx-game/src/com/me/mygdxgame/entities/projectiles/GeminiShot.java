@@ -49,14 +49,14 @@ public class GeminiShot extends BusterShot {
     @Override
     public void update(float deltaTime) {
         
-        if (this.status == EntityState.Running) {
+        if (this.state == EntityState.Running) {
             
             //Calculate distance to travel and check if range has been traveled.
             //float toTravel = Math.min(this.speed * deltaTime, GeminiShot.MAX_MOVEMEMT);
             float toTravel = this.speed * deltaTime;
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
-                this.status = EntityState.Destroyed;
+                this.state = EntityState.Destroyed;
                 GeminiShot.currentShots--;
                 this.missSound.play();
                 return;
@@ -95,8 +95,8 @@ public class GeminiShot extends BusterShot {
                 Rectangle[] hitAreas = target.getHitArea();
                 for (Rectangle hitBox : hitAreas) {
                     if (hitBox.overlaps(this.hitBox)) {
-                        target.damage(this.power);
-                        this.status = EntityState.Destroyed;
+                        target.damage(this);
+                        this.state = EntityState.Destroyed;
                         GeminiShot.currentShots--;
                         return;
                     }

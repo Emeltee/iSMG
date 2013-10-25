@@ -26,7 +26,7 @@ public class Explosion implements GameEntity {
     
     private TextureRegion[] splode;
     private Vector3 position;
-    private EntityState status;
+    private EntityState state;
     private short animationTimer;
     private int frame;
     private float spriteScale = 1.0f;
@@ -50,33 +50,33 @@ public class Explosion implements GameEntity {
         
         this.animationTimer = 0;
         this.frame = 0;
-        this.status = EntityState.Running;
+        this.state = EntityState.Running;
     }
     
     @Override
     public void update(float deltaTime) {
-        if (this.status == EntityState.Running){
+        if (this.state == EntityState.Running){
             if (animationTimer >= FRAMERATE) {
                 this.frame++;
                 this.animationTimer = 0;
             }        
                     
             animationTimer++;        
-            if (this.frame >= NUM_FRAMES) { this.status = EntityState.Destroyed; }
+            if (this.frame >= NUM_FRAMES) { this.state = EntityState.Destroyed; }
         }
 
     }
 
     @Override
     public void draw(Renderer renderer) {
-        if (this.status == EntityState.Running) {
+        if (this.state == EntityState.Running) {
             renderer.drawRegion(splode[this.frame], this.position.x, this.position.y, Color.WHITE, spriteScale, spriteScale, 0);
         }
     }
 
     @Override
     public EntityState getState() {
-        return this.status;
+        return this.state;
     }
 
     @Override
@@ -96,8 +96,22 @@ public class Explosion implements GameEntity {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        this.state = EntityState.Destroyed;
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+    @Override
+    public int getWidth() {
+        return (int) (this.spriteScale * Explosion.SPLODE_DIM);
+    }
+
+    @Override
+    public int getHeight() {
+        return this.getWidth();
     }
 
 }

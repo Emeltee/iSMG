@@ -25,8 +25,8 @@ public class SmallRubble extends Rubble {
         this.velocity = velocity;
         this.obstacles = obstacles;
         this.targets = targets;
-        this.damage = damage;
-        this.status = EntityState.Running;
+        this.power = damage;
+        this.state = EntityState.Running;
     }
 
     @Override

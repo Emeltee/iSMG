@@ -3,7 +3,6 @@ package com.me.mygdxgame.screens.seeteufelscreen;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
@@ -40,6 +39,7 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
+import com.me.mygdxgame.utilities.GenericDamager;
 import com.me.mygdxgame.utilities.Renderer;
 
 /**
@@ -53,13 +53,12 @@ public class SeeteufelScreen implements GameScreen {
     private static final int SCREEN_LEFT = -MyGdxGame.SCREEN_WIDTH / 2;
     private static final int ENEMY_HEALTHBAR_MOVE_SPEED = 40;
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
-    private static final int ENEMY_HEALTH_Y = SCREEN_TOP - BonneHealthBar.LOGO_H - 10;
     private static final int ENEMY_HEALTH_TARGET_X = (int) (SeeteufelScreen.PLAYER_HEALTH_POS.x);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
     private static final float MAP2_CAM_SPEED_1 = 30f;
     private static final float MAP2_CAM_SPEED_2 = 50f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
-    private static final Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X - SeeteufelFront.BASE_WIDTH / 2, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
+    private static final Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
     private static final int MAP2_HEIGHT = 48;
     private static final int MAP2_PIXEL_HEIGHT = MAP2_HEIGHT * SecondMap.GROUND_DIM;
@@ -354,7 +353,7 @@ public class SeeteufelScreen implements GameScreen {
         this.playerHealth = new MegaHealthBar(this.t_tiles2,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.x,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
-        this.enemyHealth = new BonneHealthBar(this.t_tiles2, SeeteufelScreen.SCREEN_LEFT - BonneHealthBar.BAR_W * 2, ENEMY_HEALTH_Y);
+        this.enemyHealth = new BonneHealthBar(this.t_tiles2, 0, 0);
         this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,
                 (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
                         * 1.5 - Refractor.REFRACTOR_W / 2),
@@ -448,7 +447,7 @@ public class SeeteufelScreen implements GameScreen {
         // Special collision detection for player
         for (Rectangle box: player.getHitArea()) {
             // Grab the refractor
-            if (refractor.getHitBox().overlaps(box)) {
+            if (refractor.getHitArea()[0].overlaps(box)) {
                 refractor.onTake();
             }
             
@@ -750,9 +749,9 @@ public class SeeteufelScreen implements GameScreen {
         // Player.
         // Kill if player falls below screen.
         if (playerPos.y + SeeteufelScreen.MAP2_PLAYER_DROWN_OFFSET < this.map2Y - Gdx.graphics.getHeight() / 2) {
-            this.player.damage(this.player.getMaxHealth());
+            this.player.destroy();
         }
-        // Set under water status on/off as needed.
+        // Set under water state on/off as needed.
         if (playerPos.y < this.map2WaterY) {
             if (!this.player.getIsUnderwater()) {
                 this.splash.play();
@@ -805,10 +804,11 @@ public class SeeteufelScreen implements GameScreen {
         map3CamPos.y = this.map2Y;
         this.obstacles.remove(this.map2Ceiling);
         
+        GenericDamager damager = new GenericDamager(1, 0);
         for (GameEntity entity : this.entities) {
             // TODO hackish. Get rid of this instanceof.
             if (entity instanceof Platform) {
-                ((Platform) entity).damage(Platform.MAX_HEALTH);
+                ((Platform) entity).damage(damager);
                 entity.update(1);
                 if (entity.hasCreatedEntities()) {
                     this.toAdd.add(entity.getCreatedEntities());
@@ -819,12 +819,13 @@ public class SeeteufelScreen implements GameScreen {
         this.seeteufelTargets.clear();
         this.explosion.play();
         
-        this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, ENEMY_HEALTH_Y);
+        int enemyHealthY = SCREEN_TOP - this.enemyHealth.getHeight() - 10;
+        this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, enemyHealthY);
         
         this.seeteufelTargets.offer(new LinkedList<Damageable>());
         this.seeteufelTargets.get(0).add(this.player);
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
-        seeSideStartPos.y = this.seeFront.getTargetY() - SeeteufelFront.TARGET_Y_OFFSET;
+        seeSideStartPos.y = this.seeFront.getTargetY();
         this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
                 this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos, this.seeteufelTargets.get(0), this.obstacles);
         
@@ -884,7 +885,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Update/Draw player.
         if (playerPos.y + SeeteufelScreen.MAP2_PLAYER_DROWN_OFFSET < this.map2Y - Gdx.graphics.getHeight() / 2) {
-            this.player.damage(this.player.getMaxHealth());
+            this.player.destroy();
         }
         if (playerPos.y < this.map2WaterY) {
             if (!this.player.getIsUnderwater()) {
@@ -936,6 +937,8 @@ public class SeeteufelScreen implements GameScreen {
         // Victory condition.
         if (this.seeSide.getState() == EntityState.Destroyed) {
             this.state = GameState.Win;
+            this.music1.stop();
+            this.music2.stop();
         }
     }
     

@@ -10,20 +10,21 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-public class BusterShot implements GameEntity {
+public class BusterShot implements GameEntity, Damager {
     
     // Just controlling which way it goes.
     public static enum ShotDirection { LEFT, RIGHT };
     
     // Constants for extracting bullet from Texture
-    public static final int BULLET_X = 226;
-    public static final int BULLET_Y = 175;
-    public static final int BULLET_W = 7;
-    public static final int BULLET_H = 5;
+    protected static final int BULLET_X = 226;
+    protected static final int BULLET_Y = 175;
+    protected static final int BULLET_W = 7;
+    protected static final int BULLET_H = 5;
  
     /** TextureRegion representing the idle frame. */
     protected TextureRegion bullet;
@@ -49,7 +50,7 @@ public class BusterShot implements GameEntity {
     /** Hitbox.*/
     protected Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
     
-    protected EntityState status;
+    protected EntityState state;
     
     /** Areas of the map to look out for. */
     protected Collection<Rectangle> obstacles;
@@ -69,14 +70,14 @@ public class BusterShot implements GameEntity {
         this.bullet = new TextureRegion(this.spriteSheet, BULLET_X, BULLET_Y, BULLET_W, BULLET_H);
         this.obstacles = obstacles;
         this.targets = targets;
-        this.status = EntityState.Running;
+        this.state = EntityState.Running;
     }
     
     
     @Override
     public void update(float deltaTime) {
         
-        if (this.status == EntityState.Running) {
+        if (this.state == EntityState.Running) {
             // Move. Assumes speed is always positive.
             float toTravel = this.speed * deltaTime;
             if (this.dir == ShotDirection.LEFT) {
@@ -88,7 +89,7 @@ public class BusterShot implements GameEntity {
             // Check if range has been traveled. If so, destroy.
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
-                this.status = EntityState.Destroyed;
+                this.state = EntityState.Destroyed;
                 this.missSound.play();
                 return;
             }
@@ -102,8 +103,8 @@ public class BusterShot implements GameEntity {
                 Rectangle[] hitAreas = target.getHitArea();
                 for (Rectangle hitBox : hitAreas) {
                     if (hitBox.overlaps(this.hitBox)) {
-                        target.damage(this.power);
-                        this.status = EntityState.Destroyed;
+                        target.damage(this);
+                        this.state = EntityState.Destroyed;
                         return;
                     }
                 }
@@ -112,7 +113,7 @@ public class BusterShot implements GameEntity {
             // Check for collisions with obstacles.
             for (Rectangle r: this.obstacles) {
                 if (r.overlaps(this.hitBox)) {
-                    this.status = EntityState.Destroyed;
+                    this.state = EntityState.Destroyed;
                     this.missSound.play();
                     return;
                 }
@@ -124,7 +125,7 @@ public class BusterShot implements GameEntity {
     @Override
     public void draw(Renderer renderer) {
         
-        if (this.status == EntityState.Running) {
+        if (this.state == EntityState.Running) {
             // Every call, increment the animationTimer.
             this.animationTimer++;
             
@@ -134,7 +135,7 @@ public class BusterShot implements GameEntity {
 
     @Override
     public EntityState getState() {
-        return this.status;
+        return this.state;
     }
 
     @Override
@@ -154,8 +155,32 @@ public class BusterShot implements GameEntity {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        this.state = EntityState.Destroyed;
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+    @Override
+    public int getWidth() {
+        return BusterShot.BULLET_W;
+    }
+
+    @Override
+    public int getHeight() {
+        return BusterShot.BULLET_H;
+    }
+
+    @Override
+    public int getPower() {
+        return this.power;
+    }
+
+    @Override
+    public int getKnockback() {
+        return 0;
     }
 
 }

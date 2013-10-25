@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
@@ -27,7 +28,7 @@ public class Door implements GameEntity {
     private TextureRegion doorOpen; // Closed door sprite
     private int x; // x-coord
     private int y; // y coord
-    private DoorState doorStatus; // Door-specific status variable
+    private DoorState doorStatus; // Door-specific state variable
     private Sound openSound;
     private Sound closeSound;
     private Rectangle hitbox = null;
@@ -69,7 +70,6 @@ public class Door implements GameEntity {
 
     @Override
     public boolean hasCreatedEntities() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -108,8 +108,22 @@ public class Door implements GameEntity {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        // Do nothing.
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return Door.DOOR_W;
+    }
+
+    @Override
+    public int getHeight() {
+        return Door.DOOR_H;
     }
     
     

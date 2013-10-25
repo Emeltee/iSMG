@@ -4,29 +4,30 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.ProgressBar;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class BonneHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions
-    public static final int LOGO_X = 0;
-    public static final int LOGO_Y = 56;
-    public static final int LOGO_W = 32;
-    public static final int LOGO_H = 32;
+    private static final int LOGO_X = 0;
+    private static final int LOGO_Y = 56;
+    private static final int LOGO_W = 32;
+    private static final int LOGO_H = 32;
     
     // Offset distance for the healthbar from the extracted TextureRegion
-    public static final int BAR_W = 600;
-    public static final int BAR_H = 12;
-    public static final int BAR_X = LOGO_W / 2;
-    public static final int BAR_Y = LOGO_W / 2 - BAR_H / 2;    
+    private static final int BAR_W = 600;
+    private static final int BAR_H = 12;
+    private static final int BAR_X = LOGO_W / 2;
+    private static final int BAR_Y = LOGO_W / 2 - BAR_H / 2;    
     
     private static final Color BAR_COLOR = Color.RED;
     private static final Color BAR_OUTLINE = Color.BLACK;
     
     // Parameters affecting state of the bar
     protected float value = 1.0f;
-    private int barSize;
+    private int barSize = 1;
     
     // Bar position and graphic holders
     private int x, y;
@@ -75,5 +76,20 @@ public class BonneHealthBar implements ProgressBar {
     @Override
     public float getValue() {
         return this.value;
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return BAR_W;
+    }
+
+    @Override
+    public int getHeight() {
+        return LOGO_H;
     }
 }

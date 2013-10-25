@@ -54,7 +54,7 @@ public interface GameScreen {
     /**
      * Retrieves the current state of the game.
      * 
-     * @return A GameState indicating the current status of the game.
+     * @return A GameState indicating the current state of the game.
      * @see GameState
      */
     public GameState getState();
