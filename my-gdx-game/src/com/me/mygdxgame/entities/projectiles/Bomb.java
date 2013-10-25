@@ -61,6 +61,8 @@ public class Bomb implements GameEntity, Damager {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
+        this.position.x -= BOMB_W / 2;
+        this.position.y -= BOMB_H / 2;
         this.velocity.set(velocity);
         this.bomb = new TextureRegion(this.spriteSheet, BOMB_X, BOMB_Y, BOMB_W, BOMB_H);
         this.obstacles = obstacles;
