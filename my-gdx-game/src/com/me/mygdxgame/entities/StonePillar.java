@@ -1,17 +1,14 @@
 package com.me.mygdxgame.entities;
 
-import java.util.NoSuchElementException;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
-import com.me.mygdxgame.utilities.EntityState;
-import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
+import com.me.mygdxgame.utilities.Updatable;
 
-public class StonePillar implements GameEntity {
+public class StonePillar implements Updatable {
 
     // this.pillarTopBaseRegion = new TextureRegion(spriteSheet, 224, 160, 19, 15);
     public static final int PILLAR_BASE_X = 224;
@@ -76,32 +73,18 @@ public class StonePillar implements GameEntity {
     }
 
     @Override
-    public EntityState getState() {
-        // Always running
-        return EntityState.Running;
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
     }
 
     @Override
-    public boolean hasCreatedEntities() {
-        // Always false
-        return false;
+    public int getWidth() {
+        return StonePillar.PILLAR_BASE_W;
     }
 
     @Override
-    public Rectangle[] getHitArea() {
-        // None to speak of
-        return null;
-    }
-
-    @Override
-    public void destroy() {
-        // Never ever do anything
-    }
-
-    @Override
-    public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        // Never returns anything
-        throw new NoSuchElementException();
+    public int getHeight() {
+        return this.height + StonePillar.PILLAR_BASE_H * 2;
     }
 
 }

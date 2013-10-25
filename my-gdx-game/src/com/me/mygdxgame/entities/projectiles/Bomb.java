@@ -10,17 +10,18 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.particles.Explosion;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-public class Bomb implements GameEntity {
+public class Bomb implements GameEntity, Damager {
     
     // Constants for extracting bullet from Texture
-    public static final int BOMB_X = 210;
-    public static final int BOMB_Y = 175;
-    public static final int BOMB_W = 16;
-    public static final int BOMB_H = 16;
+    private static final int BOMB_X = 210;
+    private static final int BOMB_Y = 175;
+    private static final int BOMB_W = 16;
+    private static final int BOMB_H = 16;
 
     private static final float GRAVITY = 250;
     private static final int EXPLOSION_EXPANSION = 30;
@@ -39,7 +40,7 @@ public class Bomb implements GameEntity {
     private Vector3 velocity = new Vector3(0, 0, 0);
     /** Collision detection rectangles */
     private Rectangle [] obstacles;
-    /** Targets to damage. */
+    /** Targets to power. */
     private Damageable[] targets;
     /** Status of object */
     private EntityState status;
@@ -50,13 +51,13 @@ public class Bomb implements GameEntity {
     /** Damage done to targets. */
     private int power = 0;
     /** Force to apply upon hitting a target. */
-    private float knockback = 0;
+    private int knockback = 0;
     /** Sound to play upon explosion.*/
     private Sound explosion = null;
     
     private Explosion[] explosions;
   
-    public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, float knockback, Rectangle [] obstacles, Damageable[] targets) {
+    public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, int knockback, Rectangle [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
@@ -108,9 +109,8 @@ public class Bomb implements GameEntity {
                             && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
                              || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
                              || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
-                        // Apply damage and force, and explode. Don't apply force on z.
-                        d.damage(this.power);
-                        d.applyForce(new Vector3(r.x - this.position.x, r.y - this.position.y, 0).nor().scl(this.knockback));
+                        // Apply power and force, and explode. Don't apply force on z.
+                        d.damage(this);
                         explode();
                         return;
                     }
@@ -182,7 +182,36 @@ public class Bomb implements GameEntity {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        this.status = EntityState.Destroyed;
+    }
+
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+
+    @Override
+    public int getWidth() {
+        return Bomb.BOMB_W;
+    }
+
+
+    @Override
+    public int getHeight() {
+        return Bomb.BOMB_H;
+    }
+
+
+    @Override
+    public int getPower() {
+        return this.power;
+    }
+
+
+    @Override
+    public int getKnockback() {
+        return this.knockback;
     }
 }

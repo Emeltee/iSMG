@@ -4,16 +4,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.ProgressBar;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class MegaHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions (Healthbar-chrome texture)
-    public static final int CHROME_X = 38;
-    public static final int CHROME_Y = 57;
-    public static final int CHROME_H = 68;
-    public static final int CHROME_W = 14;
+    private static final int CHROME_X = 38;
+    private static final int CHROME_Y = 57;
+    private static final int CHROME_H = 68;
+    private static final int CHROME_W = 14;
 
     // Offset distance for the healthbar from the Chrome
     private static final int BAR_X = 4;
@@ -84,5 +85,20 @@ public class MegaHealthBar implements ProgressBar {
     @Override
     public float getValue() {
         return this.value;
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return BAR_W;
+    }
+
+    @Override
+    public int getHeight() {
+        return BAR_H;
     }
 }

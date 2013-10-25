@@ -11,13 +11,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.projectiles.Bomb;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class SeeteufelSide implements GameEntity, Damageable {
 
-    public static final int TARGET_Y_OFFSET = 20;
+    private static final int TARGET_Y_OFFSET = 20;
+    private static final int BASE_WIDTH = 72;
     
     private static final int MAX_HEALTH = 150;
     private static final int FRONT_ARM_FRAMERATE = 6;
@@ -62,6 +64,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
     public SeeteufelSide(Texture spritesheet, Texture rocketSpritesheet,
             Sound explosion, Sound shoot, Sound damage, Vector3 position, Collection<Damageable> targets, Collection<Rectangle> obstacles) {
         this.position = new Vector3(position);
+        this.position.x -= BASE_WIDTH / 2;
+        this.position.y -= TARGET_Y_OFFSET;
+        
         this.targets = targets;
         this.obstacles = obstacles;
         
@@ -104,7 +109,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     @Override
     public void update(float deltaTime) {
         // Unlike SeeteufelFront, don't fall. Just snap to target position.
-        this.position.y = this.targetY - SeeteufelFront.TARGET_Y_OFFSET;
+        this.position.y = this.targetY - TARGET_Y_OFFSET;
         
         if (this.state == EntityState.Running) {
             if (this.health <= 0) {
@@ -264,19 +269,12 @@ public class SeeteufelSide implements GameEntity, Damageable {
 
 
     @Override
-    public void damage(int damage) {
-        if (damage > 0) {
-            this.health -= damage;
+    public void damage(Damager damager) {
+        if (damager.getPower() > 0) {
+            this.health -= damager.getPower();
             this.damage.play();
         }
     }
-
-
-    @Override
-    public void applyForce(Vector3 force) {
-        // Do nothing.
-    }
-
 
     @Override
     public int getHealth() {
@@ -289,4 +287,23 @@ public class SeeteufelSide implements GameEntity, Damageable {
         return SeeteufelSide.MAX_HEALTH;
     }
 
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+
+    @Override
+    public int getWidth() {
+        // Rough estimate. Don't count arms.
+        return this.front.getRegionWidth();
+    }
+
+
+    @Override
+    public int getHeight() {
+        // Rough estimate. Don't count arms.
+        return this.front.getRegionHeight();
+    }
 }

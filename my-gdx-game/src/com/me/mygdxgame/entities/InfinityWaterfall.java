@@ -6,14 +6,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class InfinityWaterfall implements GameEntity {
 
-    public static final int MIN_HEIGHT = 1;
-    public static final int ANIMATION_SPEED = 4;
+    private static final int MIN_HEIGHT = 1;
+    private static final int ANIMATION_SPEED = 4;
     private static final float TEX_V_DELTA = ANIMATION_SPEED / 30.0f;
     
     private final int y;
@@ -102,6 +103,21 @@ public class InfinityWaterfall implements GameEntity {
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return (int) this.waterfall.getY();
+    }
+
+    @Override
+    public int getHeight() {
+        return (int) this.hitbox.height;
     }
 
 }

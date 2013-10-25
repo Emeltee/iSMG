@@ -12,18 +12,19 @@ import com.me.mygdxgame.entities.projectiles.SmallRubble;
 import com.me.mygdxgame.entities.projectiles.TallRubble;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class Platform implements GameEntity, Damageable {
 
-    public static final int PLATFORM_X = 0;
-    public static final int PLATFORM_Y = 0;
-    public static final int PLATFORM_W = 32;
-    public static final int PLATFORM_H = 32;
+    protected static final int PLATFORM_X = 0;
+    protected static final int PLATFORM_Y = 0;
+    protected static final int PLATFORM_W = 32;
+    protected static final int PLATFORM_H = 32;
     
-    public static final int MAX_HEALTH = 1;
+    protected static final int MAX_HEALTH = 1;
     
     protected Texture spriteSheet;
     protected TextureRegion platform;
@@ -88,8 +89,8 @@ public class Platform implements GameEntity, Damageable {
     }
 
     @Override
-    public void damage(int damage) {
-        this.health -= damage;        
+    public void damage(Damager damager) {
+        this.health -= damager.getPower();        
     }
 
     @Override
@@ -123,12 +124,22 @@ public class Platform implements GameEntity, Damageable {
     }
 
     @Override
-    public void applyForce(Vector3 force) {
-        // Do nothing.
+    public void destroy() {
+        this.status = EntityState.Destroyed;
     }
 
     @Override
-    public void destroy() {
-        this.status = EntityState.Destroyed;
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return Platform.PLATFORM_W;
+    }
+
+    @Override
+    public int getHeight() {
+        return Platform.PLATFORM_H;
     }
 }

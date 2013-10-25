@@ -4,15 +4,15 @@ import java.util.NoSuchElementException;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-public class WatchNadia implements Damageable, GameEntity {
+public class WatchNadia implements Damageable {
 
     /* WATCH NADIA */
     /*public static final int WATCH_NADIA_X = 165;
@@ -21,7 +21,7 @@ public class WatchNadia implements Damageable, GameEntity {
     public static final int WATCH_NADIA_H = 32;*/
     
     private Sprite watchNadia;
-    public static final int MAX_HEALTH = 1;
+    private static final int MAX_HEALTH = 1;
     private int health;
     private int x, y;
     
@@ -33,7 +33,7 @@ public class WatchNadia implements Damageable, GameEntity {
     }
     
     @Override
-    public void damage(int damage) {
+    public void damage(Damager damager) {
         this.health = 0;
     }
 
@@ -80,14 +80,23 @@ public class WatchNadia implements Damageable, GameEntity {
     }
 
     @Override
-    public void applyForce(Vector3 force) {
-        // Do nothing.
+    public void destroy() {
+        // Nothing.
     }
 
     @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-        
+    public Vector3 getPosition() {
+        return new Vector3(this.x, this.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return this.watchNadia.getRegionWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return this.watchNadia.getRegionHeight();
     }
 
 }

@@ -6,20 +6,23 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class Splash implements GameEntity {
     
+    // Minimum velocity values.
     public static final float MIN_INIT_Y_VEL = 50;
     public static final float MAX_INIT_Y_VEL = 150;
     public static final float MIN_INIT_X_VEL = -75;
     public static final float MAX_INIT_X_VEL = 75;
-    public static final float GRAVITY_FACTOR = -400;
-    public static final float RADIUS_FALLOFF = 0.05f;
-    public static final int DEFAULT_RADIUS = 3;
-    public static final Color DEFAULT_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
+    
+    private static final float GRAVITY_FACTOR = -400;
+    private static final float RADIUS_FALLOFF = 0.05f;
+    private static final int DEFAULT_RADIUS = 3;
+    private static final Color DEFAULT_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
     
     private Vector2 position = new Vector2();
     private Vector2 velocity = new Vector2();
@@ -125,12 +128,27 @@ public class Splash implements GameEntity {
 
     @Override
     public void destroy() {
-        // Nothing.
+        this.lifetime = 0;
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position.x, this.position.y, 0);
+    }
+
+    @Override
+    public int getWidth() {
+        return (int) this.hitbox.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return (int) this.hitbox.height;
     }
 
 }

@@ -25,13 +25,7 @@ public class FatRubble extends Rubble {
         this.velocity = velocity;
         this.obstacles = obstacles;
         this.targets = targets;
-        this.damage = damage;
-        this.status = EntityState.Running;
-    }
-
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
-        
+        this.power = damage;
+        this.state = EntityState.Running;
     }
 }

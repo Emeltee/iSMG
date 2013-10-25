@@ -76,13 +76,16 @@ public interface GameEntity extends Updatable {
     public Rectangle[] getHitArea();
     
     /**
-     * Called when the screen would like to remove an entity manually. This
-     * method gives the entity an opportunity to finish any outstanding work it
-     * may need to do.
+     * Called when the screen would like to remove a GameEntity from its update
+     * loop manually, without waiting for EntityState.Destroyed to be returned
+     * by getState. This method gives the entity an opportunity to finish any
+     * outstanding work it may need to do, such as free resources or stop
+     * sounds. No further calls to update or draw should be expected following
+     * this call.
      * 
-     * This method is called at the discretion of the screen, usually in
-     * special cases. Entity logic should therefore not depend upon this method
-     * being called by the screen.
+     * Note that this is not a destructor. This method is called at the
+     * discretion of the screen, usually in special cases. GameEntity logic
+     * should therefore not depend upon this method being called by the screen.
      */
     public void destroy();
     

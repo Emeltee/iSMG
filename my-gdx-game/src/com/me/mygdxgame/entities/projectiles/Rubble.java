@@ -6,11 +6,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
+import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-public abstract class Rubble implements GameEntity {
+public abstract class Rubble implements GameEntity, Damager {
     
     /** Sprite to be drawn */
     protected TextureRegion rubble;
@@ -19,7 +20,7 @@ public abstract class Rubble implements GameEntity {
     /** Velocity for 3 axes */
     protected Vector3 velocity;
     /** Running|Destroyed */
-    protected EntityState status;
+    protected EntityState state;
     /** List of objects stopping rubble */
     protected Rectangle [] obstacles;
     /** List of damageable objects stopping rubble */
@@ -41,7 +42,9 @@ public abstract class Rubble implements GameEntity {
     /** Texture-control variables (can't be constants because of superclass/subclass relationship) */
     protected int x, y, w, h;
     /** Damage factor for falling rubble */
-    protected int damage;
+    protected int power = 0;
+    /** Knockback for falling rubble */
+    protected int knockback = 0;
     
     public Rubble(int x, int y, int width, int height) {
         this.hitbox.set(x, y, width, height);
@@ -49,7 +52,7 @@ public abstract class Rubble implements GameEntity {
     
     @Override
     public void update(float deltaTime) {
-        if (this.status == EntityState.Running) {
+        if (this.state == EntityState.Running) {
             
             // Update the coords
             this.position.add(this.velocity.cpy().scl(deltaTime));
@@ -70,14 +73,14 @@ public abstract class Rubble implements GameEntity {
             // Destroy if lifetime has been reached.
             this.lifetime -= deltaTime;
             if (this.lifetime < 0) {
-                this.status = EntityState.Destroyed;
+                this.state = EntityState.Destroyed;
                 return;
             }
             
             // Check for harmless collisions
             for (Rectangle r: obstacles) {
                 if (r.overlaps(new Rectangle(this.position.x, this.position.y, this.w, this.h))) {
-                    this.status = EntityState.Destroyed;
+                    this.state = EntityState.Destroyed;
                     return;
                 }
             }
@@ -87,8 +90,8 @@ public abstract class Rubble implements GameEntity {
                 for (Rectangle r: d.getHitArea()) {
                     if (r.overlaps(new Rectangle(
                             this.position.x, this.position.y, this.w, this.h))) {
-                        d.damage(damage);
-                        this.status = EntityState.Destroyed;
+                        d.damage(this);
+                        this.state = EntityState.Destroyed;
                         return;
                     }
                 }
@@ -98,14 +101,14 @@ public abstract class Rubble implements GameEntity {
 
     @Override
     public void draw(Renderer renderer) {
-        if (this.status == EntityState.Running){            
+        if (this.state == EntityState.Running){            
             renderer.drawRegion(this.rubble, (int)this.position.x, (int)this.position.y);
         }
     }
 
     @Override
     public EntityState getState() {
-        return this.status;
+        return this.state;
     }
 
     @Override
@@ -121,6 +124,36 @@ public abstract class Rubble implements GameEntity {
     @Override
     public Rectangle[] getHitArea() {
         return this.area;
+    }
+    
+    @Override
+    public void destroy() {
+        this.state = EntityState.Destroyed;
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+    @Override
+    public int getWidth() {
+        return (int) this.hitbox.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return (int) this.hitbox.height;
+    }
+
+    @Override
+    public int getPower() {
+        return this.power;
+    }
+
+    @Override
+    public int getKnockback() {
+        return this.knockback;
     }
 
 }

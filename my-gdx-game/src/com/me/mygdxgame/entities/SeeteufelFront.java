@@ -17,8 +17,8 @@ import com.me.mygdxgame.utilities.Renderer;
 
 public class SeeteufelFront implements GameEntity {
     
-    public static final int BASE_WIDTH = 98;
-    public static final int TARGET_Y_OFFSET = 20;
+    private static final int BASE_WIDTH = 98;
+    private static final int TARGET_Y_OFFSET = 20;
     
     private static final int FRONT_ARM_FRAMERATE = 15;
     private static final int BACK_ARM_FRAMERATE = 7;
@@ -56,6 +56,8 @@ public class SeeteufelFront implements GameEntity {
     public SeeteufelFront(Texture spritesheet, Texture rocketSpritesheet,
             Sound explosion, Sound splash, Sound shoot, Vector3 position) {
         this.position.set(position);
+        this.position.x -= SeeteufelFront.BASE_WIDTH / 2;
+        this.position.y -= TARGET_Y_OFFSET;
         
         this.explosion = explosion;
         this.splash = splash;
@@ -142,9 +144,9 @@ public class SeeteufelFront implements GameEntity {
             Rectangle targetHitArea = target.getHitArea()[0];
             Vector3 rocketPosition = this.position.cpy();
             rocketPosition.x += SeeteufelFront.BASE_WIDTH / 2;
-            rocketPosition.x -= Rocket.ROCKET_W / 2;
             Vector3 targetPosition = new Vector3(targetHitArea.x
                     - rocketPosition.x, targetHitArea.y - rocketPosition.y, 0);
+
             this.createdEntities.addFirst(new Rocket(this.rocketSpritesheet,
                     this.explosion, rocketPosition, targetPosition.nor().scl(
                             SeeteufelFront.ROCKET_SPEED), 1, 0,
@@ -219,7 +221,22 @@ public class SeeteufelFront implements GameEntity {
 
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
-        
+        // Nothing to do.
+    }
+
+    @Override
+    public Vector3 getPosition() {
+        return new Vector3(this.position);
+    }
+
+    @Override
+    public int getWidth() {
+        // Rough estimate of width (body width + back arm width), but should be enough.
+        return SeeteufelFront.BASE_WIDTH + this.backArmLeft[0].getRegionWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return this.front.getRegionWidth();
     }
 }
