@@ -83,6 +83,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP3_WATER_BASE_X = MAP2_PIXEL_HEIGHT - 500;
     private static final int MAP3_CAM_Y = 1700;
     private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
+    private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
+
     
     // State.
     private GameState state = GameState.Running;
@@ -853,7 +855,7 @@ public class SeeteufelScreen implements GameScreen {
         // Set up falling blocks.
         this.fallingBlocks.clear();
         this.fallenBlocks.clear();
-        int fallingBlockY = (SecondMap.ARENA_HEIGHT + SeeteufelScreen.MAP2_HEIGHT - 2) * SecondMap.GROUND_DIM;
+        int fallingBlockY = (SecondMap.ARENA_HEIGHT + SeeteufelScreen.MAP2_HEIGHT - 1) * SecondMap.GROUND_DIM;
         int fallingBlockTargetY = SeeteufelScreen.MAP2_HEIGHT * SecondMap.GROUND_DIM;
         for (int x = 1; x < SecondMap.GROUND_WIDTH - 3; x++) {
             fallingBlocks.add(new FallingPlatform(this.t_tiles1, this.mapTiles, this.seeSplash,
@@ -889,6 +891,9 @@ public class SeeteufelScreen implements GameScreen {
         }
         if (map3CamPos.x < MAP3_CAM_MIN_X) {
             map3CamPos.x = MAP3_CAM_MIN_X;
+        }
+        else if (map3CamPos.x > MAP3_CAM_MAX_X) {
+            map3CamPos.x = MAP3_CAM_MAX_X;
         }
         orthoCam.position.x = map3CamPos.x;
         orthoCam.position.y = map3CamPos.y + this.cameraShake;
