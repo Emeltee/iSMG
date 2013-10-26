@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.particles.Explosion;
 import com.me.mygdxgame.entities.projectiles.Bomb;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
@@ -29,6 +30,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final float ATTACK_DELAY = 0.6f;
     private static final int ROCKET_POWER = 10;
     private static final int ROCKET_KNOCKBACK = 15;
+    private static final int SINK_SPEED = 75;
+    private static final int SINK_DEPTH = 150;
+    private static final float SINK_EXPLOSION_DELAY = 0.1f;
     
     private Vector3 position;
     
@@ -54,6 +58,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private EntityState state = EntityState.Running;
     private int health = MAX_HEALTH;
     private boolean moving = true;
+    private float destroyedTargetY = 0;
+    private LinkedList<Explosion> explosions = new LinkedList<Explosion>();
     
     private float attackDelayTimer = 0;
     private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
@@ -108,14 +114,36 @@ public class SeeteufelSide implements GameEntity, Damageable {
     
     @Override
     public void update(float deltaTime) {
-        // Unlike SeeteufelFront, don't fall. Just snap to target position.
-        this.position.y = this.targetY - TARGET_Y_OFFSET;
         
         if (this.state == EntityState.Running) {
+            // If out of health, sink and explode.
+            // Reuse attack timer for explosion effects.
             if (this.health <= 0) {
-                this.state = EntityState.Destroyed;
+                LinkedList<Explosion> finishedExplosions = new LinkedList<Explosion>();
+                for (Explosion explosion : this.explosions) {
+                    explosion.update(deltaTime);
+                    if (explosion.getState() == EntityState.Destroyed) {
+                        finishedExplosions.add(explosion);
+                    }
+                }
+                this.explosions.removeAll(finishedExplosions);
+                if (this.position.y > destroyedTargetY) {
+                    this.position.y -= SINK_SPEED * deltaTime;
+                    this.hitArea[0].y = this.position.y;
+                    this.attackDelayTimer += deltaTime;
+                    if (this.attackDelayTimer > SINK_EXPLOSION_DELAY) {
+                        explode();
+                        this.attackDelayTimer = 0;
+                    }
+                }
+                else {
+                    this.state = EntityState.Destroyed;
+                }
                 return;
             }
+            
+            // Unlike SeeteufelFront, don't fall. Just snap to target position.
+            this.position.y = this.targetY - TARGET_Y_OFFSET;
             
             if (this.moving) {
                 // Move left until you hit an obstacle.
@@ -135,7 +163,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 this.attackDelayTimer += deltaTime;
                 if (this.attackDelayTimer > ATTACK_DELAY) {
                     this.shoot.play();
-                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 50), 250.0f, 0);
+                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
                     Damageable[] currentTargets = new Damageable[this.targets.size()];
                     currentTargets = this.targets.toArray(currentTargets);
                     Rectangle[] currentObstacles= new Rectangle[this.obstacles.size()];
@@ -226,6 +254,22 @@ public class SeeteufelSide implements GameEntity, Damageable {
         } else {
             renderer.drawRegion(this.sideArmFront[2], this.position.x - 66, this.position.y + 22);
         }
+        
+        // Draw any explosions. Handled here instead of by the screen so we can render them in front.
+        for (Explosion explosion : this.explosions) {
+            explosion.draw(renderer);
+        }
+    }
+    
+    private void explode() {
+        // Create explosions.
+        this.explosions.push(new Explosion(this.rocketSpritesheet,
+                new Vector3((float) (this.position.x + (Math.random() * this.front.getRegionWidth())),
+                        (float) (this.position.y + (Math.random() * this.front.getRegionHeight())),
+                        this.position.z)));
+        
+        // Play sound.
+        this.explosion.play();
     }
     
     public void setTargetY(int targetY) {
@@ -270,9 +314,16 @@ public class SeeteufelSide implements GameEntity, Damageable {
 
     @Override
     public void damage(Damager damager) {
+        
+        boolean alive = this.health > 0;
+        
         if (damager.getPower() > 0) {
-            this.health -= damager.getPower();
+            this.health = Math.max(0, this.health - damager.getPower());
             this.damage.play();
+        }
+        
+        if (alive && this.health <= 0) {
+            this.destroyedTargetY = this.position.y - SINK_DEPTH;
         }
     }
 
