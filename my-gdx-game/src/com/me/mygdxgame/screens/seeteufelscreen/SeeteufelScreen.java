@@ -977,7 +977,9 @@ public class SeeteufelScreen implements GameScreen {
             this.enemyHealth.setPosition(this.enemyHealth.getX() + moveAmount, this.enemyHealth.getY());
         }
         this.enemyHealth.setValue((float)this.seeSide.getHealth() / this.seeSide.getMaxHealth());
-        this.enemyHealth.draw(this.hudRenderer);
+        if (this.enemyHealth.getValue() > 0) {
+            this.enemyHealth.draw(this.hudRenderer);
+        }
         
         // Remove or add to generic entity list as needed.
         this.entities.removeAll(this.toRemove);
