@@ -23,7 +23,7 @@ public class BonneHealthBar implements ProgressBar {
     private static final int BAR_Y = LOGO_W / 2 - BAR_H / 2;    
     
     private static final Color BAR_COLOR = Color.RED;
-    private static final Color BAR_OUTLINE = Color.BLACK;
+    private static final Color BAR_OUTLINE = Color.DARK_GRAY;
     
     // Parameters affecting state of the bar
     protected float value = 1.0f;

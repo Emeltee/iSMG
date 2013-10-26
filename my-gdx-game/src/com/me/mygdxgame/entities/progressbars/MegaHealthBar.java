@@ -35,6 +35,7 @@ public class MegaHealthBar implements ProgressBar {
     private static final int SIGNAL_Y = 2;
     
     private static final Color BAR_COLOR = Color.YELLOW;
+    private static final Color BAR_BACK_COLOR = Color.BLACK;
     
     // Parameters affecting state of the bar
     protected float value = 1.0f;
@@ -66,7 +67,11 @@ public class MegaHealthBar implements ProgressBar {
     }
 
     @Override
-    public void draw(Renderer renderer) {        
+    public void draw(Renderer renderer) {
+        
+        // Draw background to bar.
+        renderer.drawRect(ShapeType.Filled, BAR_BACK_COLOR, this.x + BAR_X, this.y + BAR_Y, BAR_W, BAR_H);
+        
         // Draw the bar
         renderer.drawRect(ShapeType.Filled, BAR_COLOR, this.x + BAR_X, this.y + BAR_Y, BAR_W, this.barSize);
         
