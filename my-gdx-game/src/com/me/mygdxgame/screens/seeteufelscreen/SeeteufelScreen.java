@@ -3,6 +3,7 @@ package com.me.mygdxgame.screens.seeteufelscreen;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
@@ -29,6 +30,7 @@ import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.SeeteufelSide;
 import com.me.mygdxgame.entities.WatchNadia;
+import com.me.mygdxgame.entities.obstacles.FallingPlatform;
 import com.me.mygdxgame.entities.obstacles.Platform;
 import com.me.mygdxgame.entities.progressbars.BonneHealthBar;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
@@ -69,8 +71,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_PLAYER_DROWN_OFFSET = MegaPlayer.HITBOX_HEIGHT * 2;
     private static final float MAP2_INITIAL_CAM_Y = -SCREEN_BOTTOM;
     private static final float MAP2_WATER_Y_OFFSET = 75;
-    private static final int MAP2_CAMERA_SHAKE = 15;
-    private static final float MAP2_CAMERA_SHAKE_FALLOFF = 0.5f;
+    private static final int CAMERA_SHAKE = 15;
+    private static final float CAMERA_SHAKE_FALLOFF = 0.5f;
     private static final float MAP2_STAIR_STEP_HEIGHT = 0.5f;
     private static final float MAP2_STAIR_FLIGHT_HEIGHT = 4.5f;
     private static final int MAP2_STAIR_FLIGHT_X_OFFSET = 5;
@@ -91,7 +93,7 @@ public class SeeteufelScreen implements GameScreen {
     private int currentMap;
     private float map2Y = MAP2_INITIAL_CAM_Y;
     private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
-    private float map2CameraShake = 0;
+    private float cameraShake = 0;
     private Vector2 map3CamPos = new Vector2();
     
     // Resource files.
@@ -127,6 +129,7 @@ public class SeeteufelScreen implements GameScreen {
     private Refractor refractor;
     private Door room1Exit;
     private Door room2Entrance;
+    private Door room3Exit;
     private WatchNadia bonus;
     private SeeteufelFront seeFront;
     private SeeteufelSide seeSide;
@@ -134,6 +137,8 @@ public class SeeteufelScreen implements GameScreen {
     private InfinityWaterfall room2Fall;
     
     private LinkedList<Rectangle> obstacles = new LinkedList<Rectangle>();
+    private LinkedList<FallingPlatform> fallingBlocks = new LinkedList<FallingPlatform>();
+    private LinkedList<FallingPlatform> fallenBlocks = new LinkedList<FallingPlatform>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
     private LinkedList<LinkedList<Damageable>> seeteufelTargets = new LinkedList<LinkedList<Damageable>>();
     private LinkedList<Integer> seeteufelTargetLevels = new LinkedList<Integer>();
@@ -338,7 +343,7 @@ public class SeeteufelScreen implements GameScreen {
         this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
         this.seeteufelTargets.clear();
         this.seeteufelTargetLevels.clear();
-        this.map2CameraShake = 0;
+        this.cameraShake = 0;
         
         for (GameEntity e : this.entities) {
             e.destroy();
@@ -454,7 +459,8 @@ public class SeeteufelScreen implements GameScreen {
             // Exit the room. Do setup for room 2.
             if (room1Exit.getDoorState() == Door.DoorState.OPEN) {
                 if (room1Exit.getHitBox().overlaps(box) &&
-                        Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                        (Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
+                        Gdx.input.isKeyPressed(Input.Keys.S))) {
                     this.currentMap = 2;
                     this.setupMap2();
                 }
@@ -499,6 +505,10 @@ public class SeeteufelScreen implements GameScreen {
         this.room2Entrance = new Door(this.t_tiles2, this.doorOpen,
                 this.doorClose, SecondMap.GROUND_DIM, SecondMap.GROUND_DIM * (SecondMap.ENTRANCE_PLAT_HEIGHT + 1));
         this.room2Entrance.setIsOpen(DoorState.SHUT, false);
+        this.room3Exit = new Door(this.t_tiles2, this.doorOpen,
+                this.doorClose, (SecondMap.GROUND_WIDTH - 2) * SecondMap.GROUND_DIM, (SeeteufelScreen.MAP2_HEIGHT + 1) * SecondMap.GROUND_DIM);
+        this.entities.add(this.room2Entrance);
+        this.entities.add(this.room3Exit);
         
         // Create decorative waterfall.
         this.room2Fall = new InfinityWaterfall(
@@ -639,12 +649,12 @@ public class SeeteufelScreen implements GameScreen {
         // Rises slowly as room floods. Stays static prior.
         Vector3 playerPos = this.player.getPosition();
         orthoCam.position.x = SeeteufelScreen.MAP2_CAM_X;
-        orthoCam.position.y = (float) Math.floor(this.map2Y + this.map2CameraShake);
+        orthoCam.position.y = (float) Math.floor(this.map2Y + this.cameraShake);
         orthoCam.update();
-        if (this.map2CameraShake > 0) {
-            this.map2CameraShake = -this.map2CameraShake + SeeteufelScreen.MAP2_CAMERA_SHAKE_FALLOFF;
-        } else if (this.map2CameraShake < 0) {
-            this.map2CameraShake = -this.map2CameraShake - SeeteufelScreen.MAP2_CAMERA_SHAKE_FALLOFF;
+        if (this.cameraShake > 0) {
+            this.cameraShake = -this.cameraShake + SeeteufelScreen.CAMERA_SHAKE_FALLOFF;
+        } else if (this.cameraShake < 0) {
+            this.cameraShake = -this.cameraShake - SeeteufelScreen.CAMERA_SHAKE_FALLOFF;
         }
         
         // Activate flooding once player moves above certain x.
@@ -671,7 +681,7 @@ public class SeeteufelScreen implements GameScreen {
             this.isMap2Flooding = true;
             this.music1.play();
             this.seeSplash.play();
-            this.map2CameraShake = SeeteufelScreen.MAP2_CAMERA_SHAKE;
+            this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
             this.seeFront = new SeeteufelFront(this.t_seeteufel, this.t_tiles1,
                     this.explosion, this.seeSplash, this.bombShoot,
@@ -690,7 +700,6 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw the map
         this.map2.render(deltaTime, renderer);
-        this.room2Entrance.draw(renderer);
         
         // Draw falls.
         this.room2Fall.update(deltaTime);
@@ -800,10 +809,14 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void setupMap3() {
+        // Match the third area camera position with the second area cam.
         map3CamPos.x = SeeteufelScreen.MAP2_CAM_X;
         map3CamPos.y = this.map2Y;
+        
+        // Remove moving ceiling.
         this.obstacles.remove(this.map2Ceiling);
         
+        // Destroy all remaining platforms from room 2.
         GenericDamager damager = new GenericDamager(1, 0);
         for (GameEntity entity : this.entities) {
             // TODO hackish. Get rid of this instanceof.
@@ -816,20 +829,34 @@ public class SeeteufelScreen implements GameScreen {
                 this.toRemove.add(entity);
             }
         }
-        this.seeteufelTargets.clear();
         this.explosion.play();
         
         int enemyHealthY = SCREEN_TOP - this.enemyHealth.getHeight() - 10;
         this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, enemyHealthY);
         
+        // Set player as the sole target for enemy.
+        this.seeteufelTargets.clear();
         this.seeteufelTargets.offer(new LinkedList<Damageable>());
         this.seeteufelTargets.get(0).add(this.player);
+        
+        // Create SeeteufelSide as the same position as SeeteufelFront.
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
         seeSideStartPos.y = this.seeFront.getTargetY();
         this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
                 this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos, this.seeteufelTargets.get(0), this.obstacles);
         
+        // Set SeeteufelSide as the player's sole target.
         this.playerTargets.add(this.seeSide);
+        
+        // Set up falling blocks.
+        this.fallingBlocks.clear();
+        this.fallenBlocks.clear();
+        int fallingBlockY = (SecondMap.ARENA_HEIGHT + SeeteufelScreen.MAP2_HEIGHT - 2) * SecondMap.GROUND_DIM;
+        int fallingBlockTargetY = SeeteufelScreen.MAP2_HEIGHT * SecondMap.GROUND_DIM;
+        for (int x = 1; x < SecondMap.GROUND_WIDTH - 3; x++) {
+            fallingBlocks.add(new FallingPlatform(this.t_tiles1, this.mapTiles, this.seeSplash,
+                    x * SecondMap.GROUND_DIM, fallingBlockY, fallingBlockTargetY));
+        }
     }
     
     private void updateMap3(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -837,7 +864,7 @@ public class SeeteufelScreen implements GameScreen {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
         // Keep the music playing. Not sure the loop option is working properly.
-        if (!this.music2.isPlaying()) {
+        if (!this.music2.isPlaying() && this.seeSide.getState() != EntityState.Destroyed) {
             this.music2.setLooping(true);
             this.music2.play();
         }
@@ -862,14 +889,31 @@ public class SeeteufelScreen implements GameScreen {
             map3CamPos.x = MAP3_CAM_MIN_X;
         }
         orthoCam.position.x = map3CamPos.x;
-        orthoCam.position.y = map3CamPos.y;
+        orthoCam.position.y = map3CamPos.y + this.cameraShake;
         orthoCam.update();
+        
+        // Camera shake.
+        if (this.cameraShake > 0) {
+            this.cameraShake = -this.cameraShake + SeeteufelScreen.CAMERA_SHAKE_FALLOFF;
+        } else if (this.cameraShake < 0) {
+            this.cameraShake = -this.cameraShake - SeeteufelScreen.CAMERA_SHAKE_FALLOFF;
+        }
         
         // Create Renderer.
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map.
         this.map2.render(deltaTime, renderer);
+        
+        // Update the falling blocks as needed.
+        for (FallingPlatform platform : this.fallingBlocks) {
+            platform.update(deltaTime);
+            platform.draw(renderer);
+        }
+        for (FallingPlatform platform : this.fallenBlocks) {
+            platform.update(deltaTime);
+            platform.draw(renderer);
+        }
         
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
@@ -934,11 +978,36 @@ public class SeeteufelScreen implements GameScreen {
         this.toAdd.clear();
         this.toRemove.clear();
         
-        // Victory condition.
-        if (this.seeSide.getState() == EntityState.Destroyed) {
-            this.state = GameState.Win;
-            this.music1.stop();
-            this.music2.stop();
+        // Ending sequence and victory conditions.
+        if (this.seeSide.getHealth() <= 0) {
+            if (this.seeSide.getState() == EntityState.Destroyed) {
+                
+                if (!this.fallingBlocks.isEmpty()) {
+                    FallingPlatform currentBlock = this.fallingBlocks.removeFirst();
+                    currentBlock.fall();
+                    this.fallenBlocks.add(currentBlock);
+                }
+                for (FallingPlatform fallen : this.fallenBlocks) {
+                    if (fallen.hasFallen() && !this.obstacles.contains(fallen.getHitArea()[0])) {
+                        this.obstacles.add(fallen.getHitArea()[0]);
+                    }
+                }
+                
+                this.music1.stop();
+                this.music2.stop();
+                
+                if (!this.player.getIsInAir() && 
+                        this.player.getHitArea()[0].overlaps(this.room3Exit.getHitArea()[0]) &&
+                        (Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
+                        Gdx.input.isKeyPressed(Input.Keys.S))) {
+                    this.state = GameState.Win;
+                }
+            }
+            else {
+                if (this.cameraShake == 0) {
+                    this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
+                }
+            }
         }
     }
     

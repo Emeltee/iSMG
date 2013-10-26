@@ -1,5 +1,6 @@
 package com.me.mygdxgame.entities.obstacles;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
@@ -12,14 +13,16 @@ public class FallingPlatform extends Platform {
      * there's a decent chance it's here.
      */
     
-    private static final int GRAVITY = 3;
+    private static final int GRAVITY = 400;
     private int destinationY;
     private boolean hasLanded;
+    private Sound landingSound;
     
-    public FallingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int x, int y, int destinationY) {
+    public FallingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, Sound landSound, int x, int y, int destinationY) {
         super(spriteSheet, tiles, x, y);
         this.destinationY = destinationY;
-        this.hasLanded = false;
+        this.hasLanded = true;
+        this.landingSound = landSound;
     }
     
     public void update(float deltaTime) {
@@ -32,9 +35,11 @@ public class FallingPlatform extends Platform {
             if (!this.hasLanded) {
                 if (this.y > destinationY) {                
                     // If gravity pulls the platform past the destination, bump it back up
-                    this.y = Math.max(this.y - GRAVITY, this.destinationY);
+                    this.y = (int) Math.max(this.y - (GRAVITY * deltaTime), this.destinationY);
+                    this.hitbox.y = this.y;
                 } else {
                     this.hasLanded = true;
+                    this.landingSound.play();
                 }
             }
         }
@@ -43,6 +48,18 @@ public class FallingPlatform extends Platform {
     public Rectangle [] getHitArea() {
         // Prevent collision detection until the platform lands
         return (this.hasLanded) ? new Rectangle [] { this.hitbox } : new Rectangle [] {};
+    }
+    
+    public void setTargetY(int targetY) {
+        this.destinationY = targetY;
+    }
+    
+    public boolean hasFallen() {
+        return this.hasLanded;
+    }
+    
+    public void fall() {
+        this.hasLanded = false;
     }
 
 }
