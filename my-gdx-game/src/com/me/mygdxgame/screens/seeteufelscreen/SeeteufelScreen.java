@@ -949,11 +949,13 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Update/Draw Seeteufel.
-        this.seeSide.setTargetY((int)this.map2WaterY);
-        this.seeSide.update(deltaTime);
-        this.seeSide.draw(renderer);
-        if (this.seeSide.hasCreatedEntities()) {
-            this.toAdd.addFirst(this.seeSide.getCreatedEntities());
+        if (this.seeSide.getState() != EntityState.Destroyed) {
+            this.seeSide.setTargetY((int)this.map2WaterY);
+            this.seeSide.update(deltaTime);
+            this.seeSide.draw(renderer);
+            if (this.seeSide.hasCreatedEntities()) {
+                this.toAdd.addFirst(this.seeSide.getCreatedEntities());
+            }
         }
         
         // Draw water.
