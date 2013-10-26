@@ -30,7 +30,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final float ATTACK_DELAY = 0.6f;
     private static final int ROCKET_POWER = 10;
     private static final int ROCKET_KNOCKBACK = 15;
-    private static final int SINK_SPEED = 75;
+    private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
     private static final float SINK_EXPLOSION_DELAY = 0.1f;
     
@@ -131,13 +131,14 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     this.position.y -= SINK_SPEED * deltaTime;
                     this.hitArea[0].y = this.position.y;
                     this.attackDelayTimer += deltaTime;
-                    if (this.attackDelayTimer > SINK_EXPLOSION_DELAY) {
+                    if (this.attackDelayTimer >= SINK_EXPLOSION_DELAY) {
                         explode();
                         this.attackDelayTimer = 0;
                     }
                 }
                 else {
                     this.state = EntityState.Destroyed;
+                    this.explosions.clear();
                 }
                 return;
             }
