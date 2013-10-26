@@ -506,7 +506,9 @@ public class SeeteufelScreen implements GameScreen {
                 this.doorClose, SecondMap.GROUND_DIM, SecondMap.GROUND_DIM * (SecondMap.ENTRANCE_PLAT_HEIGHT + 1));
         this.room2Entrance.setIsOpen(DoorState.SHUT, false);
         this.room3Exit = new Door(this.t_tiles2, this.doorOpen,
-                this.doorClose, (SecondMap.GROUND_WIDTH - 2) * SecondMap.GROUND_DIM, (SeeteufelScreen.MAP2_HEIGHT + 1) * SecondMap.GROUND_DIM);
+                this.doorClose, (SecondMap.GROUND_WIDTH - 2) * SecondMap.GROUND_DIM - this.room2Entrance.getWidth() / 2,
+                (SeeteufelScreen.MAP2_HEIGHT + 1) * SecondMap.GROUND_DIM);
+        this.room3Exit.setIsOpen(DoorState.OPEN, false);
         this.entities.add(this.room2Entrance);
         this.entities.add(this.room3Exit);
         

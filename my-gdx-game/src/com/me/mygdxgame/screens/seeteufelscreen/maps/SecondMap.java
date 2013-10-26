@@ -56,6 +56,7 @@ public class SecondMap extends GameMap {
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + 1) * GROUND_DIM, GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + this.height * GROUND_DIM, GROUND_DIM, ARENA_HEIGHT * GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH - 3), GROUND_ORIGIN_Y + this.height * GROUND_DIM, GROUND_DIM * 2, GROUND_DIM),
+                new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH - 2), GROUND_ORIGIN_Y + (this.height - 1) * GROUND_DIM, GROUND_DIM, GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + (this.height + ARENA_HEIGHT - 1) * GROUND_DIM, GROUND_DIM * (ARENA_WIDTH + GROUND_WIDTH), GROUND_DIM),
         };
     }
