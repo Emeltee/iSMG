@@ -150,7 +150,7 @@ public class SeeteufelFront implements GameEntity {
             this.createdEntities.addFirst(new Rocket(this.rocketSpritesheet,
                     this.explosion, rocketPosition, targetPosition.nor().scl(
                             SeeteufelFront.ROCKET_SPEED), 1, 0,
-                    new Rectangle[0], new Damageable[] { target }));
+                    new GameEntity[0], new Damageable[] { target }));
         }
     }
 

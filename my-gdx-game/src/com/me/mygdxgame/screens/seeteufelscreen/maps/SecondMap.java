@@ -1,11 +1,15 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
+import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class SecondMap extends GameMap {
@@ -25,6 +29,7 @@ public class SecondMap extends GameMap {
             ENTRANCE_PLAT_HEIGHT = 3; // Height of the platform the entrance is to be on.
     
     private Rectangle[] obstacles = null;
+    private GenericEntity returnObstacles = null;
     private static final Vector3 INIT_POS = new Vector3(FirstMap.GROUND_DIM + 10, FirstMap.GROUND_DIM * (ENTRANCE_PLAT_HEIGHT + 1), 0); 
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
@@ -59,6 +64,7 @@ public class SecondMap extends GameMap {
                 new Rectangle (GROUND_ORIGIN_X + GROUND_DIM * (GROUND_WIDTH - 2), GROUND_ORIGIN_Y + (this.height - 1) * GROUND_DIM, GROUND_DIM, GROUND_DIM),
                 new Rectangle (GROUND_ORIGIN_X - GROUND_DIM * ARENA_WIDTH, GROUND_ORIGIN_Y + (this.height + ARENA_HEIGHT - 1) * GROUND_DIM, GROUND_DIM * (ARENA_WIDTH + GROUND_WIDTH), GROUND_DIM),
         };
+        this.returnObstacles = new GenericEntity(Arrays.asList(this.obstacles));
     }
     
     @Override
@@ -67,8 +73,8 @@ public class SecondMap extends GameMap {
     }
 
     @Override
-    public Rectangle[] getObstacles() {
-        return this.obstacles;
+    public GameEntity getObstacles() {
+        return this.returnObstacles;
     }
 
     @Override
@@ -88,7 +94,7 @@ public class SecondMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 

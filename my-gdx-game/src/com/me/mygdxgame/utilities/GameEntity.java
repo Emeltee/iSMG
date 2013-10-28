@@ -68,7 +68,10 @@ public interface GameEntity extends Updatable {
     public boolean hasCreatedEntities();
     
     /**
-     * Retrieves this objects bounding boxes.
+     * Retrieves this object's bounding boxes. The array returned is only valid
+     * at the point the method is called, and data may be obsolete by the next
+     * update. Return values should therefore not be cached between updates;
+     * method should be called at least once per update cycle.
      * 
      * @return An array of Rectangles indicating the object's effective area(s).
      *         May be empty, but should not be null.

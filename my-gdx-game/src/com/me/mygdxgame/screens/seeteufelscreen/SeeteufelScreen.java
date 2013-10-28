@@ -42,6 +42,7 @@ import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
 import com.me.mygdxgame.utilities.GenericDamager;
+import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 /**
@@ -138,7 +139,7 @@ public class SeeteufelScreen implements GameScreen {
     private Renderer hudRenderer;
     private InfinityWaterfall room2Fall;
     
-    private LinkedList<Rectangle> obstacles = new LinkedList<Rectangle>();
+    private LinkedList<GameEntity> obstacles = new LinkedList<GameEntity>();
     private LinkedList<FallingPlatform> fallingBlocks = new LinkedList<FallingPlatform>();
     private LinkedList<FallingPlatform> fallenBlocks = new LinkedList<FallingPlatform>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
@@ -376,10 +377,7 @@ public class SeeteufelScreen implements GameScreen {
         this.entities.add(this.refractor);
         this.entities.add(this.room1Exit);
         this.entities.add(this.bonus);
-        Rectangle[] mapObstacles = this.map1.getObstacles();
-        for (Rectangle rect : mapObstacles) {
-            this.obstacles.add(rect);
-        }
+        this.obstacles.add(this.map1.getObstacles());
         this.playerTargets.add(this.bonus);
     }
 
@@ -487,17 +485,14 @@ public class SeeteufelScreen implements GameScreen {
         this.obstacles.clear();
         
         // Add player static obstacles.
-        Rectangle[] map2Obstacles = this.map2.getObstacles();
-        for (Rectangle rect : map2Obstacles) {
-            this.obstacles.add(rect);
-        }
+        this.obstacles.add(this.map2.getObstacles());
         
         // Generate stairs of destructable platforms and load them into lists.
         this.generateMap2Stairs();
         
         // Add moving ceiling obstacle to obstacle list.
         this.map2Ceiling = new Rectangle(0, 0, Gdx.graphics.getWidth(), 50);
-        this.obstacles.addFirst(this.map2Ceiling);
+        this.obstacles.add(new GenericEntity(Arrays.asList(new Rectangle[] {this.map2Ceiling})));
         
         // Set player state and initial position.
         Vector3 map2InitPos = this.map2.getInitialPosition();
@@ -530,7 +525,7 @@ public class SeeteufelScreen implements GameScreen {
         Platform destructableTile = null;
         for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
             destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
-            this.obstacles.add(destructableTile.getHitArea()[0]);
+            this.obstacles.add(destructableTile);
             this.entities.add(destructableTile);
             
             if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
@@ -549,7 +544,7 @@ public class SeeteufelScreen implements GameScreen {
             int currentYCoord = (int) (currentTileY * (SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
             this.seeteufelTargets.peek().add(destructableTile);
-            this.obstacles.add(destructableTile.getHitArea()[0]);
+            this.obstacles.add(destructableTile);
             this.entities.add(destructableTile);
             
             if (platformDirection) {
@@ -595,7 +590,7 @@ public class SeeteufelScreen implements GameScreen {
         
         LinkedList<Damageable> topStairs = this.seeteufelTargets.removeFirst();
         for (Damageable d : topStairs) {
-            this.obstacles.remove(d.getHitArea()[0]);
+            this.obstacles.remove(d);
             this.entities.remove(d);
         }
         this.seeteufelTargetLevels.removeFirst();
@@ -802,7 +797,7 @@ public class SeeteufelScreen implements GameScreen {
             // Remove from obstacle list if this was one of the platforms.
             // TODO Hackish, fix eventually.
             if (e instanceof Platform) {
-                this.obstacles.remove(((Platform) e).getHitArea()[0]);
+                this.obstacles.remove(e);
             }
         }
         for (GameEntity[] newEntities : this.toAdd) {
@@ -817,8 +812,9 @@ public class SeeteufelScreen implements GameScreen {
         map3CamPos.x = SeeteufelScreen.MAP2_CAM_X;
         map3CamPos.y = this.map2Y;
         
-        // Remove moving ceiling.
-        this.obstacles.remove(this.map2Ceiling);
+        // Remove moving ceiling and all room 2 platforms.
+        this.obstacles.clear();
+        this.obstacles.add(this.map2.getObstacles());
         
         // Destroy all remaining platforms from room 2.
         GenericDamager damager = new GenericDamager(1, 0);
@@ -826,11 +822,6 @@ public class SeeteufelScreen implements GameScreen {
             // TODO hackish. Get rid of this instanceof.
             if (entity instanceof Platform) {
                 ((Platform) entity).damage(damager);
-                entity.update(1);
-                if (entity.hasCreatedEntities()) {
-                    this.toAdd.add(entity.getCreatedEntities());
-                }
-                this.toRemove.add(entity);
             }
         }
         this.explosion.play();
@@ -860,6 +851,7 @@ public class SeeteufelScreen implements GameScreen {
         for (int x = 1; x < SecondMap.GROUND_WIDTH - 3; x++) {
             fallingBlocks.add(new FallingPlatform(this.t_tiles1, this.mapTiles, this.seeSplash,
                     x * SecondMap.GROUND_DIM, fallingBlockY, fallingBlockTargetY));
+            this.obstacles.add(fallingBlocks.getLast());
         }
     }
     
@@ -997,11 +989,6 @@ public class SeeteufelScreen implements GameScreen {
                     FallingPlatform currentBlock = this.fallingBlocks.removeFirst();
                     currentBlock.fall();
                     this.fallenBlocks.add(currentBlock);
-                }
-                for (FallingPlatform fallen : this.fallenBlocks) {
-                    if (fallen.hasFallen() && !this.obstacles.contains(fallen.getHitArea()[0])) {
-                        this.obstacles.add(fallen.getHitArea()[0]);
-                    }
                 }
                 
                 this.music1.stop();

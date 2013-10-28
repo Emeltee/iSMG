@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
+import com.me.mygdxgame.utilities.GameEntity;
 
 public class GeminiShot extends BusterShot {
 
@@ -32,7 +33,7 @@ public class GeminiShot extends BusterShot {
 
     public GeminiShot(Texture spriteSheet, Sound missSound, Vector3 position,
             int speed, BusterShot.ShotDirection dir, int power, float range,
-            Collection<Rectangle> obstacles, Collection<Damageable> targets) {
+            Collection<GameEntity> obstacles, Collection<Damageable> targets) {
         
         super(spriteSheet, missSound, position, speed, dir, 2 * power,
                 3 * range, obstacles, targets);
@@ -110,25 +111,27 @@ public class GeminiShot extends BusterShot {
             return; 
         }
         
-        for (Rectangle r: this.obstacles) {
-            if (r.overlaps(this.hitBox)) {
-                numDeflects++;
-                
-                if (this.dir == ShotDirection.LEFT) {
-                    this.dir = BusterShot.ShotDirection.RIGHT;
-                    this.position.x = r.getX() + r.getWidth() + 1;
-                } else {
-                    this.dir = BusterShot.ShotDirection.LEFT;
-                    this.position.x = r.getX() - GeminiShot.GEMINI_W - 1;
+        for (GameEntity entity : this.obstacles) {
+            for (Rectangle r: entity.getHitArea()) {
+                if (r.overlaps(this.hitBox)) {
+                    numDeflects++;
+                    
+                    if (this.dir == ShotDirection.LEFT) {
+                        this.dir = BusterShot.ShotDirection.RIGHT;
+                        this.position.x = r.getX() + r.getWidth() + 1;
+                    } else {
+                        this.dir = BusterShot.ShotDirection.LEFT;
+                        this.position.x = r.getX() - GeminiShot.GEMINI_W - 1;
+                    }
+                    
+                    if (!this.isDeflected) {
+                        this.isDeflected = true;
+                        this.dir2 = ShotDeflection.UP;
+                        this.dir = (this.dir == BusterShot.ShotDirection.LEFT) ? BusterShot.ShotDirection.RIGHT : BusterShot.ShotDirection.LEFT;
+                    }
+                    
+                    return;
                 }
-                
-                if (!this.isDeflected) {
-                    this.isDeflected = true;
-                    this.dir2 = ShotDeflection.UP;
-                    this.dir = (this.dir == BusterShot.ShotDirection.LEFT) ? BusterShot.ShotDirection.RIGHT : BusterShot.ShotDirection.LEFT;
-                }
-                
-                return;
             }
         }
     }
@@ -138,19 +141,21 @@ public class GeminiShot extends BusterShot {
             return; 
         }
         
-        for (Rectangle r: this.obstacles) {
-            if (r.overlaps(this.hitBox)) {
-                numDeflects++;
-                
-                if (this.dir2 == ShotDeflection.UP) {
-                    this.dir2 = ShotDeflection.DOWN;
-                    this.position.y = r.getY() - GeminiShot.GEMINI_H - 1;
-                } else {
-                    this.dir2 = GeminiShot.ShotDeflection.UP;
-                    this.position.y = r.getY() + r.getHeight() + 1;
+        for (GameEntity entity : this.obstacles) {
+            for (Rectangle r: entity.getHitArea()) {
+                if (r.overlaps(this.hitBox)) {
+                    numDeflects++;
+                    
+                    if (this.dir2 == ShotDeflection.UP) {
+                        this.dir2 = ShotDeflection.DOWN;
+                        this.position.y = r.getY() - GeminiShot.GEMINI_H - 1;
+                    } else {
+                        this.dir2 = GeminiShot.ShotDeflection.UP;
+                        this.position.y = r.getY() + r.getHeight() + 1;
+                    }
+                    
+                    return;
                 }
-                
-                return;
             }
         }
     }

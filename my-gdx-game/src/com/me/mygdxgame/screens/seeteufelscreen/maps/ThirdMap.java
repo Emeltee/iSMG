@@ -1,11 +1,15 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
+import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class ThirdMap extends GameMap {
@@ -93,7 +97,7 @@ public class ThirdMap extends GameMap {
     }
 
     @Override
-    public Rectangle[] getObstacles() {
+    public GameEntity getObstacles() {
         // TODO Auto-generated method stub
         Rectangle [] result = {                
             new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM, 9 * GROUND_DIM), // Left Wall
@@ -104,7 +108,7 @@ public class ThirdMap extends GameMap {
             new Rectangle(GROUND_ORIGIN_X + GROUND_DIM, GROUND_ORIGIN_Y + 2*GROUND_DIM, 2 * GROUND_DIM, GROUND_DIM), // 3rd Lowest
             new Rectangle(GROUND_ORIGIN_X + GROUND_DIM, GROUND_ORIGIN_Y + 3*GROUND_DIM, 1 * GROUND_DIM, GROUND_DIM), // 4th Lowest
         };
-        return result;
+        return new GenericEntity(Arrays.asList(result));
     }
 
     @Override
@@ -163,7 +167,7 @@ public class ThirdMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
     }
 

@@ -36,7 +36,7 @@ public class Rocket implements GameEntity, Damager {
     /** Current velocity. */
     private Vector3 velocity = new Vector3(0, 0, 0);
     /** Collision detection rectangles */
-    private Rectangle [] obstacles;
+    private GameEntity[] obstacles;
     /** Targets to power. */
     private Damageable[] targets;
     /** State of object */
@@ -56,7 +56,7 @@ public class Rocket implements GameEntity, Damager {
     // Entities to be created by rocket
     private Explosion[] explosions;
   
-    public Rocket(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, int knockback, Rectangle [] obstacles, Damageable[] targets) {
+    public Rocket(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, int knockback, GameEntity [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
@@ -86,13 +86,15 @@ public class Rocket implements GameEntity, Damager {
             this.hitBox.setPosition(this.position.x, this.position.y);
             
             // Check for obstacle collisions.
-            for (Rectangle r: this.obstacles) {
-                if (r.overlaps(this.hitBox)
-                        && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
-                         || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
-                         || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
-                    explode();
-                    return;
+            for (GameEntity entity : this.obstacles) {
+                for (Rectangle r: entity.getHitArea()) {
+                    if (r.overlaps(this.hitBox)
+                            && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
+                             || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
+                             || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
+                        explode();
+                        return;
+                    }
                 }
             }
             

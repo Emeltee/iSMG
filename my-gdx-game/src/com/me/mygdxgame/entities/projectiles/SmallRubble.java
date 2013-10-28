@@ -2,10 +2,10 @@ package com.me.mygdxgame.entities.projectiles;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
+import com.me.mygdxgame.utilities.GameEntity;
 
 public class SmallRubble extends Rubble {
     // Texture control constants, get passed up into super-class instance vars
@@ -14,7 +14,7 @@ public class SmallRubble extends Rubble {
     public static final int RUBBLE_W = 15;
     public static final int RUBBLE_H = 15;
     
-    public SmallRubble(Texture spriteSheet, Vector3 position, Vector3 velocity, int damage, Rectangle[] obstacles, Damageable[] targets) {
+    public SmallRubble(Texture spriteSheet, Vector3 position, Vector3 velocity, int damage, GameEntity[] obstacles, Damageable[] targets) {
         super((int)position.x, (int)position.y, RUBBLE_W, RUBBLE_H);
         this.rubble = new TextureRegion(spriteSheet, RUBBLE_X, RUBBLE_Y, RUBBLE_W, RUBBLE_H);
         this.y = RUBBLE_Y;

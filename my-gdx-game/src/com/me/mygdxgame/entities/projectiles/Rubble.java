@@ -22,7 +22,7 @@ public abstract class Rubble implements GameEntity, Damager {
     /** Running|Destroyed */
     protected EntityState state;
     /** List of objects stopping rubble */
-    protected Rectangle [] obstacles;
+    protected GameEntity [] obstacles;
     /** List of damageable objects stopping rubble */
     protected Damageable [] targets;
     /** Time to remain active before automatically being destroyed.*/
@@ -78,10 +78,12 @@ public abstract class Rubble implements GameEntity, Damager {
             }
             
             // Check for harmless collisions
-            for (Rectangle r: obstacles) {
-                if (r.overlaps(new Rectangle(this.position.x, this.position.y, this.w, this.h))) {
-                    this.state = EntityState.Destroyed;
-                    return;
+            for (GameEntity entity : this.obstacles) {
+                for (Rectangle r: entity.getHitArea()) {
+                    if (r.overlaps(new Rectangle(this.position.x, this.position.y, this.w, this.h))) {
+                        this.state = EntityState.Destroyed;
+                        return;
+                    }
                 }
             }
             

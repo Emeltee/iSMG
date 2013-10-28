@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -59,9 +58,11 @@ public class EntityTestScreen implements GameScreen {
     
     /**
      * Retrieves the list of obstacles from the underlying {@link GameMap}.
-     * @return A list of Rectangles representing the obstacles in the Screen's GameMap.
+     * 
+     * @return A GameEntity whose hit areas represent the obstacles in the
+     *         Screen's GameMap.
      */
-    public Rectangle[] getObstacles() {
+    public GameEntity getObstacles() {
         return this.map.getObstacles();
     }
     

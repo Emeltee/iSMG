@@ -53,13 +53,15 @@ public class BusterShot implements GameEntity, Damager {
     protected EntityState state;
     
     /** Areas of the map to look out for. */
-    protected Collection<Rectangle> obstacles;
+    protected Collection<GameEntity> obstacles;
     /** Stuff to hurt.*/
     protected Collection<Damageable> targets;
   
     public BusterShot() {}
     
-    public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed, ShotDirection dir, int power, float range, Collection<Rectangle> obstacles, Collection<Damageable> targets) {
+    public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed,
+            ShotDirection dir, int power, float range, Collection<GameEntity> obstacles,
+            Collection<Damageable> targets) {
         this.spriteSheet = spriteSheet;
         this.missSound = missSound;
         this.position.set(position);
@@ -100,8 +102,7 @@ public class BusterShot implements GameEntity, Damager {
             
             // Check collisions with potential targets.
             for (Damageable target : this.targets) {
-                Rectangle[] hitAreas = target.getHitArea();
-                for (Rectangle hitBox : hitAreas) {
+                for (Rectangle hitBox : target.getHitArea()) {
                     if (hitBox.overlaps(this.hitBox)) {
                         target.damage(this);
                         this.state = EntityState.Destroyed;
@@ -111,11 +112,13 @@ public class BusterShot implements GameEntity, Damager {
             }
             
             // Check for collisions with obstacles.
-            for (Rectangle r: this.obstacles) {
-                if (r.overlaps(this.hitBox)) {
-                    this.state = EntityState.Destroyed;
-                    this.missSound.play();
-                    return;
+            for (GameEntity entity : this.obstacles) {
+                for (Rectangle r: entity.getHitArea()) {
+                    if (r.overlaps(this.hitBox)) {
+                        this.state = EntityState.Destroyed;
+                        this.missSound.play();
+                        return;
+                    }
                 }
             }
         }

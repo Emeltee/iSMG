@@ -52,7 +52,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Vector3 velocity = new Vector3();
     private Vector3 shotOrigin = new Vector3();
     private int health = MegaPlayer.MAX_HEALTH;
-    private Collection<Rectangle> obstacles = null;
+    private Collection<GameEntity> obstacles = null;
     private Collection<Damageable> targets = null;
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
     private int animationTimer = 0;
@@ -137,7 +137,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     public MegaPlayer(MegaPlayerResources resources, Vector3 initialPosition,
-            Collection<Rectangle> obstacles, Collection<Damageable> targets) {
+            Collection<GameEntity> obstacles, Collection<Damageable> targets) {
         this.resources = resources;
         this.position.set(initialPosition);
         this.obstacles = obstacles;
@@ -511,36 +511,38 @@ public class MegaPlayer implements GameEntity, Damageable {
         boolean floorCollision = false;
         
         // Brute force it. We've got a deadline here.
-        for (Rectangle obstacle : this.obstacles) {
-            if (obstacle.overlaps(this.hitBox)) {
-                
-                obstacleTop = obstacle.y + obstacle.height;
-                // Check if it's a floor collision.
-                if (hitBoxTop > obstacleTop && this.hitBox.y <= obstacleTop) {
+        for (GameEntity entity : this.obstacles) {
+            for (Rectangle obstacle : entity.getHitArea()) {
+                if (obstacle.overlaps(this.hitBox)) {
                     
-                    // Play landing sound if in the air.
-                    if (this.isInAir) {
-                        this.resources.landSound.play();
+                    obstacleTop = obstacle.y + obstacle.height;
+                    // Check if it's a floor collision.
+                    if (hitBoxTop > obstacleTop && this.hitBox.y <= obstacleTop) {
+                        
+                        // Play landing sound if in the air.
+                        if (this.isInAir) {
+                            this.resources.landSound.play();
+                        }
+                        
+                        // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
+                        this.position.y = obstacle.y + obstacle.height;
+                        this.velocity.y = 0;
+                        this.isInAir = false;
+                        floorCollision = true;
+                        return;
                     }
-                    
-                    // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
-                    this.position.y = obstacle.y + obstacle.height;
-                    this.velocity.y = 0;
-                    this.isInAir = false;
-                    floorCollision = true;
-                    break;
+                    // Check if it's a ceiling collision.
+                    else if(hitBoxTop < obstacleTop && hitBoxTop > obstacle.y)
+                    {
+                        // Set position to bottom of obstacle. Set y velocity to 0. Reset jump values.
+                        this.position.y = obstacle.y - this.hitBox.height - 1;
+                        this.velocity.y = 0;
+                        this.isJumping = false;
+                        this.jumpThrustTimer = 0;
+                        return;
+                    }
                 }
-                // Check if it's a ceiling collision.
-                else if(hitBoxTop < obstacleTop && hitBoxTop > obstacle.y)
-                {
-                    // Set position to bottom of obstacle. Set y velocity to 0. Reset jump values.
-                    this.position.y = obstacle.y - this.hitBox.height - 1;
-                    this.velocity.y = 0;
-                    this.isJumping = false;
-                    this.jumpThrustTimer = 0;
-                    break;
-                }
-            }
+            }       
         }
 
         // If there were no y collisions, assume you're in the air.
@@ -565,32 +567,34 @@ public class MegaPlayer implements GameEntity, Damageable {
         float hitBoxRightEdge = this.hitBox.x + MegaPlayer.HITBOX_WIDTH;
         
         // O(n) like a charlatan.
-        for (Rectangle obstacle : this.obstacles) {
-            if (obstacle.overlaps(this.hitBox)) {
-                
-                obstacleRightEdge = obstacle.x + obstacle.width;
-                
-                // Collision on right side of obstacle.
-                if (this.hitBox.x < obstacleRightEdge && hitBoxRightEdge > obstacleRightEdge) {
-                    // Set position to obstacle's right edge. Drop velocity to 0 if you were moving left.
-                    this.position.x = obstacleRightEdge;
-                    this.hitBox.x = this.position.x;
-                    if(this.velocity.x < 0)
-                    {
-                        this.velocity.x = 0;
+        for (GameEntity entity : this.obstacles) {
+            for (Rectangle obstacle : entity.getHitArea()) {
+                if (obstacle.overlaps(this.hitBox)) {
+                    
+                    obstacleRightEdge = obstacle.x + obstacle.width;
+                    
+                    // Collision on right side of obstacle.
+                    if (this.hitBox.x < obstacleRightEdge && hitBoxRightEdge > obstacleRightEdge) {
+                        // Set position to obstacle's right edge. Drop velocity to 0 if you were moving left.
+                        this.position.x = obstacleRightEdge;
+                        this.hitBox.x = this.position.x;
+                        if(this.velocity.x < 0)
+                        {
+                            this.velocity.x = 0;
+                        }
+                        return;
                     }
-                    break;
-                }
-                // Collision on left side of obstacle.
-                else if (hitBoxRightEdge > obstacle.x && this.hitBox.x < obstacle.x) {
-                    // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
-                    this.position.x = obstacle.x - this.hitBox.width;
-                    this.hitBox.x = this.position.x;
-                    if(this.velocity.x > 0)
-                    {
-                        this.velocity.x = 0;
+                    // Collision on left side of obstacle.
+                    else if (hitBoxRightEdge > obstacle.x && this.hitBox.x < obstacle.x) {
+                        // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
+                        this.position.x = obstacle.x - this.hitBox.width;
+                        this.hitBox.x = this.position.x;
+                        if(this.velocity.x > 0)
+                        {
+                            this.velocity.x = 0;
+                        }
+                        return;
                     }
-                    break;
                 }
             }
         }
