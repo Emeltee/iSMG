@@ -182,7 +182,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     
                     // Decide whether to attack a ceiling tile in addition to the normal attack.
                     // Ramp up to 2x the normal rate as damage is done.
-                    float ceilingAttackChance = CEILING_ATTACK_CHANCE + 2 * ((MAX_HEALTH - this.health) / MAX_HEALTH);
+                    float ceilingAttackChance = CEILING_ATTACK_CHANCE + 0.1f * ((MAX_HEALTH - this.health) / (float)MAX_HEALTH);
+                    System.out.println(ceilingAttackChance);
                     if (Math.random() <= ceilingAttackChance) {
                         if (!this.ceilingTargets.isEmpty()) {
                             int index = (int) (Math.random() * this.ceilingTargets.size());
