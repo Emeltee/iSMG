@@ -26,7 +26,7 @@ public class DamagingPlatform implements Damageable {
     protected static final int PLATFORM_H = 32;
     
     protected static final int MAX_HEALTH = 1;
-    protected static final int POWER = 15;
+    protected static final int POWER = 10;
     
     protected Texture spriteSheet;
     protected TextureRegion platform;
@@ -111,13 +111,13 @@ public class DamagingPlatform implements Damageable {
         targets = this.targets.toArray(targets);
         this.rubble = new Rubble [] {
                 new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
-                        new Vector3((150 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         POWER, new GameEntity [0], targets, 1),
                 new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
-                        new Vector3((150 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         POWER, new GameEntity [0], targets, 1),
                 new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
-                        new Vector3((150 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         POWER, new GameEntity [0], targets, 1),
         };
     }
