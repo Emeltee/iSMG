@@ -26,6 +26,7 @@ public class InfinityWaterfall implements GameEntity {
     private Rectangle hitbox = null;
     private Rectangle[] hitAreas = null;
     private TextureRegion[] waterfallEnd = new TextureRegion[5];
+    private TextureRegion grateRegion = null;
     
     public InfinityWaterfall(Texture waterfall, Texture waterfallEnd, int x, int y, int height) {
         
@@ -33,6 +34,8 @@ public class InfinityWaterfall implements GameEntity {
         this.y = y;
         
         height = Math.max(height, InfinityWaterfall.MIN_HEIGHT);
+        
+        this.grateRegion = new TextureRegion(waterfallEnd, 22, 102, 23, 23);
         
         this.waterfall = new Sprite(waterfall);
         this.waterfall.setBounds(x, y - height, waterfall.getWidth(), height);

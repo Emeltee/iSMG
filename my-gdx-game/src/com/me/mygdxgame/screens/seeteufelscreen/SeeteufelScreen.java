@@ -75,6 +75,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_PLAYER_DROWN_OFFSET = MegaPlayer.HITBOX_HEIGHT * 2;
     private static final float MAP2_INITIAL_CAM_Y = -SCREEN_BOTTOM;
     private static final float MAP2_WATER_Y_OFFSET = 75;
+    private static final int MAP2_WATERFALL_OFFSET = 200;
     private static final int CAMERA_SHAKE = 15;
     private static final float CAMERA_SHAKE_FALLOFF = 0.5f;
     private static final float MAP2_STAIR_STEP_HEIGHT = 0.5f;
@@ -142,7 +143,8 @@ public class SeeteufelScreen implements GameScreen {
     private SeeteufelFront seeFront;
     private SeeteufelSide seeSide;
     private Renderer hudRenderer;
-    private InfinityWaterfall room2Fall;
+    private InfinityWaterfall room2Fall1;
+    private InfinityWaterfall room2Fall2;
     
     private LinkedList<GameEntity> obstacles = new LinkedList<GameEntity>();
     private LinkedList<FallingPlatform> fallingBlocks = new LinkedList<FallingPlatform>();
@@ -518,9 +520,12 @@ public class SeeteufelScreen implements GameScreen {
         this.entities.add(this.room3Exit);
         
         // Create decorative waterfall.
-        this.room2Fall = new InfinityWaterfall(
-                this.waterfall, this.waterfallEnd, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT, 
-                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET));
+        this.room2Fall1 = new InfinityWaterfall(
+                this.waterfall, this.waterfallEnd, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
+                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
+        this.room2Fall2 = new InfinityWaterfall(
+                this.waterfall, this.waterfallEnd, 510, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
+                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
     }
     
     /** Add player dynamic obstacles. Also generates Seeteufel target list(s).*/
@@ -708,13 +713,18 @@ public class SeeteufelScreen implements GameScreen {
         // Draw the map
         this.map2.render(deltaTime, renderer);
         
-        // Draw falls.
-        this.room2Fall.update(deltaTime);
-        this.room2Fall.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY);
-        this.room2Fall.draw(renderer);
-        
-        // Update Seeteufel only after water starts rising.
+        // Update Seeteufel and draw waterfalls only after water starts rising.
         if (this.isMap2Flooding) {
+            
+            // Update falls.
+            this.room2Fall1.update(deltaTime);
+            this.room2Fall1.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
+            this.room2Fall1.draw(renderer);
+            this.room2Fall2.update(deltaTime);
+            this.room2Fall2.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
+            this.room2Fall2.draw(renderer);
+            
+            // Update Seeteufel.
             this.seeFront.setTargetY((int)this.map2WaterY);
             this.seeFront.update(deltaTime);
             this.seeFront.draw(renderer);
@@ -919,6 +929,14 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw the map.
         this.map2.render(deltaTime, renderer);
+        
+        // Update falls.
+        this.room2Fall1.update(deltaTime);
+        this.room2Fall1.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
+        this.room2Fall1.draw(renderer);
+        this.room2Fall2.update(deltaTime);
+        this.room2Fall2.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
+        this.room2Fall2.draw(renderer);
         
         // Update the falling blocks as needed.
         for (FallingPlatform platform : this.fallingBlocks) {
