@@ -2,7 +2,6 @@ package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
 import java.util.Arrays;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -36,7 +35,7 @@ public class SecondMap extends GameMap {
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
     
-    public SecondMap(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int height) {
+    public SecondMap(SeeteufelScreen.MapTiles tiles, int height) {
         
         this.height = height;
         

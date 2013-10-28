@@ -67,6 +67,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private boolean geminiEnabled = false;
     private boolean isUnderwater = false;
     
+    private Texture spritesheet = null;
+    
     MegaPlayerResources resources = new MegaPlayerResources();
     
     private TextureRegion[] runRight = new TextureRegion[4];
@@ -91,8 +93,6 @@ public class MegaPlayer implements GameEntity, Damageable {
      * Simple storage class to manage the resources required by MegaPlayer.
      */
     public static class MegaPlayerResources {
-        public Texture playerTexture = null;
-        public Texture busterTexture = null;
         public Sound shootSound = null;
         public Sound shotMissSound = null;
         public Sound footstepSound = null;
@@ -105,8 +105,6 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         public void load() {
             if (!this.isLoaded) {
-                this.busterTexture = new Texture(Gdx.files.internal("img/seeTiles1.png"));
-                this.playerTexture = new Texture(Gdx.files.internal("img/mmd.png"));
                 this.footstepSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-walk1.ogg"));
                 this.hurtSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-hurt1.ogg"));
                 this.jumpSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-jump1.ogg"));
@@ -121,8 +119,6 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         public void unload() {
             if (this.isLoaded) {
-                this.busterTexture.dispose();
-                this.playerTexture.dispose();
                 this.footstepSound.dispose();
                 this.hurtSound.dispose();
                 this.jumpSound.dispose();
@@ -136,24 +132,25 @@ public class MegaPlayer implements GameEntity, Damageable {
         }
     }
     
-    public MegaPlayer(MegaPlayerResources resources, Vector3 initialPosition,
+    public MegaPlayer(Texture spritesheet, MegaPlayerResources resources, Vector3 initialPosition,
             Collection<GameEntity> obstacles, Collection<Damageable> targets) {
+        this.spritesheet = spritesheet;
         this.resources = resources;
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
         this.geminiEnabled = false;
         
-        this.runRight[0] = new TextureRegion(resources.playerTexture, 0, 0,
+        this.runRight[0] = new TextureRegion(spritesheet, 0, 256,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[1] = new TextureRegion(resources.playerTexture,
-                this.runRight[0].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
+        this.runRight[1] = new TextureRegion(spritesheet,
+                this.runRight[0].getRegionX() + MegaPlayer.SPRITE_WIDTH, 256,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[2] = new TextureRegion(resources.playerTexture,
-                this.runRight[1].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
+        this.runRight[2] = new TextureRegion(spritesheet,
+                this.runRight[1].getRegionX() + MegaPlayer.SPRITE_WIDTH, 256,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.runRight[3] = new TextureRegion(resources.playerTexture,
-                this.runRight[2].getRegionX() + MegaPlayer.SPRITE_WIDTH, 0,
+        this.runRight[3] = new TextureRegion(spritesheet,
+                this.runRight[2].getRegionX() + MegaPlayer.SPRITE_WIDTH, 256,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
         this.runLeft[0] = new TextureRegion(this.runRight[0]);
@@ -165,18 +162,18 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runLeft[3] = new TextureRegion(this.runRight[3]);
         this.runLeft[3].flip(true, false);
         
-        this.runShootRight[0] = new TextureRegion(resources.playerTexture, 0,
-                MegaPlayer.SPRITE_HEIGHT + 1, MegaPlayer.SPRITE_WIDTH,
+        this.runShootRight[0] = new TextureRegion(spritesheet, 0,
+                MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[1] = new TextureRegion(resources.playerTexture,
+        this.runShootRight[1] = new TextureRegion(spritesheet,
                 this.runRight[1].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[2] = new TextureRegion(resources.playerTexture,
+        this.runShootRight[2] = new TextureRegion(spritesheet,
                 this.runRight[2].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.runShootRight[3] = new TextureRegion(resources.playerTexture,
+        this.runShootRight[3] = new TextureRegion(spritesheet,
                 this.runRight[3].getRegionX(),
                 this.runShootRight[0].getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
@@ -190,23 +187,23 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.runShootLeft[3] = new TextureRegion(this.runShootRight[3]);
         this.runShootLeft[3].flip(true, false);
         
-        this.standRight = new TextureRegion(resources.playerTexture, 0,
+        this.standRight = new TextureRegion(spritesheet, 0,
                 this.runShootRight[0].getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.standLeft = new TextureRegion(this.standRight);
         this.standLeft.flip(true, false);
         
-        this.standShootRight = new TextureRegion(resources.playerTexture,
+        this.standShootRight = new TextureRegion(spritesheet,
                 this.runShootRight[1].getRegionX(),
                 this.standRight.getRegionY(), MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
         this.standShootLeft = new TextureRegion(this.standShootRight);
         this.standShootLeft.flip(true, false);
 
-        this.damageRight[0] = new TextureRegion(resources.playerTexture, this.runShootRight[2].getRegionX(),
+        this.damageRight[0] = new TextureRegion(spritesheet, this.runShootRight[2].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.damageRight[1] = new TextureRegion(resources.playerTexture, this.runShootRight[3].getRegionX(),
+        this.damageRight[1] = new TextureRegion(spritesheet, this.runShootRight[3].getRegionX(),
                 this.standShootRight.getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         this.damageLeft[0] = new TextureRegion(this.damageRight[0]);
@@ -214,11 +211,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.damageLeft[1] = new TextureRegion(this.damageRight[1]);
         this.damageLeft[1].flip(true, false);
         
-        this.jumpRight[0] = new TextureRegion(resources.playerTexture,
+        this.jumpRight[0] = new TextureRegion(spritesheet,
                 this.runRight[0].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpRight[1] = new TextureRegion(resources.playerTexture,
+        this.jumpRight[1] = new TextureRegion(spritesheet,
                 this.runRight[2].getRegionX(), this.jumpRight[0].getRegionY(),
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -227,11 +224,11 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpLeft[1] = new TextureRegion(this.jumpRight[1]);
         this.jumpLeft[1].flip(true, false);
         
-        this.jumpShootRight[0] = new TextureRegion(resources.playerTexture,
+        this.jumpShootRight[0] = new TextureRegion(spritesheet,
                 this.runRight[1].getRegionX(), this.standRight.getRegionY()
                         + MegaPlayer.SPRITE_HEIGHT, MegaPlayer.SPRITE_WIDTH,
                 MegaPlayer.SPRITE_HEIGHT);
-        this.jumpShootRight[1] = new TextureRegion(resources.playerTexture, this.runRight[3].getRegionX(),
+        this.jumpShootRight[1] = new TextureRegion(spritesheet, this.runRight[3].getRegionX(),
                 this.standRight.getRegionY() + MegaPlayer.SPRITE_HEIGHT,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
@@ -672,14 +669,14 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
                     this.resources.geminiSound.play(0.75f);
-                    this.createdEntities.offer(new GeminiShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new GeminiShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
                     this.resources.shootSound.play(0.75f);
-                    this.createdEntities.offer(new BusterShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new BusterShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
@@ -688,14 +685,14 @@ public class MegaPlayer implements GameEntity, Damageable {
             } else {
                 if (geminiEnabled) {
                     this.resources.geminiSound.play(0.75f);
-                    this.createdEntities.offer(new GeminiShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new GeminiShot(this.spritesheet,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
                     this.resources.shootSound.play(0.75f);
-                    this.createdEntities.offer(new BusterShot(this.resources.busterTexture,
+                    this.createdEntities.offer(new BusterShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,

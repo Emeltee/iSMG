@@ -74,9 +74,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private Rectangle[] hitArea = new Rectangle[1];
     private Rectangle movementHitArea = new Rectangle(0, 0, 0, 0);
     
-    public SeeteufelSide(Texture spritesheet, Texture rocketSpritesheet,
-            Sound explosion, Sound shoot, Sound damage, Vector3 position,
-            Collection<Damageable> targets, Collection<GameEntity> obstacles,
+    public SeeteufelSide(Texture spritesheet, Sound explosion, Sound shoot,
+            Sound damage, Vector3 position, Collection<Damageable> targets,
+            Collection<GameEntity> obstacles,
             Collection<Damageable> ceilingTargets) {
         this.position = new Vector3(position);
         this.position.x -= BASE_WIDTH / 2;
@@ -93,26 +93,26 @@ public class SeeteufelSide implements GameEntity, Damageable {
         this.shoot = shoot;
         this.damage = damage;
         
-        this.front = new TextureRegion(spritesheet, 0, 211, 72, 115);
+        this.front = new TextureRegion(spritesheet, 256, 211, 72, 115);
         
-        this.rocketSpritesheet = rocketSpritesheet;
+        this.rocketSpritesheet = spritesheet;
         
-        this.frontArm[0] = new TextureRegion(spritesheet, 19, 20, 101, 77);
-        this.frontArm[1] = new TextureRegion(spritesheet, 132, 14, 111, 84);
-        this.frontArm[2] = new TextureRegion(spritesheet, 244, 25, 122, 73);
-        this.frontArm[3] = new TextureRegion(spritesheet, 22, 103, 100, 103);
-        this.frontArm[4] = new TextureRegion(spritesheet, 290, 98, 76, 113);
-        this.frontArm[5] = new TextureRegion(spritesheet, 185, 98, 59, 113);
+        this.frontArm[0] = new TextureRegion(spritesheet, 275, 20, 101, 77);
+        this.frontArm[1] = new TextureRegion(spritesheet, 388, 14, 111, 84);
+        this.frontArm[2] = new TextureRegion(spritesheet, 500, 25, 122, 73);
+        this.frontArm[3] = new TextureRegion(spritesheet, 278, 103, 100, 103);
+        this.frontArm[4] = new TextureRegion(spritesheet, 546, 98, 76, 113);
+        this.frontArm[5] = new TextureRegion(spritesheet, 441, 98, 59, 113);
         for (TextureRegion region : this.frontArm) {
             region.flip(true, false);
         }
         
-        this.sideArmFront[0] = new TextureRegion(spritesheet, 0, 334, 113, 28);
-        this.sideArmFront[1] = new TextureRegion(spritesheet, 114, 334, 113, 24);
-        this.sideArmFront[2] = new TextureRegion(spritesheet, 228, 325, 113, 29);
-        this.sideArmBack[0] = new TextureRegion(spritesheet, 0, 370, 113, 28);
-        this.sideArmBack[1] = new TextureRegion(spritesheet, 114, 370, 113, 24);
-        this.sideArmBack[2] = new TextureRegion(spritesheet, 228, 362, 113, 29);
+        this.sideArmFront[0] = new TextureRegion(spritesheet, 256, 334, 113, 28);
+        this.sideArmFront[1] = new TextureRegion(spritesheet, 370, 334, 113, 24);
+        this.sideArmFront[2] = new TextureRegion(spritesheet, 484, 325, 113, 29);
+        this.sideArmBack[0] = new TextureRegion(spritesheet, 256, 370, 113, 28);
+        this.sideArmBack[1] = new TextureRegion(spritesheet, 370, 370, 113, 24);
+        this.sideArmBack[2] = new TextureRegion(spritesheet, 484, 362, 113, 29);
         for (TextureRegion region : this.sideArmFront) {
             region.flip(true, false);
         }

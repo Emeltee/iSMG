@@ -63,26 +63,26 @@ public class SeeteufelFront implements GameEntity {
         this.splash = splash;
         this.shoot = shoot;
         
-        this.front = new TextureRegion(spritesheet, 73, 211, 98, 115);
+        this.front = new TextureRegion(spritesheet, 329, 211, 98, 115);
         
         this.rocketSpritesheet = rocketSpritesheet;
         
-        this.frontArmLeft[0] = new TextureRegion(spritesheet, 175, 271, 88, 54);
-        this.frontArmLeft[1] = new TextureRegion(spritesheet, 269, 267, 82, 55);
-        this.frontArmRight[0] = new TextureRegion(spritesheet, 175, 271, 88, 54);
+        this.frontArmLeft[0] = new TextureRegion(spritesheet, 431, 271, 88, 54);
+        this.frontArmLeft[1] = new TextureRegion(spritesheet, 525, 267, 82, 55);
+        this.frontArmRight[0] = new TextureRegion(spritesheet, 431, 271, 88, 54);
         this.frontArmRight[0].flip(true, false);
-        this.frontArmRight[1] = new TextureRegion(spritesheet, 269, 267, 82, 55);
+        this.frontArmRight[1] = new TextureRegion(spritesheet, 525, 267, 82, 55);
         this.frontArmRight[1].flip(true, false);
         
-        this.backArmLeft[0] = new TextureRegion(spritesheet, 0, 370, 113, 28);
+        this.backArmLeft[0] = new TextureRegion(spritesheet, 256, 370, 113, 28);
         this.backArmLeft[0].flip(true, false);
-        this.backArmLeft[1] = new TextureRegion(spritesheet, 114, 370, 113, 24);
+        this.backArmLeft[1] = new TextureRegion(spritesheet, 370, 370, 113, 24);
         this.backArmLeft[1].flip(true, false);
-        this.backArmLeft[2] = new TextureRegion(spritesheet, 228, 362, 113, 29);
+        this.backArmLeft[2] = new TextureRegion(spritesheet, 484, 362, 113, 29);
         this.backArmLeft[2].flip(true, false);
-        this.backArmRight[0] = new TextureRegion(spritesheet, 0, 370, 113, 28);
-        this.backArmRight[1] = new TextureRegion(spritesheet, 114, 370, 113, 24);
-        this.backArmRight[2] = new TextureRegion(spritesheet, 228, 362, 113, 29);
+        this.backArmRight[0] = new TextureRegion(spritesheet, 256, 370, 113, 28);
+        this.backArmRight[1] = new TextureRegion(spritesheet, 370, 370, 113, 24);
+        this.backArmRight[2] = new TextureRegion(spritesheet, 484, 362, 113, 29);
     }
     
     public void setTargetY(int targetY) {
