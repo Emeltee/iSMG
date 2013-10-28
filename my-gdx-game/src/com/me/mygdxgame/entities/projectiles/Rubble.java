@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities.projectiles;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
@@ -45,6 +46,7 @@ public abstract class Rubble implements GameEntity, Damager {
     protected int power = 0;
     /** Knockback for falling rubble */
     protected int knockback = 0;
+    protected float scale = 1.0f;
     
     public Rubble(int x, int y, int width, int height) {
         this.hitbox.set(x, y, width, height);
@@ -104,7 +106,7 @@ public abstract class Rubble implements GameEntity, Damager {
     @Override
     public void draw(Renderer renderer) {
         if (this.state == EntityState.Running){            
-            renderer.drawRegion(this.rubble, (int)this.position.x, (int)this.position.y);
+            renderer.drawRegion(this.rubble, (int)this.position.x, (int)this.position.y, Color.WHITE, this.scale, this.scale, 0);
         }
     }
 

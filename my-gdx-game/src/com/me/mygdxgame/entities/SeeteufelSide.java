@@ -27,7 +27,9 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int SIDE_ARM_FRAMERATE = 10;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
     private static final float MOVE_SPEED = 2f;
-    private static final float ATTACK_DELAY = 0.6f;
+    private static final float BASE_ATTACK_DELAY = 1.0f;
+    private static final float MIN_ATTACK_DELAY = 0.3f;
+    private static final float ATTACK_DELAY_RAMP = 0.004f;
     private static final int ROCKET_POWER = 10;
     private static final int ROCKET_KNOCKBACK = 15;
     private static final int SINK_SPEED = 50;
@@ -37,6 +39,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private Vector3 position;
     
     private Collection<Damageable> targets;
+    private Collection<Damageable> ceilingTargets;
     private Collection<GameEntity> obstacles;
     
     private TextureRegion front = null;
@@ -69,12 +72,14 @@ public class SeeteufelSide implements GameEntity, Damageable {
     
     public SeeteufelSide(Texture spritesheet, Texture rocketSpritesheet,
             Sound explosion, Sound shoot, Sound damage, Vector3 position,
-            Collection<Damageable> targets, Collection<GameEntity> obstacles) {
+            Collection<Damageable> targets, Collection<GameEntity> obstacles,
+            Collection<Damageable> ceilingTargets) {
         this.position = new Vector3(position);
         this.position.x -= BASE_WIDTH / 2;
         this.position.y -= TARGET_Y_OFFSET;
         
         this.targets = targets;
+        this.ceilingTargets = ceilingTargets;
         this.obstacles = obstacles;
         
         this.hitArea[0] = new Rectangle(position.x, position.y, 72, 115);
@@ -165,7 +170,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
             } else {
                 // Attack.
                 this.attackDelayTimer += deltaTime;
-                if (this.attackDelayTimer > ATTACK_DELAY) {
+                float attackDelay = Math.max(MIN_ATTACK_DELAY, BASE_ATTACK_DELAY - (MAX_HEALTH - this.health) * ATTACK_DELAY_RAMP);
+                if (this.attackDelayTimer > attackDelay) {
                     this.shoot.play();
                     Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
                     Damageable[] currentTargets = new Damageable[this.targets.size()];
