@@ -1,6 +1,7 @@
 package com.me.mygdxgame.entities;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -11,6 +12,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.entities.particles.Explosion;
 import com.me.mygdxgame.entities.projectiles.Bomb;
+import com.me.mygdxgame.entities.projectiles.Rocket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
@@ -30,8 +32,10 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final float BASE_ATTACK_DELAY = 1.0f;
     private static final float MIN_ATTACK_DELAY = 0.3f;
     private static final float ATTACK_DELAY_RAMP = 0.004f;
+    private static final float CEILING_ATTACK_CHANCE = 0.2f;
     private static final int ROCKET_POWER = 10;
     private static final int ROCKET_KNOCKBACK = 15;
+    private static final float ROCKET_SPEED = 200.0f;
     private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
     private static final float SINK_EXPLOSION_DELAY = 0.1f;
@@ -79,7 +83,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
         this.position.y -= TARGET_Y_OFFSET;
         
         this.targets = targets;
-        this.ceilingTargets = ceilingTargets;
+        this.ceilingTargets = new LinkedList<Damageable>(ceilingTargets);
         this.obstacles = obstacles;
         
         this.hitArea[0] = new Rectangle(position.x, position.y, 72, 115);
@@ -172,7 +176,33 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 this.attackDelayTimer += deltaTime;
                 float attackDelay = Math.max(MIN_ATTACK_DELAY, BASE_ATTACK_DELAY - (MAX_HEALTH - this.health) * ATTACK_DELAY_RAMP);
                 if (this.attackDelayTimer > attackDelay) {
+                    
+                    this.attackDelayTimer = 0;
                     this.shoot.play();
+                    
+                    // Decide whether to attack a ceiling tile in addition to the normal attack.
+                    if (Math.random() <= CEILING_ATTACK_CHANCE) {
+                        if (!this.ceilingTargets.isEmpty()) {
+                            int index = (int) (Math.random() * this.ceilingTargets.size());
+                            Damageable target = this.ceilingTargets.iterator().next();
+                            Iterator<Damageable> itr = this.ceilingTargets.iterator();
+                            for (int x = 0; x < index; x++) {
+                                target = itr.next();
+                            }
+                            Vector3 targetPos = target.getPosition();
+                            Vector3 rocketPosition = this.position.cpy();
+                            rocketPosition.x += BASE_WIDTH / 2;
+                            Vector3 targetPosition = new Vector3(targetPos.x
+                                    - rocketPosition.x, targetPos.y - rocketPosition.y, 0);
+    
+                            this.createdEntities.add(new Rocket(this.rocketSpritesheet,
+                                    this.explosion, rocketPosition, targetPosition.nor().scl(
+                                            ROCKET_SPEED), 1, 0,
+                                    new GameEntity[0], new Damageable[] { target }));
+                        }
+                    }
+                    
+                    // Shoot bomb with random trajectory.
                     Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
                     Damageable[] currentTargets = new Damageable[this.targets.size()];
                     currentTargets = this.targets.toArray(currentTargets);
@@ -182,7 +212,6 @@ public class SeeteufelSide implements GameEntity, Damageable {
                             new Bomb(this.rocketSpritesheet, this.explosion, this.position,
                                     rocketVel, ROCKET_POWER, ROCKET_KNOCKBACK,
                                     currentObstacles, currentTargets));
-                    this.attackDelayTimer = 0;
                 }
             }
         }
