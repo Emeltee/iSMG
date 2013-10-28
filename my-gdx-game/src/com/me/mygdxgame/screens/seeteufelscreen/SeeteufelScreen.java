@@ -1006,6 +1006,8 @@ public class SeeteufelScreen implements GameScreen {
         if (this.seeSide.getHealth() <= 0) {
             if (this.seeSide.getState() == EntityState.Destroyed) {
                 
+                this.playerHealth.setInDanger(false);
+                
                 if (!this.fallingBlocks.isEmpty()) {
                     FallingPlatform currentBlock = this.fallingBlocks.removeFirst();
                     currentBlock.fall();
