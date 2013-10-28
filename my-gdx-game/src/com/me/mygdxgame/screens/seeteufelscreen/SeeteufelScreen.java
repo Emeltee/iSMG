@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -88,6 +89,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
 
+    private static final String WIN_MESSAGE_1 = "MISSION COMPLETE!";
+    private static final String WIN_MESSAGE_2 = "Press Enter to try again.";
     
     // State.
     private GameState state = GameState.Running;
@@ -309,8 +312,10 @@ public class SeeteufelScreen implements GameScreen {
             this.updateMap1(deltaTime, difficulty, perspCam, orthoCam);
         } else if (this.currentMap == 2) {
             this.updateMap2(deltaTime, difficulty, perspCam, orthoCam);
-        } else {
+        } else if (this.currentMap == 3) {
             this.updateMap3(deltaTime, difficulty, perspCam, orthoCam);
+        } else {
+            this.updateMap4(deltaTime, difficulty, perspCam, orthoCam);
         }
         
         // Draw fps for testing, if enabled.
@@ -1021,7 +1026,9 @@ public class SeeteufelScreen implements GameScreen {
                         this.player.getHitArea()[0].overlaps(this.room3Exit.getHitArea()[0]) &&
                         (Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
                         Gdx.input.isKeyPressed(Input.Keys.S))) {
-                    this.state = GameState.Win;
+                    
+                    setupMap4();
+                    this.currentMap = 4;
                 }
             }
             else {
@@ -1029,6 +1036,29 @@ public class SeeteufelScreen implements GameScreen {
                     this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
                 }
             }
+        }
+    }
+    
+    private void setupMap4() {
+        
+    }
+    
+    private void updateMap4(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
+        
+        // Clear screen.
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        
+        // Congratulations.
+        font.setScale(2);
+        TextBounds bounds = font.getBounds(WIN_MESSAGE_1);
+        this.hudRenderer.drawText(font, "MISSION COMPLETE!", -bounds.width / 2.0f, 0);
+        font.setScale(1);
+        bounds = font.getBounds(WIN_MESSAGE_2);
+        this.hudRenderer.drawText(font, "Press Enter to try again.", -bounds.width / 2.0f, -50);
+        
+        // Play again.
+        if (Gdx.input.isKeyPressed(Keys.ENTER)) {
+            this.state = GameState.Win;
         }
     }
     
