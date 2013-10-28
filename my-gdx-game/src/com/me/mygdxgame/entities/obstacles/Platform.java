@@ -17,7 +17,7 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-public class Platform implements GameEntity, Damageable {
+public class Platform implements Damageable {
 
     protected static final int PLATFORM_X = 0;
     protected static final int PLATFORM_Y = 0;
@@ -113,13 +113,22 @@ public class Platform implements GameEntity, Damageable {
         this.rubble = new Rubble [] {
                 new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
                         new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        5, new GameEntity [0], new Damageable [0]),
+                        5, new GameEntity [0], new Damageable [0], 0.5f),
                 new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
                         new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        5, new GameEntity [0], new Damageable [0]),
+                        5, new GameEntity [0], new Damageable [0], 0.5f),
                 new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
                         new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        5, new GameEntity [0], new Damageable [0]),
+                        5, new GameEntity [0], new Damageable [0], 0.5f),
+                new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        5, new GameEntity [0], new Damageable [0], 0.5f),
+                new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        5, new GameEntity [0], new Damageable [0], 0.5f),
+                new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
+                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
+                        5, new GameEntity [0], new Damageable [0], 0.5f)
         };
     }
 

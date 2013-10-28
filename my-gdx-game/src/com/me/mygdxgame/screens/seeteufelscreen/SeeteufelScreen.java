@@ -1,6 +1,7 @@
 package com.me.mygdxgame.screens.seeteufelscreen;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -30,6 +31,7 @@ import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.SeeteufelSide;
 import com.me.mygdxgame.entities.WatchNadia;
+import com.me.mygdxgame.entities.obstacles.DamagingPlatform;
 import com.me.mygdxgame.entities.obstacles.FallingPlatform;
 import com.me.mygdxgame.entities.obstacles.Platform;
 import com.me.mygdxgame.entities.progressbars.BonneHealthBar;
@@ -58,7 +60,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int ENEMY_HEALTH_TARGET_X = (int) (SeeteufelScreen.PLAYER_HEALTH_POS.x);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static final float MAP2_CAM_SPEED_1 = 30f;
+    private static final float MAP2_CAM_SPEED_1 = 35f;
     private static final float MAP2_CAM_SPEED_2 = 50f;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static final Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
@@ -142,6 +144,7 @@ public class SeeteufelScreen implements GameScreen {
     private LinkedList<GameEntity> obstacles = new LinkedList<GameEntity>();
     private LinkedList<FallingPlatform> fallingBlocks = new LinkedList<FallingPlatform>();
     private LinkedList<FallingPlatform> fallenBlocks = new LinkedList<FallingPlatform>();
+    private Collection<Damageable> ceilingTargets = new LinkedList<Damageable>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
     private LinkedList<LinkedList<Damageable>> seeteufelTargets = new LinkedList<LinkedList<Damageable>>();
     private LinkedList<Integer> seeteufelTargetLevels = new LinkedList<Integer>();
@@ -829,16 +832,29 @@ public class SeeteufelScreen implements GameScreen {
         int enemyHealthY = SCREEN_TOP - this.enemyHealth.getHeight() - 10;
         this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, enemyHealthY);
         
-        // Set player as the sole target for enemy.
+        // Set player as the main target for enemy.
         this.seeteufelTargets.clear();
         this.seeteufelTargets.offer(new LinkedList<Damageable>());
         this.seeteufelTargets.get(0).add(this.player);
+        
+        // Set up a bunch of ceiling tiles, attacked as part of the battle sequence.
+        for (int x = 0; x < SecondMap.ARENA_WIDTH; x++) {
+            this.ceilingTargets.add(new DamagingPlatform(this.t_tiles1, this.mapTiles, -x * SecondMap.GROUND_DIM,
+                    (int) (SecondMap.GROUND_DIM * (SeeteufelScreen.MAP2_HEIGHT + SecondMap.ARENA_HEIGHT - 1)),
+                    this.seeteufelTargets.get(0)));
+        }
+        for (int x = 0; x < SecondMap.ARENA_WIDTH; x++) {
+            this.ceilingTargets.add(new DamagingPlatform(this.t_tiles1, this.mapTiles, -x * SecondMap.GROUND_DIM,
+                    (int) (SecondMap.GROUND_DIM * (SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT + SecondMap.ARENA_HEIGHT - 2)),
+                    this.seeteufelTargets.get(0)));
+        }
         
         // Create SeeteufelSide as the same position as SeeteufelFront.
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
         seeSideStartPos.y = this.seeFront.getTargetY();
         this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
-                this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos, this.seeteufelTargets.get(0), this.obstacles);
+                this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos,
+                this.seeteufelTargets.get(0), this.obstacles, this.ceilingTargets);
         
         // Set SeeteufelSide as the player's sole target.
         this.playerTargets.add(this.seeSide);
@@ -913,8 +929,18 @@ public class SeeteufelScreen implements GameScreen {
             platform.update(deltaTime);
             platform.draw(renderer);
         }
+        for (Damageable platform : this.ceilingTargets) {
+            platform.update(deltaTime);
+            platform.draw(renderer);
+            if (platform.getState() == EntityState.Destroyed) {
+                this.toRemove.addFirst(platform);              
+            }
+            if (platform.hasCreatedEntities()) {
+                this.toAdd.addFirst(platform.getCreatedEntities());
+            }
+        }
         
-        // Update and draw all generic entities.
+        // Update and draw all other generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
             e.draw(renderer); 
