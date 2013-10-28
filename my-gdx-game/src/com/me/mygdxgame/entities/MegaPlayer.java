@@ -277,20 +277,23 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     @Override
     public void damage(Damager damager) {
-        this.health -= damager.getPower();
-        this.health = Math.max(this.health, 0);
-        this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
-        this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
-        this.isJumping = false;
         
-        Vector3 damagerPos = damager.getPosition();
-        damagerPos.x += damager.getWidth() / 2.0;
-        damagerPos.y += damager.getHeight() / 2.0;
-        this.velocity.add(new Vector3(
-                this.position.x - damagerPos.x,
-                this.position.y - damagerPos.y,
-                0).
-                nor().scl(damager.getKnockback()));
+        if (this.flinchTimer <= 0) {
+            this.health -= damager.getPower();
+            this.health = Math.max(this.health, 0);
+            this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
+            this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
+            this.isJumping = false;
+            
+            Vector3 damagerPos = damager.getPosition();
+            damagerPos.x += damager.getWidth() / 2.0;
+            damagerPos.y += damager.getHeight() / 2.0;
+            this.velocity.add(new Vector3(
+                    this.position.x - damagerPos.x,
+                    this.position.y - damagerPos.y,
+                    0).
+                    nor().scl(damager.getKnockback()));
+        }
     }
 
     @Override
