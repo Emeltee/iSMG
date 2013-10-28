@@ -41,11 +41,11 @@ public class InfinityWaterfall implements GameEntity {
         this.waterfall.setBounds(x, y - height, waterfall.getWidth(), height);
         this.waterfall.setV2(height / (float)waterfall.getHeight());
         
-        this.waterfallEnd[0] = new TextureRegion(waterfallEnd, 0, 0, 32, 26);
-        this.waterfallEnd[1] = new TextureRegion(waterfallEnd, 34, 0, 31, 26);
-        this.waterfallEnd[2] = new TextureRegion(waterfallEnd, 66, 0, 32, 26);
-        this.waterfallEnd[3] = new TextureRegion(waterfallEnd, 97, 0, 29, 26);
-        this.waterfallEnd[4] = new TextureRegion(waterfallEnd, 128, 0, 32, 26);
+        this.waterfallEnd[0] = new TextureRegion(waterfallEnd, 0, 568, 32, 26);
+        this.waterfallEnd[1] = new TextureRegion(waterfallEnd, 34, 568, 31, 26);
+        this.waterfallEnd[2] = new TextureRegion(waterfallEnd, 66, 568, 32, 26);
+        this.waterfallEnd[3] = new TextureRegion(waterfallEnd, 97, 568, 29, 26);
+        this.waterfallEnd[4] = new TextureRegion(waterfallEnd, 128, 568, 32, 26);
         
         this.hitbox = new Rectangle(x, y, waterfall.getWidth(), height);
         this.hitAreas = new Rectangle[] {this.hitbox};

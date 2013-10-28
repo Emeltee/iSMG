@@ -12,7 +12,7 @@ public class MegaHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions (Healthbar-chrome texture)
     private static final int CHROME_X = 38;
-    private static final int CHROME_Y = 57;
+    private static final int CHROME_Y = 497;
     private static final int CHROME_H = 68;
     private static final int CHROME_W = 14;
 
@@ -24,9 +24,9 @@ public class MegaHealthBar implements ProgressBar {
     
     // Texture extraction coordinates and dimensions (Signal light texture)
     private static final int DANGER_X = 9;
-    private static final int DANGER_Y = 89;
+    private static final int DANGER_Y = 529;
     private static final int SAFETY_X = 0;
-    private static final int SAFETY_Y = 89;    
+    private static final int SAFETY_Y = 529;    
     private static final int SIGNAL_W = 9;
     private static final int SIGNAL_H = 9;
     

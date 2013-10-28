@@ -12,7 +12,7 @@ public class BonneHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions
     private static final int LOGO_X = 0;
-    private static final int LOGO_Y = 56;
+    private static final int LOGO_Y = 496;
     private static final int LOGO_W = 32;
     private static final int LOGO_H = 32;
     

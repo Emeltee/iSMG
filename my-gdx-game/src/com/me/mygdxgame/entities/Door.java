@@ -18,9 +18,9 @@ public class Door implements GameEntity {
     
     // Texture control constants
     public static final int DOOR_SHUT_X = 0;
-    public static final int DOOR_SHUT_Y = 0;
+    public static final int DOOR_SHUT_Y = 440;
     public static final int DOOR_OPEN_X = 44;
-    public static final int DOOR_OPEN_Y = 0;
+    public static final int DOOR_OPEN_Y = 440;
     public static final int DOOR_W = 44;
     public static final int DOOR_H = 56;
     

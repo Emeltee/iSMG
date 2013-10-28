@@ -107,11 +107,7 @@ public class SeeteufelScreen implements GameScreen {
     
     // Resource files.
     private Texture t_tiles1;
-    private Texture t_tiles2;
-    private Texture t_player;
-    private Texture t_seeteufel;
     private Texture waterfall;
-    private Texture waterfallEnd;
     private BitmapFont font;
     private MegaPlayer.MegaPlayerResources playerResources = new MegaPlayer.MegaPlayerResources();
     private MapTiles mapTiles = new MapTiles();
@@ -186,7 +182,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.pillarTex = new Texture("img/tile3.png");
                 this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
                 
-                this.greyBlockTex = new Texture("img/idk.png");
+                this.greyBlockTex = new Texture("img/tile5.png");
                 this.greyBlockTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
                 
                 this.bonusTex  = new Texture("img/nadia.png");
@@ -217,14 +213,10 @@ public class SeeteufelScreen implements GameScreen {
     public void load() {
         
         this.mapTiles.load();
-        this.t_tiles1 = new Texture("img/seeTiles1.png");
-        this.t_tiles2 = new Texture("img/seeTiles2.png");
-        this.t_player = new Texture("img/mmd.png");
-        this.t_seeteufel = new Texture("img/seeteufel.png");
+        this.t_tiles1 = new Texture("img/seeteufelScreen.png");
         this.waterfall = new Texture("img/waterfall1.png");
         this.waterfall.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
         this.waterfall.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        this.waterfallEnd = new Texture("img/waterfallEnd.png");
         
         this.playerResources.load();
         
@@ -275,7 +267,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Load maps.
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
-        this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
+        this.map2 = new SecondMap(this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
         this.currentMap = 1;
     }
 
@@ -284,11 +276,7 @@ public class SeeteufelScreen implements GameScreen {
         // Dispose of Textures
         this.mapTiles.unload();
         this.t_tiles1.dispose();
-        this.t_tiles2.dispose();
-        this.t_player.dispose();
-        this.t_seeteufel.dispose();
         this.waterfall.dispose();
-        this.waterfallEnd.dispose();
         
         // Unload other recs.
         this.playerResources.unload();
@@ -364,20 +352,20 @@ public class SeeteufelScreen implements GameScreen {
         this.entities.clear();
         
         // Create fresh instances of vital objects.
-        this.player = new MegaPlayer(this.playerResources,
+        this.player = new MegaPlayer(this.t_tiles1, this.playerResources,
                 this.map1.getInitialPosition(),
                 Collections.unmodifiableCollection(this.obstacles),
                 Collections.unmodifiableCollection(this.playerTargets));
-        this.playerHealth = new MegaHealthBar(this.t_tiles2,
+        this.playerHealth = new MegaHealthBar(this.t_tiles1,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.x,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
-        this.enemyHealth = new BonneHealthBar(this.t_tiles2, 0, 0);
+        this.enemyHealth = new BonneHealthBar(this.t_tiles1, 0, 0);
         this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,
                 (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
                         * 1.5 - Refractor.REFRACTOR_W / 2),
                 (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM * 2
                         + 22));
-        this.room1Exit = new Door(this.t_tiles2, this.doorOpen, this.doorClose,
+        this.room1Exit = new Door(this.t_tiles1, this.doorOpen, this.doorClose,
                 FirstMap.GROUND_END_X - (int) (FirstMap.GROUND_DIM * 1.5),
                 FirstMap.GROUND_START_Y);
         this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
@@ -509,10 +497,10 @@ public class SeeteufelScreen implements GameScreen {
         this.player.setPosition(map2InitPos);
 
         // Add doors.
-        this.room2Entrance = new Door(this.t_tiles2, this.doorOpen,
+        this.room2Entrance = new Door(this.t_tiles1, this.doorOpen,
                 this.doorClose, SecondMap.GROUND_DIM, SecondMap.GROUND_DIM * (SecondMap.ENTRANCE_PLAT_HEIGHT + 1));
         this.room2Entrance.setIsOpen(DoorState.SHUT, false);
-        this.room3Exit = new Door(this.t_tiles2, this.doorOpen,
+        this.room3Exit = new Door(this.t_tiles1, this.doorOpen,
                 this.doorClose, (SecondMap.GROUND_WIDTH - 2) * SecondMap.GROUND_DIM - this.room2Entrance.getWidth() / 2,
                 (SeeteufelScreen.MAP2_HEIGHT + 1) * SecondMap.GROUND_DIM);
         this.room3Exit.setIsOpen(DoorState.OPEN, false);
@@ -521,10 +509,10 @@ public class SeeteufelScreen implements GameScreen {
         
         // Create decorative waterfall.
         this.room2Fall1 = new InfinityWaterfall(
-                this.waterfall, this.waterfallEnd, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
+                this.waterfall, this.t_tiles1, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
                 (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
         this.room2Fall2 = new InfinityWaterfall(
-                this.waterfall, this.waterfallEnd, 510, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
+                this.waterfall, this.t_tiles1, 510, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
                 (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
     }
     
@@ -695,7 +683,7 @@ public class SeeteufelScreen implements GameScreen {
             this.seeSplash.play();
             this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
-            this.seeFront = new SeeteufelFront(this.t_seeteufel, this.t_tiles1,
+            this.seeFront = new SeeteufelFront(this.t_tiles1, this.t_tiles1,
                     this.explosion, this.seeSplash, this.bombShoot,
                     SeeteufelScreen.MAP2_SEETEUFEL_INIT_POS);
         }
@@ -862,10 +850,11 @@ public class SeeteufelScreen implements GameScreen {
         // Create SeeteufelSide as the same position as SeeteufelFront.
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
         seeSideStartPos.y = this.seeFront.getTargetY();
-        this.seeSide = new SeeteufelSide(this.t_seeteufel, this.t_tiles1,
-                this.explosion, this.bombShoot, this.enemyDamage, seeSideStartPos,
-                this.seeteufelTargets.get(0), this.obstacles, this.ceilingTargets);
-        
+        this.seeSide = new SeeteufelSide(this.t_tiles1, this.explosion,
+                this.bombShoot, this.enemyDamage, seeSideStartPos,
+                this.seeteufelTargets.get(0), this.obstacles,
+                this.ceilingTargets);
+
         // Set SeeteufelSide as the player's sole target.
         this.playerTargets.add(this.seeSide);
         
