@@ -843,11 +843,6 @@ public class SeeteufelScreen implements GameScreen {
                     (int) (SecondMap.GROUND_DIM * (SeeteufelScreen.MAP2_HEIGHT + SecondMap.ARENA_HEIGHT - 1)),
                     this.seeteufelTargets.get(0)));
         }
-        for (int x = 0; x < SecondMap.ARENA_WIDTH; x++) {
-            this.ceilingTargets.add(new DamagingPlatform(this.t_tiles1, this.mapTiles, -x * SecondMap.GROUND_DIM,
-                    (int) (SecondMap.GROUND_DIM * (SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT + SecondMap.ARENA_HEIGHT - 2)),
-                    this.seeteufelTargets.get(0)));
-        }
         
         // Create SeeteufelSide as the same position as SeeteufelFront.
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
