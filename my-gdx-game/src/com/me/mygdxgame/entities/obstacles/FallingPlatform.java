@@ -47,7 +47,7 @@ public class FallingPlatform extends Platform {
     
     public Rectangle [] getHitArea() {
         // Prevent collision detection until the platform lands
-        return (this.hasLanded) ? new Rectangle [] { this.hitbox } : new Rectangle [] {};
+        return (this.hasLanded) ? new Rectangle [] { new Rectangle(this.hitbox) } : new Rectangle [] {};
     }
     
     public void setTargetY(int targetY) {

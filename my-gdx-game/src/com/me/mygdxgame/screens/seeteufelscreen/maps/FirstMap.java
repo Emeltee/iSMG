@@ -1,5 +1,6 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.StonePillar;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
+import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 //TODO Horizontally tiled wallTex appear to have gaps between them.
@@ -31,6 +34,7 @@ public class FirstMap extends GameMap {
     private StonePillar [] updatables;
     
     private Rectangle[] obstacles = null;
+    private GenericEntity returnObstacles = null;
 
     // Since apparently this is a 3D space, which contains a sprawling infinity of
     // floating point nonsense, and no precise integer pixel coordinates that one might
@@ -90,6 +94,7 @@ public class FirstMap extends GameMap {
             new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
             new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
         };
+        this.returnObstacles = new GenericEntity(Arrays.asList(this.obstacles));
         
         List<StonePillar> temp = new LinkedList<StonePillar>();        
         for (int i = 0; i < 2; i++) {
@@ -109,8 +114,8 @@ public class FirstMap extends GameMap {
     }
 
     @Override
-    public Rectangle[] getObstacles() {
-        return this.obstacles;
+    public GameEntity getObstacles() {
+        return this.returnObstacles;
     }
 
     @Override
@@ -157,7 +162,7 @@ public class FirstMap extends GameMap {
         
         // Debug
         if (this.debugMode) {
-            drawObstacles(renderer, this.getObstacles(), GameMap.DEFAULT_OBSTACLE_COLOR);
+            drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
 
     }

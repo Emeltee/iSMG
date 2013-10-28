@@ -39,7 +39,7 @@ public class Bomb implements GameEntity, Damager {
     /** Current velocity. */
     private Vector3 velocity = new Vector3(0, 0, 0);
     /** Collision detection rectangles */
-    private Rectangle [] obstacles;
+    private GameEntity[] obstacles;
     /** Targets to power. */
     private Damageable[] targets;
     /** Status of object */
@@ -57,7 +57,8 @@ public class Bomb implements GameEntity, Damager {
     
     private Explosion[] explosions;
   
-    public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, int knockback, Rectangle [] obstacles, Damageable[] targets) {
+    public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power,
+            int knockback, GameEntity [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
@@ -86,27 +87,31 @@ public class Bomb implements GameEntity, Damager {
             this.hitBox.setPosition(this.position.x, this.position.y);
             
             // Check for obstacle collisions.
-            for (Rectangle r: this.obstacles) {
-                if (r.overlaps(this.hitBox)
-                        && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
-                         || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
-                         || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
-                    explode();
-                    // Expand hitbox on collision for check against targets.
-                    int hitboxOffset = EXPLOSION_EXPANSION / 2;
-                    this.hitBox.x -= hitboxOffset;
-                    this.hitBox.y -= hitboxOffset;
-                    this.hitBox.width += EXPLOSION_EXPANSION;
-                    this.hitBox.height += EXPLOSION_EXPANSION;
+            for (GameEntity entity : this.obstacles) {
+                for (Rectangle r: entity.getHitArea()) {
+                    if (r.overlaps(this.hitBox)
+                            && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
+                             || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
+                             || this.position.z == 0)) { // Bomb at precisely 0 (unlikely)
+                        explode();
+                        // Expand hitbox on collision for check against targets.
+                        int hitboxOffset = EXPLOSION_EXPANSION / 2;
+                        this.hitBox.x -= hitboxOffset;
+                        this.hitBox.y -= hitboxOffset;
+                        this.hitBox.width += EXPLOSION_EXPANSION;
+                        this.hitBox.height += EXPLOSION_EXPANSION;
+                        explode();
+                        break;
+                    }
+                }
+                if (this.status == EntityState.Destroyed) {
                     break;
                 }
             }
             
             // Check for target collisions.
-            Rectangle[] hitAreas = null;
             for (Damageable d: this.targets) {
-                hitAreas = d.getHitArea();
-                for (Rectangle r : hitAreas) {
+                for (Rectangle r : d.getHitArea()) {
                     if (r.overlaps(this.hitBox)
                             && (((this.prevZ < 0 && this.position.z > 0) // Bomb from behind 
                              || (this.prevZ > 0 && this.position.z < 0)) // Bomb from in front
@@ -114,7 +119,6 @@ public class Bomb implements GameEntity, Damager {
                         // Apply power and force, and explode. Don't apply force on z.
                         d.damage(this);
                         explode();
-                        return;
                     }
                 }
             }
@@ -156,23 +160,25 @@ public class Bomb implements GameEntity, Damager {
     }
 
     private void explode() {
-        // Adjust position vector to center of sprite.
-        this.position.x += Bomb.BOMB_W / 2;
-        this.position.y += Bomb.BOMB_H / 2;
-        
-        
-        // Create explosions.
-        this.explosions = new Explosion[4];
-        this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
-        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
-        this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
-        this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
-        
-        // Play sound.
-        this.explosion.play();
-        
-        // Set object state.
-        this.status = EntityState.Destroyed;
+        if (this.status != EntityState.Destroyed) {
+            // Adjust position vector to center of sprite.
+            this.position.x += Bomb.BOMB_W / 2;
+            this.position.y += Bomb.BOMB_H / 2;
+            
+            
+            // Create explosions.
+            this.explosions = new Explosion[4];
+            this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
+            this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
+            this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
+            this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
+            
+            // Play sound.
+            this.explosion.play();
+            
+            // Set state.
+            this.status = EntityState.Destroyed;
+        }
     }
 
 

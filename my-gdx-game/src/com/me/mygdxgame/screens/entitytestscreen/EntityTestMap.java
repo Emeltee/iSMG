@@ -1,10 +1,13 @@
 package com.me.mygdxgame.screens.entitytestscreen;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
+import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 /**
@@ -56,8 +59,8 @@ public class EntityTestMap extends GameMap {
     }
 
     @Override
-    public Rectangle[] getObstacles() {
-        return this.obstacles;
+    public GameEntity getObstacles() {
+        return new GenericEntity(Arrays.asList(this.obstacles));
     }
 
     @Override

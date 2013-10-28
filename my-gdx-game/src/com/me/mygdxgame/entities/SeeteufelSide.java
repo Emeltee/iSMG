@@ -37,7 +37,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private Vector3 position;
     
     private Collection<Damageable> targets;
-    private Collection<Rectangle> obstacles;
+    private Collection<GameEntity> obstacles;
     
     private TextureRegion front = null;
     private TextureRegion[] frontArm = new TextureRegion[6];
@@ -68,7 +68,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private Rectangle movementHitArea = new Rectangle(0, 0, 0, 0);
     
     public SeeteufelSide(Texture spritesheet, Texture rocketSpritesheet,
-            Sound explosion, Sound shoot, Sound damage, Vector3 position, Collection<Damageable> targets, Collection<Rectangle> obstacles) {
+            Sound explosion, Sound shoot, Sound damage, Vector3 position,
+            Collection<Damageable> targets, Collection<GameEntity> obstacles) {
         this.position = new Vector3(position);
         this.position.x -= BASE_WIDTH / 2;
         this.position.y -= TARGET_Y_OFFSET;
@@ -145,20 +146,22 @@ public class SeeteufelSide implements GameEntity, Damageable {
             
             // Unlike SeeteufelFront, don't fall. Just snap to target position.
             this.position.y = this.targetY - TARGET_Y_OFFSET;
+            this.hitArea[0].x = this.position.x;
+            this.hitArea[0].y = this.position.y;
             
             if (this.moving) {
                 // Move left until you hit an obstacle.
                 this.position.x -= SeeteufelSide.MOVE_SPEED;
                 this.movementHitArea.x = this.position.x - OBSTACLE_HITBOX_WIDTH / 2;
                 this.movementHitArea.y = this.position.y;
-                for (Rectangle rect : this.obstacles) {
-                    if (this.movementHitArea.overlaps(rect)) {
-                        this.moving = false;
-                        break;
+                for (GameEntity entity : this.obstacles) {
+                    for (Rectangle rect : entity.getHitArea()) {
+                        if (this.movementHitArea.overlaps(rect)) {
+                            this.moving = false;
+                            return;
+                        }
                     }
                 }
-                this.hitArea[0].x = this.position.x;
-                this.hitArea[0].y = this.position.y;
             } else {
                 // Attack.
                 this.attackDelayTimer += deltaTime;
@@ -167,7 +170,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
                     Damageable[] currentTargets = new Damageable[this.targets.size()];
                     currentTargets = this.targets.toArray(currentTargets);
-                    Rectangle[] currentObstacles= new Rectangle[this.obstacles.size()];
+                    GameEntity[] currentObstacles= new GameEntity[this.obstacles.size()];
                     currentObstacles = this.obstacles.toArray(currentObstacles);
                     this.createdEntities.offer(
                             new Bomb(this.rocketSpritesheet, this.explosion, this.position,

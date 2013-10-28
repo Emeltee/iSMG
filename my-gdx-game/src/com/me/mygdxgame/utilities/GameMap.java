@@ -28,11 +28,10 @@ public abstract class GameMap {
     public abstract Vector3 getInitialPosition();
 
     /**
-     * Creates and returns an array of the static obstacles in this map.
-     * 
-     * @return A new array of static obstacles associated with this map.
+     * @return A GameEntity whose hit areas encompass all static obstacles
+     *         associated with this map.
      */
-    public abstract Rectangle[] getObstacles();
+    public abstract GameEntity getObstacles();
 
     /**
      * Updates any logic and draws all entities to the screen. TODO, some
