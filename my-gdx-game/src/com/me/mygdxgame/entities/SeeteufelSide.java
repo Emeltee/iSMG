@@ -304,7 +304,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     
     private void explode() {
         // Create explosions.
-        this.explosions.push(new Explosion(this.rocketSpritesheet,
+        this.explosions.add(new Explosion(this.rocketSpritesheet,
                 new Vector3((float) (this.position.x + (Math.random() * this.front.getRegionWidth())),
                         (float) (this.position.y + (Math.random() * this.front.getRegionHeight())),
                         this.position.z)));
