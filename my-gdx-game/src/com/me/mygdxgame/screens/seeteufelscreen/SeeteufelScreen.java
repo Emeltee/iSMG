@@ -92,8 +92,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float SFX_VOLUME = 0.5f;
     
-    private static final String WIN_MESSAGE_1 = "MISSION COMPLETE!";
-    private static final String WIN_MESSAGE_2 = "Press Enter to try again.";
+    private static final String WIN_MESSAGE = "Press Enter to try again.";
     
     // State.
     private GameState state = GameState.Running;
@@ -666,18 +665,21 @@ public class SeeteufelScreen implements GameScreen {
                 this.music2.play();
                 this.music2.setLooping(true);
             }
-            if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
-                // Move cam faster once you reach a certain point.
-                if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
-                    float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
-                    this.map2Y += movement;
-                } else {
-                    float movement = SeeteufelScreen.MAP2_CAM_SPEED_1 * deltaTime;
-                    this.map2Y += movement;
+            // Raise water only after waterfalls have reached bottom.
+            if (this.waterfallFell) {
+                if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
+                    // Move cam faster once you reach a certain point.
+                    if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
+                        float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
+                        this.map2Y += movement;
+                    } else {
+                        float movement = SeeteufelScreen.MAP2_CAM_SPEED_1 * deltaTime;
+                        this.map2Y += movement;
+                    }
+                    this.map2WaterY = this.map2Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
+                } else if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
+                    this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
                 }
-                this.map2WaterY = this.map2Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
-            } else if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
-                this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
             }
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
             // Activate chase sequence.
@@ -714,7 +716,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.room2Fall2.setHeight(targetWaterfalHeight);
             }
             else {
-                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 40);
+                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 20);
                 this.room2Fall2.setHeight(this.room2Fall1.getHeight());
                 if (this.room2Fall1.getHeight() >= targetWaterfalHeight) {
                     this.waterfallFell = true;
@@ -1074,7 +1076,7 @@ public class SeeteufelScreen implements GameScreen {
         // Congratulations.
         this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, 0);
         font.setScale(1);
-        TextBounds bounds = font.getBounds(WIN_MESSAGE_2);
+        TextBounds bounds = font.getBounds(WIN_MESSAGE);
         this.hudRenderer.drawText(font, "Press Enter to try again.", -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
         
         // Play again.
