@@ -10,8 +10,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.MegaPlayer.MegaPlayerResources;
 import com.me.mygdxgame.entities.particles.Explosion;
 import com.me.mygdxgame.entities.projectiles.Bomb;
+import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
+import com.me.mygdxgame.entities.projectiles.LemonShot;
 import com.me.mygdxgame.entities.projectiles.Rocket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
@@ -39,6 +42,12 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
     private static final float SINK_EXPLOSION_DELAY = 0.1f;
+    private static final int[] SHOT_HEIGHTS = new int[] {60, 60 + MegaPlayer.HITBOX_HEIGHT, 60 + MegaPlayer.HITBOX_HEIGHT * 2};
+    private static final int BASE_SHOT_SPEED = 400;
+    private static final int BASE_SHOT_POWER = 5;
+    private static final float BASE_SHOT_RANGE = 600;
+    
+    private static final float SFX_VOLUME = 0.5f;
     
     private Vector3 position;
     
@@ -50,11 +59,12 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private TextureRegion[] frontArm = new TextureRegion[6];
     private TextureRegion[] sideArmBack = new TextureRegion[3];
     private TextureRegion[] sideArmFront = new TextureRegion[3];
-    private Texture rocketSpritesheet = null;
+    private Texture spritesheet = null;
     
     private Sound explosion = null;
     private Sound shoot = null;
     private Sound damage = null;
+    private MegaPlayerResources otherSounds = null;
     
     private boolean frontArmAnimDir = true;
     private int frontArmFrame = 0;
@@ -65,6 +75,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private EntityState state = EntityState.Running;
     private int health = MAX_HEALTH;
     private boolean moving = true;
+    private boolean shootLemons = true;
     private float destroyedTargetY = 0;
     private LinkedList<Explosion> explosions = new LinkedList<Explosion>();
     
@@ -75,8 +86,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private Rectangle movementHitArea = new Rectangle(0, 0, 0, 0);
     
     public SeeteufelSide(Texture spritesheet, Sound explosion, Sound shoot,
-            Sound damage, Vector3 position, Collection<Damageable> targets,
-            Collection<GameEntity> obstacles,
+            Sound damage, MegaPlayerResources otherSounds, Vector3 position,
+            Collection<Damageable> targets, Collection<GameEntity> obstacles,
             Collection<Damageable> ceilingTargets) {
         this.position = new Vector3(position);
         this.position.x -= BASE_WIDTH / 2;
@@ -92,10 +103,11 @@ public class SeeteufelSide implements GameEntity, Damageable {
         this.explosion = explosion;
         this.shoot = shoot;
         this.damage = damage;
+        this.otherSounds = otherSounds;
         
         this.front = new TextureRegion(spritesheet, 256, 211, 72, 115);
         
-        this.rocketSpritesheet = spritesheet;
+        this.spritesheet = spritesheet;
         
         this.frontArm[0] = new TextureRegion(spritesheet, 275, 20, 101, 77);
         this.frontArm[1] = new TextureRegion(spritesheet, 388, 14, 111, 84);
@@ -178,7 +190,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 if (this.attackDelayTimer > attackDelay) {
                     
                     this.attackDelayTimer = 0;
-                    this.shoot.play();
+                    this.shoot.play(SFX_VOLUME);
                     
                     // Decide whether to attack a ceiling tile in addition to the normal attack.
                     // Ramp up to +0.1 the normal rate as damage is done.
@@ -197,23 +209,39 @@ public class SeeteufelSide implements GameEntity, Damageable {
                             Vector3 targetPosition = new Vector3(targetPos.x
                                     - rocketPosition.x, targetPos.y - rocketPosition.y, 0);
     
-                            this.createdEntities.add(new Rocket(this.rocketSpritesheet,
+                            this.createdEntities.add(new Rocket(this.spritesheet,
                                     this.explosion, rocketPosition, targetPosition.nor().scl(
                                             ROCKET_SPEED), 1, 0,
                                     new GameEntity[0], new Damageable[] { target }));
                         }
                     }
                     
-                    // Shoot bomb with random trajectory.
-                    Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
-                    Damageable[] currentTargets = new Damageable[this.targets.size()];
-                    currentTargets = this.targets.toArray(currentTargets);
-                    GameEntity[] currentObstacles= new GameEntity[this.obstacles.size()];
-                    currentObstacles = this.obstacles.toArray(currentObstacles);
-                    this.createdEntities.offer(
-                            new Bomb(this.rocketSpritesheet, this.explosion, this.position,
-                                    rocketVel, ROCKET_POWER, ROCKET_KNOCKBACK,
-                                    currentObstacles, currentTargets));
+                    // Swap between bombs and lemons with a 5% chance.
+                    if (Math.random() <= 0.05) {
+                        this.shootLemons = !this.shootLemons;
+                    }
+                    if (this.shootLemons) {
+                        // Shoot lemon at one of three randon heights.
+                        int shotHeight = SHOT_HEIGHTS[(int) (Math.random() * 3)];
+                        Vector3 shotPos = new Vector3(this.position.x, this.position.y + shotHeight, 0);
+                        this.createdEntities.offer(new LemonShot(spritesheet,
+                                this.otherSounds.shotMissSound, shotPos,
+                                BASE_SHOT_SPEED, ShotDirection.LEFT,
+                                BASE_SHOT_POWER, BASE_SHOT_RANGE, this.obstacles,
+                                this.targets));
+                    }
+                    else {
+                     // Shoot bomb with random trajectory.
+                        Vector3 rocketVel = new Vector3((float) (-Math.random() * 200 - 60), 260.0f, 0);
+                        Damageable[] currentTargets = new Damageable[this.targets.size()];
+                        currentTargets = this.targets.toArray(currentTargets);
+                        GameEntity[] currentObstacles= new GameEntity[this.obstacles.size()];
+                        currentObstacles = this.obstacles.toArray(currentObstacles);
+                        this.createdEntities.offer(
+                                new Bomb(this.spritesheet, this.explosion, this.position,
+                                        rocketVel, ROCKET_POWER, ROCKET_KNOCKBACK,
+                                        currentObstacles, currentTargets));
+                    }
                 }
             }
         }
@@ -304,13 +332,13 @@ public class SeeteufelSide implements GameEntity, Damageable {
     
     private void explode() {
         // Create explosions.
-        this.explosions.add(new Explosion(this.rocketSpritesheet,
+        this.explosions.add(new Explosion(this.spritesheet,
                 new Vector3((float) (this.position.x + (Math.random() * this.front.getRegionWidth())),
                         (float) (this.position.y + (Math.random() * this.front.getRegionHeight())),
                         this.position.z)));
         
         // Play sound.
-        this.explosion.play();
+        this.explosion.play(SFX_VOLUME);
     }
     
     public void setTargetY(int targetY) {
@@ -360,7 +388,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
         
         if (damager.getPower() > 0) {
             this.health = Math.max(0, this.health - damager.getPower());
-            this.damage.play();
+            this.damage.play(SFX_VOLUME);
         }
         
         if (alive && this.health <= 0) {

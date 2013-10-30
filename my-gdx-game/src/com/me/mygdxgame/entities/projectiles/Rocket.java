@@ -23,6 +23,7 @@ public class Rocket implements GameEntity, Damager {
     private static final int ROCKET_W = 16;
     private static final int ROCKET_H = 16;
     private static final Color ROCKET_TINT = new Color(1, 0.75f, 0.75f, 1);
+    private static final float SFX_VOLUME = 0.5f;
 
     /** TextureRegion representing the idle frame. */
     private TextureRegion rocket;
@@ -163,7 +164,7 @@ public class Rocket implements GameEntity, Damager {
         this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
         
         // Play sound.
-        this.explosion.play();
+        this.explosion.play(SFX_VOLUME);
         
         // Set object state.
         this.state = EntityState.Destroyed;

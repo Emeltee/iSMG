@@ -90,7 +90,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP3_CAM_Y = 1700;
     private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
-
+    private static final float SFX_VOLUME = 0.5f;
+    
     private static final String WIN_MESSAGE_1 = "MISSION COMPLETE!";
     private static final String WIN_MESSAGE_2 = "Press Enter to try again.";
     
@@ -417,7 +418,7 @@ public class SeeteufelScreen implements GameScreen {
                 // TODO, Hackish.
                 if (e instanceof WatchNadia) {
                     this.player.setGeminiEnabled(true);
-                    this.itemGet.play(0.5f);
+                    this.itemGet.play(SFX_VOLUME);
                 }
                 this.toRemove.addFirst(e);              
             }
@@ -682,7 +683,7 @@ public class SeeteufelScreen implements GameScreen {
             // Activate chase sequence.
             this.isMap2Flooding = true;
             this.music1.play();
-            this.seeSplash.play();
+            this.seeSplash.play(SFX_VOLUME);
             this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
             this.seeFront = new SeeteufelFront(this.t_tiles1, this.t_tiles1,
@@ -782,11 +783,11 @@ public class SeeteufelScreen implements GameScreen {
         // Set under water state on/off as needed.
         if (playerPos.y < this.map2WaterY) {
             if (!this.player.getIsUnderwater()) {
-                this.splash.play();
+                this.splash.play(SFX_VOLUME);
                 this.player.setIsUnderwater(true, true);
             }
         } else if (this.player.getIsUnderwater()) {
-            this.splash.play();
+            this.splash.play(SFX_VOLUME);
             this.player.setIsUnderwater(false, true);
         }
         // Update internal logic and draw.
@@ -844,7 +845,7 @@ public class SeeteufelScreen implements GameScreen {
                 ((Platform) entity).damage(damager);
             }
         }
-        this.explosion.play();
+        this.explosion.play(SFX_VOLUME);
         
         int enemyHealthY = SCREEN_TOP - this.enemyHealth.getHeight() - 10;
         this.enemyHealth.setPosition(SeeteufelScreen.SCREEN_LEFT - 1000, enemyHealthY);
@@ -866,8 +867,8 @@ public class SeeteufelScreen implements GameScreen {
         Vector3 seeSideStartPos = new Vector3(MAP2_SEETEUFEL_INIT_POS);
         seeSideStartPos.y = this.seeFront.getTargetY();
         this.seeSide = new SeeteufelSide(this.t_tiles1, this.explosion,
-                this.bombShoot, this.enemyDamage, seeSideStartPos,
-                this.seeteufelTargets.get(0), this.obstacles,
+                this.bombShoot, this.enemyDamage, this.playerResources,
+                seeSideStartPos, this.seeteufelTargets.get(0), this.obstacles,
                 this.ceilingTargets);
 
         // Set SeeteufelSide as the player's sole target.
@@ -980,11 +981,11 @@ public class SeeteufelScreen implements GameScreen {
         }
         if (playerPos.y < this.map2WaterY) {
             if (!this.player.getIsUnderwater()) {
-                this.splash.play();
+                this.splash.play(SFX_VOLUME);
                 this.player.setIsUnderwater(true, true);
             }
         } else if (this.player.getIsUnderwater()) {
-            this.splash.play();
+            this.splash.play(SFX_VOLUME);
             this.player.setIsUnderwater(false, true);
         }
         this.player.update(deltaTime);

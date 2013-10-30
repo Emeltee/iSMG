@@ -26,6 +26,8 @@ public class SeeteufelFront implements GameEntity {
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
     
+    private static final float SFX_VOLUME = 0.5f;
+    
     private Vector3 position = new Vector3();
     
     private LinkedList<Damageable> targets = new LinkedList<Damageable>();
@@ -112,7 +114,7 @@ public class SeeteufelFront implements GameEntity {
             this.position.y = adjustedTargetY;
             
             if (this.isFalling) {
-                this.splash.play();
+                this.splash.play(SFX_VOLUME);
                 float middleX = this.position.x + SeeteufelFront.BASE_WIDTH / 2;
                 float leftX = middleX - 15;
                 float rightX = middleX + 15;
@@ -139,7 +141,7 @@ public class SeeteufelFront implements GameEntity {
             this.attackDelayTimer += deltaTime;
         } else if (!this.targets.isEmpty()) {
             this.attackDelayTimer = 0;
-            this.shoot.play(1);
+            this.shoot.play(SFX_VOLUME);
             Damageable target = this.targets.removeLast();
             Rectangle targetHitArea = target.getHitArea()[0];
             Vector3 rocketPosition = this.position.cpy();

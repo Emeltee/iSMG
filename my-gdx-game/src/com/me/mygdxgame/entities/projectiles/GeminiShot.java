@@ -12,11 +12,10 @@ import com.me.mygdxgame.utilities.GameEntity;
 
 public class GeminiShot extends BusterShot {
 
-    public static final int GEMINI_X = 234;
-    public static final int GEMINI_Y = 175;
-    public static final int GEMINI_W = 7;
-    public static final int GEMINI_H = 5;
-    public static final float MAX_MOVEMEMT = Math.min(GEMINI_W, GEMINI_H);
+    private static final int GEMINI_W = 7;
+    private static final int GEMINI_H = 5;
+    // TODO
+    //private static final float MAX_MOVEMEMT = Math.min(GEMINI_W, GEMINI_H);
     
     private static final int MAX_SHOTS = 6;
     private static int currentShots = 0;
@@ -37,6 +36,11 @@ public class GeminiShot extends BusterShot {
         
         super(spriteSheet, missSound, position, speed, dir, 2 * power,
                 3 * range, obstacles, targets);
+        
+        // Re-map region.
+        int regionWidth = this.bullet.getRegionWidth();
+        this.bullet.setRegionX(this.bullet.getRegionX() + this.bullet.getRegionWidth());
+        this.bullet.setRegionWidth(regionWidth);
         
         GeminiShot.currentShots++;
         if (GeminiShot.currentShots >= GeminiShot.MAX_SHOTS) {
