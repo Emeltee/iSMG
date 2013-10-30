@@ -26,6 +26,7 @@ public class Bomb implements GameEntity, Damager {
     private static final float GRAVITY = 250;
     private static final int EXPLOSION_EXPANSION = 30;
     private static final float MIN_GRAV = -180.0f;
+    private static final float SFX_VOLUME = 0.5f;
     
     /** TextureRegion representing the idle frame. */
     private TextureRegion bomb;
@@ -174,7 +175,7 @@ public class Bomb implements GameEntity, Damager {
             this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
             
             // Play sound.
-            this.explosion.play();
+            this.explosion.play(SFX_VOLUME);
             
             // Set state.
             this.status = EntityState.Destroyed;

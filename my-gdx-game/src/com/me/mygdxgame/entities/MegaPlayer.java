@@ -48,6 +48,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float BASE_SHOT_RANGE = 300;
     private static final float WATER_MOVEMENT_FACTOR = 1.5f;
     
+    private static final float SFX_VOLUME = 0.5f;
+    
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
     private Vector3 shotOrigin = new Vector3();
@@ -386,7 +388,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                     currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                     
                     if (currentFrame == 1 || currentFrame == 3) {
-                        this.resources.footstepSound.play();
+                        this.resources.footstepSound.play(SFX_VOLUME);
                     }
                 }
                 
@@ -446,7 +448,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
                 
                 if (currentFrame == 1 || currentFrame == 3) {
-                    this.resources.footstepSound.play();
+                    this.resources.footstepSound.play(SFX_VOLUME);
                 }
             }
             
@@ -521,7 +523,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                         
                         // Play landing sound if in the air.
                         if (this.isInAir) {
-                            this.resources.landSound.play();
+                            this.resources.landSound.play(SFX_VOLUME);
                         }
                         
                         // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
@@ -630,7 +632,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.canJump = false;
                 
                 // Play jump sound.
-                this.resources.jumpSound.play();
+                this.resources.jumpSound.play(SFX_VOLUME);
             }
         } else {
             // If not pressing key and in the middle of a jump, stop ascending.
@@ -668,14 +670,14 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 if (geminiEnabled) {
-                    this.resources.geminiSound.play(0.75f);
+                    this.resources.geminiSound.play(SFX_VOLUME);
                     this.createdEntities.offer(new GeminiShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
                             MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                             this.obstacles, this.targets));
                 } else {
-                    this.resources.shootSound.play(0.75f);
+                    this.resources.shootSound.play(SFX_VOLUME);
                     this.createdEntities.offer(new BusterShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
@@ -684,14 +686,14 @@ public class MegaPlayer implements GameEntity, Damageable {
                 }
             } else {
                 if (geminiEnabled) {
-                    this.resources.geminiSound.play(0.75f);
+                    this.resources.geminiSound.play(SFX_VOLUME);
                     this.createdEntities.offer(new GeminiShot(this.spritesheet,
                         this.resources.shotMissSound, this.shotOrigin,
                         MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
                         MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
                         this.obstacles, this.targets));
                 } else {
-                    this.resources.shootSound.play(0.75f);
+                    this.resources.shootSound.play(SFX_VOLUME);
                     this.createdEntities.offer(new BusterShot(this.spritesheet,
                             this.resources.shotMissSound, this.shotOrigin,
                             MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
