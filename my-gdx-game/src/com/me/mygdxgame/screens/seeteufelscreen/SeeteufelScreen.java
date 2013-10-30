@@ -841,6 +841,7 @@ public class SeeteufelScreen implements GameScreen {
         this.seeteufelTargets.get(0).add(this.player);
         
         // Set up a bunch of ceiling tiles, attacked as part of the battle sequence.
+        ceilingTargets.clear();
         for (int x = 0; x < SecondMap.ARENA_WIDTH; x++) {
             this.ceilingTargets.add(new DamagingPlatform(this.t_tiles1, this.mapTiles, -x * SecondMap.GROUND_DIM,
                     (int) (SecondMap.GROUND_DIM * (SeeteufelScreen.MAP2_HEIGHT + SecondMap.ARENA_HEIGHT - 1)),
