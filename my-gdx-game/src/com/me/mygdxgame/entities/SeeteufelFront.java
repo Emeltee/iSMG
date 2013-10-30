@@ -22,7 +22,7 @@ public class SeeteufelFront implements GameEntity {
     
     private static final int FRONT_ARM_FRAMERATE = 15;
     private static final int BACK_ARM_FRAMERATE = 7;
-    private static final int GRAVITY_FACTOR = 400;
+    private static final int GRAVITY_FACTOR = 500;
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
     
