@@ -278,6 +278,9 @@ public class MegaPlayer implements GameEntity, Damageable {
     public void damage(Damager damager) {
         
         if (this.flinchTimer <= 0) {
+            
+            this.resources.hurtSound.play(SFX_VOLUME);
+            
             this.health -= damager.getPower();
             this.health = Math.max(this.health, 0);
             this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
