@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -141,6 +142,7 @@ public class SeeteufelScreen implements GameScreen {
     private Renderer hudRenderer;
     private InfinityWaterfall room2Fall1;
     private InfinityWaterfall room2Fall2;
+    private TextureRegion missionComplete;
     
     private LinkedList<GameEntity> obstacles = new LinkedList<GameEntity>();
     private LinkedList<FallingPlatform> fallingBlocks = new LinkedList<FallingPlatform>();
@@ -1048,7 +1050,7 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void setupMap4() {
-        
+        this.missionComplete = new TextureRegion(this.t_tiles1, 0, 594, 208, 24);
     }
     
     private void updateMap4(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -1057,12 +1059,10 @@ public class SeeteufelScreen implements GameScreen {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
         // Congratulations.
-        font.setScale(2);
-        TextBounds bounds = font.getBounds(WIN_MESSAGE_1);
-        this.hudRenderer.drawText(font, "MISSION COMPLETE!", -bounds.width / 2.0f, 0);
+        this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, 0);
         font.setScale(1);
-        bounds = font.getBounds(WIN_MESSAGE_2);
-        this.hudRenderer.drawText(font, "Press Enter to try again.", -bounds.width / 2.0f, -50);
+        TextBounds bounds = font.getBounds(WIN_MESSAGE_2);
+        this.hudRenderer.drawText(font, "Press Enter to try again.", -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
         
         // Play again.
         if (Gdx.input.isKeyPressed(Keys.ENTER)) {
