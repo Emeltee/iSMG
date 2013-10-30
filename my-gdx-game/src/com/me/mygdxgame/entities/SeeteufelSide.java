@@ -216,10 +216,18 @@ public class SeeteufelSide implements GameEntity, Damageable {
                         }
                     }
                     
-                    // Swap between bombs and lemons with a 4% chance.
-                    if (Math.random() <= 0.05) {
-                        this.shootLemons = !this.shootLemons;
+                    // Decide on lemon or bomb attack based on health and random chance.
+                    if (this.health < MAX_HEALTH / 3) {
+                        // Below 1/3 health, swap between bombs and lemons with a 20% chance.
+                        if (Math.random() <= 0.2) {
+                            this.shootLemons = !this.shootLemons;
+                        }
                     }
+                    else if(this.health < (MAX_HEALTH / 3) * 2) {
+                        // Below 2/3 health, switch from lemons to bombs.
+                        this.shootLemons = false;
+                    }
+                    
                     if (this.shootLemons) {
                         // Shoot lemon at one of three random heights.
                         // Get random value up to 3, and wrap 4 back to 0.
