@@ -156,6 +156,7 @@ public class SeeteufelScreen implements GameScreen {
     private boolean isMap2Flooding = false;
     private boolean displayFps = false;
     private boolean displayFpsButtonTrigger = false;
+    private boolean waterfallFell = false;
     
     /** Container class for textures used by the SeeteufelScreen maps.*/
     public static class MapTiles {
@@ -341,6 +342,7 @@ public class SeeteufelScreen implements GameScreen {
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
         this.isMap2Flooding = false;
+        this.waterfallFell = false;
         this.state = GameState.Running;
         this.map2Y = SeeteufelScreen.MAP2_INITIAL_CAM_Y;
         this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
@@ -511,11 +513,9 @@ public class SeeteufelScreen implements GameScreen {
         
         // Create decorative waterfall.
         this.room2Fall1 = new InfinityWaterfall(
-                this.waterfall, this.t_tiles1, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
-                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
+                this.waterfall, this.t_tiles1, 100, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 1);
         this.room2Fall2 = new InfinityWaterfall(
-                this.waterfall, this.t_tiles1, 510, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 
-                (int) (SeeteufelScreen.MAP2_PIXEL_HEIGHT - SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET + MAP2_WATERFALL_OFFSET));
+                this.waterfall, this.t_tiles1, 510, SeeteufelScreen.MAP2_PIXEL_HEIGHT + MAP2_WATERFALL_OFFSET, 1);
     }
     
     /** Add player dynamic obstacles. Also generates Seeteufel target list(s).*/
@@ -707,11 +707,23 @@ public class SeeteufelScreen implements GameScreen {
         if (this.isMap2Flooding) {
             
             // Update falls.
+            int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
+            if (this.waterfallFell) {
+                this.room2Fall1.setHeight(targetWaterfalHeight);
+                this.room2Fall2.setHeight(targetWaterfalHeight);
+            }
+            else {
+                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 40);
+                this.room2Fall2.setHeight(this.room2Fall1.getHeight());
+                if (this.room2Fall1.getHeight() >= targetWaterfalHeight) {
+                    this.waterfallFell = true;
+                    this.room2Fall1.setHeight(targetWaterfalHeight);
+                    this.room2Fall2.setHeight(targetWaterfalHeight);
+                }
+            }
             this.room2Fall1.update(deltaTime);
-            this.room2Fall1.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
             this.room2Fall1.draw(renderer);
             this.room2Fall2.update(deltaTime);
-            this.room2Fall2.setHeight(SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET);
             this.room2Fall2.draw(renderer);
             
             // Update Seeteufel.
