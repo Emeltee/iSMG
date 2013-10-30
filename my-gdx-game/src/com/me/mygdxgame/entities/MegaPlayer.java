@@ -31,7 +31,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int HITBOX_OFFSET_X = 5;
     private static final int HITBOX_OFFSET_Y = 5;
     private static final float MAX_BUSTER_COOLDOWN = 0.3f;
-    private static final float MAX_FLINCH_TIME = 0.4f;
+    private static final float MAX_FLINCH_TIME = 0.3f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     public static final float MAX_SPEED = 8.0f;
     private static final float MAX_FALL_SPEED = 18.0f;
