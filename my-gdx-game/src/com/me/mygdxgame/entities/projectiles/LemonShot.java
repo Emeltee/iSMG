@@ -30,9 +30,11 @@ public class LemonShot extends BusterShot {
     
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime);
-        if (this.state == EntityState.Destroyed) {
-            LemonShot.currentShots--;
+        if (this.state == EntityState.Running) {
+            super.update(deltaTime);
+            if (this.state == EntityState.Destroyed) {
+                LemonShot.currentShots--;
+            }
         }
     }
     
@@ -49,6 +51,9 @@ public class LemonShot extends BusterShot {
     
     @Override
     public void destroy() {
-        LemonShot.currentShots--;
+        if (this.state == EntityState.Running) {
+            this.state = EntityState.Destroyed;
+            LemonShot.currentShots--;
+        }
     }
 }

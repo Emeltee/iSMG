@@ -166,6 +166,9 @@ public class GeminiShot extends BusterShot {
     
     @Override
     public void destroy() {
-        GeminiShot.currentShots--;
+        if (this.state == EntityState.Running) {
+            this.state = EntityState.Destroyed;
+            GeminiShot.currentShots--;
+        }
     }
 }
