@@ -33,16 +33,17 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
     private static final float MOVE_SPEED = 2f;
     private static final float BASE_ATTACK_DELAY = 1.0f;
-    private static final float MIN_ATTACK_DELAY = 0.55f;
+    private static final float MIN_ATTACK_DELAY = 0.4f;
     private static final float ATTACK_DELAY_RAMP = 0.004f;
     private static final float CEILING_ATTACK_CHANCE = 0.2f;
-    private static final int ROCKET_POWER = 7;
+    private static final int ROCKET_POWER = 8;
     private static final int ROCKET_KNOCKBACK = 15;
     private static final float ROCKET_SPEED = 200.0f;
     private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
     private static final float SINK_EXPLOSION_DELAY = 0.1f;
-    private static final int[] SHOT_HEIGHTS = new int[] {60, (int) (60 + MegaPlayer.HITBOX_HEIGHT / 2.5), 60 + MegaPlayer.HITBOX_HEIGHT * 2};
+    private static final int[] SHOT_HEIGHTS = new int[] {60, 60, 60, 60, 60, 
+        60 + MegaPlayer.HITBOX_HEIGHT, 60 + MegaPlayer.HITBOX_HEIGHT * 2};
     private static final int BASE_SHOT_SPEED = 300;
     private static final int BASE_SHOT_POWER = 5;
     private static final float BASE_SHOT_RANGE = 1000;
@@ -232,7 +233,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                         // Shoot lemon at one of three random heights.
                         // Get random value up to 3, and wrap 4 back to 0.
                         // This way, lower height gets chosen more often.
-                        int shotHeight = SHOT_HEIGHTS[(int) (Math.random() * 4) % 3];
+                        int shotHeight = SHOT_HEIGHTS[(int) (Math.random() * SHOT_HEIGHTS.length)];
                         Vector3 shotPos = new Vector3(this.position.x, this.position.y + shotHeight, 0);
                         this.createdEntities.offer(new LemonShot(spritesheet,
                                 this.otherSounds.shotMissSound, shotPos,

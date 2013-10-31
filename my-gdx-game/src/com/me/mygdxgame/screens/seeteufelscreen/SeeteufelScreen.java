@@ -156,7 +156,8 @@ public class SeeteufelScreen implements GameScreen {
     private boolean isMap2Flooding = false;
     private boolean displayFps = false;
     private boolean displayFpsButtonTrigger = false;
-    private boolean waterfallFell = false;
+    private boolean firstWaterfallFell = false;
+    private boolean secondWaterfallFell = false;
     
     /** Container class for textures used by the SeeteufelScreen maps.*/
     public static class MapTiles {
@@ -342,7 +343,8 @@ public class SeeteufelScreen implements GameScreen {
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
         this.isMap2Flooding = false;
-        this.waterfallFell = false;
+        this.firstWaterfallFell = false;
+        this.secondWaterfallFell = false;
         this.state = GameState.Running;
         this.map2Y = SeeteufelScreen.MAP2_INITIAL_CAM_Y;
         this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
@@ -660,16 +662,17 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Activate flooding once player moves above certain x.
+        int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
             if (!this.music1.isPlaying() && !this.music2.isPlaying()) {
                 this.music2.play();
                 this.music2.setLooping(true);
             }
             // Raise water only after waterfalls have reached bottom.
-            if (this.waterfallFell) {
+            if (this.firstWaterfallFell) {
                 if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                     // Move cam faster once you reach a certain point.
-                    if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
+                    if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y && this.secondWaterfallFell) {
                         float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
                         this.map2Y += movement;
                     } else {
@@ -710,17 +713,23 @@ public class SeeteufelScreen implements GameScreen {
         if (this.isMap2Flooding) {
             
             // Update falls.
-            int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
-            if (this.waterfallFell) {
+            if (this.firstWaterfallFell) {
                 this.room2Fall1.setHeight(targetWaterfalHeight);
-                this.room2Fall2.setHeight(targetWaterfalHeight);
             }
             else {
                 this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 25);
-                this.room2Fall2.setHeight(this.room2Fall1.getHeight());
                 if (this.room2Fall1.getHeight() >= targetWaterfalHeight) {
-                    this.waterfallFell = true;
+                    this.firstWaterfallFell = true;
                     this.room2Fall1.setHeight(targetWaterfalHeight);
+                }
+            }
+            if (this.secondWaterfallFell) {
+                this.room2Fall2.setHeight(targetWaterfalHeight);
+            }
+            else if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
+                this.room2Fall2.setHeight(this.room2Fall2.getHeight() + 25);
+                if (this.room2Fall2.getHeight() >= targetWaterfalHeight) {
+                    this.secondWaterfallFell = true;
                     this.room2Fall2.setHeight(targetWaterfalHeight);
                 }
             }
