@@ -716,7 +716,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.room2Fall2.setHeight(targetWaterfalHeight);
             }
             else {
-                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 20);
+                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 25);
                 this.room2Fall2.setHeight(this.room2Fall1.getHeight());
                 if (this.room2Fall1.getHeight() >= targetWaterfalHeight) {
                     this.waterfallFell = true;
