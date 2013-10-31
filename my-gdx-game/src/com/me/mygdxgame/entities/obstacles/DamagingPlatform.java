@@ -26,7 +26,7 @@ public class DamagingPlatform implements Damageable {
     protected static final int PLATFORM_H = 32;
     
     protected static final int MAX_HEALTH = 1;
-    protected static final int POWER = 7;
+    protected static final int POWER = 8;
     
     protected Texture spriteSheet;
     protected TextureRegion platform;
