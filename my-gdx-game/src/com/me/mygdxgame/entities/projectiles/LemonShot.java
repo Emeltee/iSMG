@@ -46,4 +46,9 @@ public class LemonShot extends BusterShot {
             renderer.drawRegion(bullet, this.position.x, this.position.y, Color.YELLOW, 1, 1, 60 * this.animationTimer);
         }
     }
+    
+    @Override
+    public void destroy() {
+        LemonShot.currentShots--;
+    }
 }
