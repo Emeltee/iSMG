@@ -397,6 +397,8 @@ public class SeeteufelScreen implements GameScreen {
         this.seeteufelTargets.clear();
         this.seeteufelTargetLevels.clear();
         this.cameraShake = 0;
+        this.music1.stop();
+        this.music2.stop();
         
         for (GameEntity e : this.entities) {
             e.destroy();
