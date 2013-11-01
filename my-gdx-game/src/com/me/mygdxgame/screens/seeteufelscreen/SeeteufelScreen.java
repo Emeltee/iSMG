@@ -359,8 +359,8 @@ public class SeeteufelScreen implements GameScreen {
         
         // Draw paused overlay or fps display, if needed.
         if (this.isPaused) {
-            this.music1.stop();
-            this.music2.stop();
+            this.music1.pause();
+            this.music2.pause();
             int halfWidth = Gdx.graphics.getWidth() / 2;
             int halfHeight = Gdx.graphics.getHeight() / 2;
             this.hudRenderer.drawRect(ShapeType.Filled, new Color(0, 0, 0, 0.5f), -halfWidth, -halfHeight, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -707,9 +707,14 @@ public class SeeteufelScreen implements GameScreen {
         // Activate flooding once player moves above certain x.
         int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
-            if (!this.music1.isPlaying() && !this.music2.isPlaying()) {
-                this.music2.play();
-                //this.music2.setLooping(true);
+            if (!this.music1.isPlaying()) {
+                // Check if intro music was simply paused.
+                if (this.music1.getPosition() != 0) {
+                    this.music1.play();
+                }
+                else if (!this.music2.isPlaying()) {
+                    this.music2.play();
+                }
             }
             // Raise water only after waterfalls have reached bottom.
             if (this.firstWaterfallFell) {
@@ -969,12 +974,32 @@ public class SeeteufelScreen implements GameScreen {
     
     private void updateMap3(float deltaTime, int difficulty) {
         
-        // Keep the music playing. Not sure the loop option is working properly.
-        if (!this.music1.isPlaying() &&
-                !this.music2.isPlaying() &&
-                this.seeSide.getState() != EntityState.Destroyed) {
-            //this.music2.setLooping(true);
-            this.music2.play();
+        // Have camera track player. Clamp at edges of room.
+        Vector3 playerPos = this.player.getPosition();
+        if (map3CamPos.x > playerPos.x) {
+            map3CamPos.x -= Math.min(MegaPlayer.MAX_SPEED, map3CamPos.x - playerPos.x);
+        } else if (map3CamPos.x < playerPos.x) {
+            map3CamPos.x += Math.min(MegaPlayer.MAX_SPEED, playerPos.x - map3CamPos.x);
+        }
+        if (map3CamPos.y < MAP3_CAM_Y) {
+            map3CamPos.y += Math.min(MegaPlayer.MAX_SPEED, MAP3_CAM_Y - map3CamPos.y);
+        }
+        if (map3CamPos.x < MAP3_CAM_MIN_X) {
+            map3CamPos.x = MAP3_CAM_MIN_X;
+        }
+        else if (map3CamPos.x > MAP3_CAM_MAX_X) {
+            map3CamPos.x = MAP3_CAM_MAX_X;
+        }
+        
+        // Keep the music playing.
+        if (!this.music1.isPlaying()) {
+            // Check if intro music was simply paused.
+            if (this.music1.getPosition() != 0) {
+                this.music1.play();
+            }
+            else if (!this.music2.isPlaying()) {
+                this.music2.play();
+            }
         }
         
         // If water has not yet reached the top of the shaft, keep raising it.
@@ -982,8 +1007,6 @@ public class SeeteufelScreen implements GameScreen {
             this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
             this.seeFront.setTargetY((int)map2WaterY);
         }
-        
-        Vector3 playerPos = this.player.getPosition();
         
         // Update map.
         this.map2.update(deltaTime);
@@ -1103,23 +1126,8 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void renderMap3(float deltaTime, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
-
-        // Have camera track player. Clamp at edges of room.
-        Vector3 playerPos = this.player.getPosition();
-        if (map3CamPos.x > playerPos.x) {
-            map3CamPos.x -= Math.min(MegaPlayer.MAX_SPEED, map3CamPos.x - playerPos.x);
-        } else if (map3CamPos.x < playerPos.x) {
-            map3CamPos.x += Math.min(MegaPlayer.MAX_SPEED, playerPos.x - map3CamPos.x);
-        }
-        if (map3CamPos.y < MAP3_CAM_Y) {
-            map3CamPos.y += Math.min(MegaPlayer.MAX_SPEED, MAP3_CAM_Y - map3CamPos.y);
-        }
-        if (map3CamPos.x < MAP3_CAM_MIN_X) {
-            map3CamPos.x = MAP3_CAM_MIN_X;
-        }
-        else if (map3CamPos.x > MAP3_CAM_MAX_X) {
-            map3CamPos.x = MAP3_CAM_MAX_X;
-        }
+        
+        // Camera.
         orthoCam.position.x = map3CamPos.x;
         orthoCam.position.y = map3CamPos.y + this.cameraShake;
         orthoCam.update();

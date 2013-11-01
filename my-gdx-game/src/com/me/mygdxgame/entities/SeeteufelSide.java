@@ -255,33 +255,34 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     }
                 }
             }
+            
+            
+            // Determine animation frames.
+            this.sideArmTimer++;
+            if (this.sideArmTimer >= SIDE_ARM_FRAMERATE) {
+                this.sideArmFrame = (this.sideArmFrame + 1) % 3;
+                this.sideArmTimer = 0;
+            }
+            this.frontArmTimer++;
+            if (this.frontArmTimer >= FRONT_ARM_FRAMERATE) {
+                if (frontArmAnimDir) {
+                    this.frontArmFrame++;
+                    if (frontArmFrame == 5) {
+                        frontArmAnimDir = false;
+                    }
+                } else {
+                    this.frontArmFrame--;
+                    if (frontArmFrame == 0) {
+                        frontArmAnimDir = true;
+                    }
+                }
+                this.frontArmTimer = 0;
+            }
         }
     }
 
     @Override
     public void draw(Renderer renderer) {
-        
-        // Determine frames.
-        this.sideArmTimer++;
-        if (this.sideArmTimer >= SIDE_ARM_FRAMERATE) {
-            this.sideArmFrame = (this.sideArmFrame + 1) % 3;
-            this.sideArmTimer = 0;
-        }
-        this.frontArmTimer++;
-        if (this.frontArmTimer >= FRONT_ARM_FRAMERATE) {
-            if (frontArmAnimDir) {
-                this.frontArmFrame++;
-                if (frontArmFrame == 5) {
-                    frontArmAnimDir = false;
-                }
-            } else {
-                this.frontArmFrame--;
-                if (frontArmFrame == 0) {
-                    frontArmAnimDir = true;
-                }
-            }
-            this.frontArmTimer = 0;
-        }
         
         // Draw back tentacle.
         if (this.frontArmFrame == 0) {
