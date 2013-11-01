@@ -154,6 +154,18 @@ public class SeeteufelFront implements GameEntity {
                             SeeteufelFront.ROCKET_SPEED), 1, 0,
                     new GameEntity[0], new Damageable[] { target }));
         }
+        
+        // Determine animation frames.
+        this.backArmTimer++;
+        if (this.backArmTimer >= SeeteufelFront.BACK_ARM_FRAMERATE) {
+            this.backArmFrame = (this.backArmFrame + 1) % 3;
+            this.backArmTimer = 0;
+        }
+        this.frontArmTimer++;
+        if (this.frontArmTimer >= SeeteufelFront.FRONT_ARM_FRAMERATE) {
+            this.frontArmFrame = !this.frontArmFrame;
+            this.frontArmTimer = 0;
+        }
     }
 
     @Override
@@ -163,11 +175,6 @@ public class SeeteufelFront implements GameEntity {
         renderer.drawRegion(this.front, this.position.x, this.position.y);
         
         // Draw the long tentacles on the sides.
-        this.backArmTimer++;
-        if (this.backArmTimer >= SeeteufelFront.BACK_ARM_FRAMERATE) {
-            this.backArmFrame = (this.backArmFrame + 1) % 3;
-            this.backArmTimer = 0;
-        }
         if (this.backArmFrame == 0) {
             renderer.drawRegion(this.backArmLeft[0], this.position.x - 81, this.position.y + 20);
             renderer.drawRegion(this.backArmRight[0], this.position.x + 65, this.position.y + 20);
@@ -180,11 +187,6 @@ public class SeeteufelFront implements GameEntity {
         }
         
         // Draw the front tentacles.
-        this.frontArmTimer++;
-        if (this.frontArmTimer >= SeeteufelFront.FRONT_ARM_FRAMERATE) {
-            this.frontArmFrame = !this.frontArmFrame;
-            this.frontArmTimer = 0;
-        }
         if (this.frontArmFrame) {
             renderer.drawRegion(this.frontArmRight[0], this.position.x + 58, this.position.y + 8);
             renderer.drawRegion(this.frontArmLeft[0], this.position.x - 48, this.position.y + 8);

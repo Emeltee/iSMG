@@ -34,8 +34,16 @@ public abstract class GameMap {
     public abstract GameEntity getObstacles();
 
     /**
-     * Updates any logic and draws all entities to the screen. TODO, some
-     * (enforced) form of frustum culling would eventually be nice.
+     * Updates logic.
+     * 
+     * @param deltaTime
+     *            The amount of time in seconds that has passed since the
+     *            previous render call.
+     */
+    public abstract void update(float deltaTime);
+    
+    /**
+     * Draws all elements to the screen.
      * 
      * @param deltaTime
      *            The amount of time in seconds that has passed since the

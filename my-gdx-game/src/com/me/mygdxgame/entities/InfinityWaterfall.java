@@ -62,7 +62,17 @@ public class InfinityWaterfall implements GameEntity {
     
     @Override
     public void update(float deltaTime) {
-        // Nothing.
+        // Animate waterfall body by shifting the texture coords.
+        this.waterfall.setV(this.waterfall.getV() - InfinityWaterfall.TEX_V_DELTA);
+        this.waterfall.setV2(this.waterfall.getV2() - InfinityWaterfall.TEX_V_DELTA);
+        
+        // Determine bottom animation frame.
+        if (this.animationTimer >= InfinityWaterfall.ANIMATION_SPEED) {
+            this.frame = (this.frame + 1) % this.waterfallEnd.length;
+            this.animationTimer = 0;
+        } else {
+            this.animationTimer++;
+        }
     }
 
     @Override
@@ -72,18 +82,10 @@ public class InfinityWaterfall implements GameEntity {
         renderer.drawRegion(this.grateRegion, this.x + 1 - (this.grateRegion.getRegionWidth() - this.waterfall.getRegionWidth()) / 2.0f,
                 this.y - this.grateRegion.getRegionHeight() + 2);
         
-        // Animate waterfall body by shifting the texture coords.
-        this.waterfall.setV(this.waterfall.getV() - InfinityWaterfall.TEX_V_DELTA);
-        this.waterfall.setV2(this.waterfall.getV2() - InfinityWaterfall.TEX_V_DELTA);
+        // Draw body.
         renderer.drawSprite(this.waterfall);
         
         // Draw bottom.
-        if (this.animationTimer >= InfinityWaterfall.ANIMATION_SPEED) {
-            this.frame = (this.frame + 1) % this.waterfallEnd.length;
-            this.animationTimer = 0;
-        } else {
-            this.animationTimer++;
-        }
         renderer.drawRegion(this.waterfallEnd[this.frame], this.x, this.y - this.waterfall.getHeight());
     }
 

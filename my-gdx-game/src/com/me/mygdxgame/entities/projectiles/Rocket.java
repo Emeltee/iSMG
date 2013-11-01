@@ -115,15 +115,15 @@ public class Rocket implements GameEntity, Damager {
                     }
                 }
             }
+            
+            // Every call, increment the animationTimer.
+            this.animationTimer++;
         }
     }
 
     @Override
     public void draw(Renderer renderer) {
         if (this.state == EntityState.Running){
-            // Every call, increment the animationTimer.
-            this.animationTimer++;
-            
             renderer.drawRegion(rocket, this.position.x, this.position.y, ROCKET_TINT, 1, 1, 30 * this.animationTimer);
         }
     }

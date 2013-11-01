@@ -161,14 +161,17 @@ public class ThirdMap extends GameMap {
         tileX(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y + 8 * GROUND_DIM, 13);
         tileY(renderer, this.wallSprite, GROUND_ORIGIN_X, GROUND_ORIGIN_Y, 9);
         tileY(renderer, this.wallSprite, GROUND_ORIGIN_X + 13 * GROUND_DIM, GROUND_ORIGIN_Y, 9);
-
-        // Update animation frame
-        animationFrame = (animationFrame < 96) ? animationFrame + 1 : 0;
         
         // Debug
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        // Update animation frame
+        animationFrame = (animationFrame < 96) ? animationFrame + 1 : 0;
     }
 
 }

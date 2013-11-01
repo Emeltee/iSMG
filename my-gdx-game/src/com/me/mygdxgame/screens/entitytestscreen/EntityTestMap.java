@@ -68,4 +68,9 @@ public class EntityTestMap extends GameMap {
         GameMap.drawObstacles(renderer, obstacles, Color.RED);
     }
 
+    @Override
+    public void update(float deltaTime) {
+        // Nothing.
+    }
+
 }

@@ -87,6 +87,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion[] jumpRight = new TextureRegion[2];
     private TextureRegion[] jumpShootLeft = new TextureRegion[2];
     private TextureRegion[] jumpShootRight = new TextureRegion[2];
+    private TextureRegion currentFrame = null;
 
 
     private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
@@ -238,6 +239,9 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpShootLeft[0].flip(true, false);
         this.jumpShootLeft[1] = new TextureRegion(this.jumpShootRight[1]);
         this.jumpShootLeft[1].flip(true, false);
+        
+        // Set the default frame.
+        this.currentFrame = this.standLeft;
     }
     
     public void setPosition(Vector3 position) {
@@ -336,6 +340,9 @@ public class MegaPlayer implements GameEntity, Damageable {
 
         // Apply constant forces.
         this.handlePhysics(deltaTime);
+        
+        // Update visuals and play relevent sounds.
+        this.determineFrame();
     }
 
     @Override
@@ -344,127 +351,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         float drawPositionX = this.position.x - MegaPlayer.HITBOX_OFFSET_X;
         float drawPositionY = this.position.y - MegaPlayer.HITBOX_OFFSET_Y;
         
-        // Facing right.
-        if (this.isFacingRight) {
-            if (this.flinchTimer > 0) {
-                if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
-                    renderer.drawRegion(this.damageRight[0], drawPositionX,
-                            drawPositionY);
-                } else {
-                    renderer.drawRegion(this.damageRight[1], drawPositionX,
-                            drawPositionY);
-                }
-            } else if (this.isInAir) {
-                if (this.velocity.y > 0) {
-                    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                        renderer.drawRegion(this.jumpShootRight[0],
-                                drawPositionX, drawPositionY);
-                    } else {
-                        renderer.drawRegion(this.jumpRight[0],
-                                drawPositionX, drawPositionY);
-                    }
-                } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    renderer.drawRegion(this.jumpShootRight[1],
-                            drawPositionX, drawPositionY);
-                } else {
-                    renderer.drawRegion(this.jumpRight[1],
-                            drawPositionX, drawPositionY);
-                }
-            } else if (this.velocity.x == 0) {
-                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    renderer.drawRegion(this.standShootRight, drawPositionX,
-                            drawPositionY);
-                } else {
-                    renderer.drawRegion(this.standRight, drawPositionX,
-                            drawPositionY);
-                }
-            } else {
-                
-                // Update animation timer/frame for running.
-                this.animationTimer++;
-                int currentFrame = this.prevFrame;
-                if ((!this.isUnderwater && this.animationTimer >
-                MegaPlayer.RUN_FRAMERATE) ||
-                (this.isUnderwater && this.animationTimer >
-                MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
-                    this.animationTimer = 0;
-                    currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
-                    
-                    if (currentFrame == 1 || currentFrame == 3) {
-                        this.resources.footstepSound.play(SFX_VOLUME);
-                    }
-                }
-                
-                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    renderer.drawRegion(this.runShootRight[currentFrame],
-                            drawPositionX, drawPositionY);
-                } else {
-                    renderer.drawRegion(this.runRight[currentFrame],
-                            drawPositionX, drawPositionY);
-                }
-                
-                this.prevFrame = currentFrame;
-            }
-        // Facing left.
-        } else if (this.flinchTimer > 0) {
-            if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
-                renderer.drawRegion(this.damageLeft[0], drawPositionX,
-                        drawPositionY);
-            } else {
-                renderer.drawRegion(this.damageLeft[1], drawPositionX,
-                        drawPositionY);
-            }
-        } else if (this.isInAir) {
-            if (this.velocity.y > 0) {
-                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                    renderer.drawRegion(this.jumpShootLeft[0], drawPositionX,
-                            drawPositionY);
-                } else {
-                    renderer.drawRegion(this.jumpLeft[0], drawPositionX,
-                            drawPositionY);
-                }
-            } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                renderer.drawRegion(this.jumpShootLeft[1], drawPositionX,
-                        drawPositionY);
-            } else {
-                renderer.drawRegion(this.jumpLeft[1], drawPositionX,
-                        drawPositionY);
-            }
-        } else if (this.velocity.x == 0) {
-            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                renderer.drawRegion(this.standShootLeft, drawPositionX,
-                        drawPositionY);
-            } else {
-                renderer.drawRegion(this.standLeft, drawPositionX,
-                        drawPositionY);
-            }
-        } else {
-            
-            // Update animation timer/frame for running.
-            this.animationTimer++;
-            int currentFrame = this.prevFrame;
-            if ((!this.isUnderwater && this.animationTimer >
-            MegaPlayer.RUN_FRAMERATE) ||
-            (this.isUnderwater && this.animationTimer >
-            MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
-                this.animationTimer = 0;
-                currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
-                
-                if (currentFrame == 1 || currentFrame == 3) {
-                    this.resources.footstepSound.play(SFX_VOLUME);
-                }
-            }
-            
-            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-                renderer.drawRegion(this.runShootLeft[currentFrame],
-                        drawPositionX, drawPositionY);
-            } else {
-                renderer.drawRegion(this.runLeft[currentFrame], drawPositionX,
-                        drawPositionY);
-            }
-
-            this.prevFrame = currentFrame;
-        }
+        renderer.drawRegion(this.currentFrame, drawPositionX, drawPositionY);
         
 //        // Test code. Draws hitbox as overlay.
 //        Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -497,6 +384,111 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.createdEntities.toArray(returnList);
         this.createdEntities.clear();
         return returnList;
+    }
+    
+    private void determineFrame() {
+        
+        // Facing right.
+        if (this.isFacingRight) {
+            if (this.flinchTimer > 0) {
+                if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
+                    this.currentFrame = this.damageRight[0];
+                } else {
+                    this.currentFrame = this.damageRight[1];
+                }
+            } else if (this.isInAir) {
+                if (this.velocity.y > 0) {
+                    if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                        this.currentFrame = this.jumpShootRight[0];
+                    } else {
+                        this.currentFrame = this.jumpRight[0];
+                    }
+                } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    this.currentFrame = this.jumpShootRight[1];
+                } else {
+                    this.currentFrame = this.jumpRight[1];
+                }
+            } else if (this.velocity.x == 0) {
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    this.currentFrame = this.standShootRight;
+                } else {
+                    this.currentFrame = this.standRight;
+                }
+            } else {
+                
+                // Update animation timer/frame for running.
+                this.animationTimer++;
+                int currentFrame = this.prevFrame;
+                if ((!this.isUnderwater && this.animationTimer >
+                MegaPlayer.RUN_FRAMERATE) ||
+                (this.isUnderwater && this.animationTimer >
+                MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
+                    this.animationTimer = 0;
+                    currentFrame = (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                    
+                    if (currentFrame == 1 || currentFrame == 3) {
+                        this.resources.footstepSound.play(SFX_VOLUME);
+                    }
+                }
+                
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    this.currentFrame = this.runShootRight[currentFrame];
+                } else {
+                    this.currentFrame = this.runRight[currentFrame];
+                }
+                
+                this.prevFrame = currentFrame;
+            }
+        // Facing left.
+        } else if (this.flinchTimer > 0) {
+            if (this.flinchTimer > MegaPlayer.FLINCH_ANIMATION_THRESHOLD) {
+                this.currentFrame = this.damageLeft[0];
+            } else {
+                this.currentFrame = this.damageLeft[1];
+            }
+        } else if (this.isInAir) {
+            if (this.velocity.y > 0) {
+                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                    this.currentFrame = this.jumpShootLeft[0];
+                } else {
+                    this.currentFrame = this.jumpLeft[0];
+                }
+            } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                this.currentFrame = this.jumpShootLeft[1];
+            } else {
+                this.currentFrame = this.jumpLeft[1];
+            }
+        } else if (this.velocity.x == 0) {
+            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                this.currentFrame = this.standShootLeft;
+            } else {
+                this.currentFrame = this.standLeft;
+            }
+        } else {
+            
+            // Update animation timer/frame for running.
+            this.animationTimer++;
+            int currentFrame = this.prevFrame;
+            if ((!this.isUnderwater && this.animationTimer >
+            MegaPlayer.RUN_FRAMERATE) ||
+            (this.isUnderwater && this.animationTimer >
+            MegaPlayer.RUN_FRAMERATE * MegaPlayer.WATER_MOVEMENT_FACTOR)) {
+                this.animationTimer = 0;
+                currentFrame =  (currentFrame + 1) % MegaPlayer.MAX_RUN_FRAMES;
+                
+                if (currentFrame == 1 || currentFrame == 3) {
+                    this.resources.footstepSound.play(SFX_VOLUME);
+                }
+            }
+            
+            if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+                this.currentFrame = this.runShootLeft[currentFrame];
+            } else {
+                this.currentFrame = this.runLeft[currentFrame];
+            }
+
+            this.prevFrame = currentFrame;
+        }
     }
     
     /**

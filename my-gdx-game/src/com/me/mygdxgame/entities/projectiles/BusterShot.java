@@ -121,6 +121,9 @@ public class BusterShot implements GameEntity, Damager {
                     }
                 }
             }
+            
+            // Every call, increment the animationTimer.
+            this.animationTimer++;
         }
 
     }
@@ -129,9 +132,6 @@ public class BusterShot implements GameEntity, Damager {
     public void draw(Renderer renderer) {
         
         if (this.state == EntityState.Running) {
-            // Every call, increment the animationTimer.
-            this.animationTimer++;
-            
             renderer.drawRegion(bullet, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
         }
     }
