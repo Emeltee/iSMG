@@ -709,7 +709,7 @@ public class SeeteufelScreen implements GameScreen {
         if (this.isMap2Flooding) {
             if (!this.music1.isPlaying() && !this.music2.isPlaying()) {
                 this.music2.play();
-                this.music2.setLooping(true);
+                //this.music2.setLooping(true);
             }
             // Raise water only after waterfalls have reached bottom.
             if (this.firstWaterfallFell) {
@@ -967,8 +967,10 @@ public class SeeteufelScreen implements GameScreen {
     private void updateMap3(float deltaTime, int difficulty) {
         
         // Keep the music playing. Not sure the loop option is working properly.
-        if (!this.music2.isPlaying() && this.seeSide.getState() != EntityState.Destroyed) {
-            this.music2.setLooping(true);
+        if (!this.music1.isPlaying() &&
+                !this.music2.isPlaying() &&
+                this.seeSide.getState() != EntityState.Destroyed) {
+            //this.music2.setLooping(true);
             this.music2.play();
         }
         
