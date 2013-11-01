@@ -123,15 +123,15 @@ public class Bomb implements GameEntity, Damager {
                     }
                 }
             }
+            
+            // Every call, increment the animationTimer.
+            this.animationTimer++;
         }
     }
 
     @Override
     public void draw(Renderer renderer) {
         if (this.status == EntityState.Running){
-            // Every call, increment the animationTimer.
-            this.animationTimer++;
-            
             renderer.drawRegion(bomb, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
             // TODO spriteBatch's draw() function won't manage the z-axis automatically. Fix manually with scaleX/scaleY params? 
             //MyGdxGame.currentGame.spriteBatch.draw(bomb, this.position.x, this.position.y, this.bomb.getRegionWidth() / 2.0f, this.bomb.getRegionHeight() / 2.0f, BOMB_W, BOMB_H, 1, 1, 30 * this.animationTimer);

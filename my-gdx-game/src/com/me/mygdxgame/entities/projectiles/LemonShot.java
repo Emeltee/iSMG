@@ -42,9 +42,6 @@ public class LemonShot extends BusterShot {
     public void draw(Renderer renderer) {
         
         if (this.state == EntityState.Running) {
-            // Every call, increment the animationTimer.
-            this.animationTimer++;
-            
             renderer.drawRegion(bullet, this.position.x, this.position.y, Color.YELLOW, 1, 1, 60 * this.animationTimer);
         }
     }

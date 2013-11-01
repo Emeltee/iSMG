@@ -97,4 +97,9 @@ public class SecondMap extends GameMap {
         }
     }
 
+    @Override
+    public void update(float deltaTime) {
+        // Nothing.
+    }
+
 }

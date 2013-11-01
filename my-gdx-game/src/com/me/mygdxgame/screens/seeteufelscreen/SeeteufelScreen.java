@@ -454,7 +454,7 @@ public class SeeteufelScreen implements GameScreen {
             }
         }
         
-        // Update and draw all specially-managed entities.
+        this.map1.update(deltaTime);
         
         // Player.
         this.player.update(deltaTime);
@@ -739,6 +739,9 @@ public class SeeteufelScreen implements GameScreen {
                     SeeteufelScreen.MAP2_SEETEUFEL_INIT_POS);
         }
         
+        // Update map.
+        this.map2.update(deltaTime);
+        
         // Update moving barrier at the top of the screen.
         float screenTop = this.map2Y + Gdx.graphics.getHeight() / 2;
         this.map2Ceiling.setPosition(0, screenTop);
@@ -981,6 +984,9 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         Vector3 playerPos = this.player.getPosition();
+        
+        // Update map.
+        this.map2.update(deltaTime);
         
         // Update falls.
         this.room2Fall1.update(deltaTime);

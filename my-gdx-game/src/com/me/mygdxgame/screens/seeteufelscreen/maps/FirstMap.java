@@ -157,13 +157,16 @@ public class FirstMap extends GameMap {
             pillar.renderBases(renderer);
         }
         
-        // Update animation frame
-        animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
-        
         // Debug
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
 
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        // Update animation frame
+        animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
     }
 }
