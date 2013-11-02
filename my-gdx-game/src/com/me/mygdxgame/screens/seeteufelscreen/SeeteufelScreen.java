@@ -27,6 +27,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.cheats.BusterMaxCheat;
+import com.me.mygdxgame.cheats.GeminiShotCheat;
+import com.me.mygdxgame.cheats.JumpSpringsCheat;
 import com.me.mygdxgame.cheats.MegaCheat;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Door.DoorState;
@@ -446,6 +448,8 @@ public class SeeteufelScreen implements GameScreen {
         MegaCheat.player = this.player;
         MegaCheat.enemy = this.seeSide;
         this.cheatEngine.addCheat(new BusterMaxCheat());
+        this.cheatEngine.addCheat(new JumpSpringsCheat());
+        this.cheatEngine.addCheat(new GeminiShotCheat());
         
         // Set up first map.
         this.entities.add(this.refractor);
