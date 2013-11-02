@@ -32,6 +32,7 @@ public class MegaBuster {
     private static final int MAX_SHOT_ATTACK = 5;
     private static final int MAX_SHOT_RANGE = 800;
     private static final int MAX_SHOT_ENERGY = 9;
+    private static final float SFX_VOLUME = 0.5f;
         
     private float energyTimer; // buster cooldown
     
@@ -141,7 +142,7 @@ public class MegaBuster {
     
     public BusterShot makeShot(Vector3 shotOrigin, ShotDirection dir, Collection<GameEntity> obstacles, Collection<Damageable> targets) {
         this.energyTimer = 1 / (float)this.energyStat();
-        this.shootSound.play();
+        this.shootSound.play(SFX_VOLUME);
         BusterShot shot = new BusterShot(this.spritesheet,
                                 this.missSound, shotOrigin,
                                 this.rapidStat(), dir,
