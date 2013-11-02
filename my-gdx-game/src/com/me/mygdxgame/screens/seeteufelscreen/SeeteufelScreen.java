@@ -414,7 +414,7 @@ public class SeeteufelScreen implements GameScreen {
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.x,
                 (int) SeeteufelScreen.PLAYER_HEALTH_POS.y);
         this.enemyHealth = new BonneHealthBar(this.t_tiles1, 0, 0);
-        this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,
+        this.refractor = new Refractor(this.t_tiles1, this.itemGet, this.font,                
                 (int) Math.ceil(FirstMap.PLATFORM_START_X + FirstMap.GROUND_DIM
                         * 1.5 - Refractor.REFRACTOR_W / 2),
                 (int) Math.ceil(FirstMap.GROUND_START_Y + FirstMap.GROUND_DIM * 2
@@ -422,15 +422,15 @@ public class SeeteufelScreen implements GameScreen {
         this.room1Exit = new Door(this.t_tiles1, this.doorOpen, this.doorClose,
                 FirstMap.GROUND_END_X - (int) (FirstMap.GROUND_DIM * 1.5),
                 FirstMap.GROUND_START_Y);
-        this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
-                FirstMap.GROUND_START_Y);
+        /* this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
+                FirstMap.GROUND_START_Y); */
         
         // Set up first map.
         this.entities.add(this.refractor);
         this.entities.add(this.room1Exit);
-        this.entities.add(this.bonus);
+        // this.entities.add(this.bonus);
         this.obstacles.add(this.map1.getObstacles());
-        this.playerTargets.add(this.bonus);
+        // this.playerTargets.add(this.bonus);
     }
 
     @Override
@@ -548,6 +548,11 @@ public class SeeteufelScreen implements GameScreen {
         
         // Generate stairs of destructable platforms and load them into lists.
         this.generateMap2Stairs();
+        
+        // Add the bonus tile
+        this.bonus = this.makeBonusTile();
+        this.entities.add(this.bonus);
+        this.playerTargets.add(this.bonus);
         
         // Add moving ceiling obstacle to obstacle list.
         this.map2Ceiling = new Rectangle(0, 0, Gdx.graphics.getWidth(), 50);
@@ -702,6 +707,26 @@ public class SeeteufelScreen implements GameScreen {
         return targets;
     }
     
+    private WatchNadia makeBonusTile() {        
+        /* Randomly places the tile between four and eight flights of stairs above.
+         * the bottom. Alternates left and right based on stair placement / direction.
+         * Gets slightly harder to reach the higher it goes.
+         */
+        int bonusYOffset = (int)(System.currentTimeMillis() % 5) + 4;
+        boolean leftSide = (bonusYOffset % 2 == 0);
+        int bonusX = leftSide ? 0 : SecondMap.GROUND_DIM * (SecondMap.GROUND_WIDTH - 1);                
+        int bonusY = 9 + (int) (MAP2_STAIR_FLIGHT_HEIGHT * bonusYOffset * SecondMap.GROUND_DIM);
+        bonusY -= bonusY % SecondMap.GROUND_DIM; // Ensure Y is an even tile height
+        
+        WatchNadia seriouslyWtfMlt = new WatchNadia(
+                this.mapTiles.bonusTex, 
+                this.player, 
+                this.itemGet, SeeteufelScreen.SFX_VOLUME, 
+                bonusX, bonusY
+        );        
+        return seriouslyWtfMlt;
+    }
+    
     private void updateMap2(float deltaTime, int difficulty) {
         
         Vector3 playerPos = this.player.getPosition();
@@ -813,6 +838,11 @@ public class SeeteufelScreen implements GameScreen {
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
             if (e.getState() == EntityState.Destroyed) {
+                // TODO, Hackish.
+                if (e instanceof WatchNadia) {
+                    this.player.setGeminiEnabled(true);
+                    this.itemGet.play(SFX_VOLUME);
+                }
                 this.toRemove.addFirst(e);              
             }
             if (e.hasCreatedEntities()) {
