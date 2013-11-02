@@ -838,11 +838,6 @@ public class SeeteufelScreen implements GameScreen {
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
             if (e.getState() == EntityState.Destroyed) {
-                // TODO, Hackish.
-                if (e instanceof WatchNadia) {
-                    this.player.setGeminiEnabled(true);
-                    this.itemGet.play(SFX_VOLUME);
-                }
                 this.toRemove.addFirst(e);              
             }
             if (e.hasCreatedEntities()) {
