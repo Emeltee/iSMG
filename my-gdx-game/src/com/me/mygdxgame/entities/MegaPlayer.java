@@ -70,6 +70,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = false;
     private boolean geminiEnabled = false;
+    private boolean jumpSpringsEnabled = false;
     private boolean isUnderwater = false;
     
     private Texture spritesheet = null;
@@ -254,6 +255,22 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
+    }
+    
+    public boolean isGeminiEnabled() {
+        return this.geminiEnabled;
+    }
+    
+    public void setJumpSpringsEnabled(boolean jumpSpringsEnabled) {
+        this.jumpSpringsEnabled = jumpSpringsEnabled;
+    }
+    
+    public boolean isJumpSpringsEnabled() {
+        return this.jumpSpringsEnabled;
+    }
+    
+    private float getJumpThrustLimit() {
+        return MegaPlayer.MAX_JUMP_THRUST_TIME * ((this.jumpSpringsEnabled) ? 1.2f : 1.0f);
     }
     
     public MegaBuster getMegaBuster() {
@@ -650,7 +667,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         // If already jumping, ascend upwards for as long as indicated by the
         // timer.
         if (this.isJumping) {
-            if (this.jumpThrustTimer < MegaPlayer.MAX_JUMP_THRUST_TIME) {
+            if (this.jumpThrustTimer < this.getJumpThrustLimit()) {
                 this.velocity.y = Math.max(this.velocity.y
                         + (MegaPlayer.ACCELERATION * deltaTime),
                         MegaPlayer.MAX_SPEED);
