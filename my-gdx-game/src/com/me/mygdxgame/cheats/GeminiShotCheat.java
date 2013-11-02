@@ -4,17 +4,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
+import com.me.mygdxgame.entities.MegaPlayer;
+import com.me.mygdxgame.utilities.GameCheat;
 
-public class GeminiShotCheat extends MegaCheat {
+public class GeminiShotCheat extends GameCheat {
 
+    private MegaPlayer player;
+    
+    public GeminiShotCheat(MegaPlayer player) {
+        super();
+        this.player = player;
+    }
+    
     public void enableCheat() {
         super.enableCheat();
-        MegaCheat.player.setGeminiEnabled(true);        
+        this.player.setGeminiEnabled(true);        
     }
     
     public void disableCheat() {
         super.disableCheat();
-        MegaCheat.player.setGeminiEnabled(false);
+        this.player.setGeminiEnabled(false);
     }
     
     @Override

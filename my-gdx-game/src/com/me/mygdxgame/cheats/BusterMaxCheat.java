@@ -5,14 +5,19 @@ import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
 import com.me.mygdxgame.buster.BusterMax;
+import com.me.mygdxgame.entities.MegaPlayer;
+import com.me.mygdxgame.utilities.GameCheat;
 
-public class BusterMaxCheat extends MegaCheat {
+public class BusterMaxCheat extends GameCheat {
     
     /* Enables the BusterMax upgrade. */
     
     private BusterMax busterUpgrade;
+    private MegaPlayer player;
     
-    public BusterMaxCheat(){
+    public BusterMaxCheat(MegaPlayer player) {
+        super();
+        this.player = player;
         this.busterUpgrade = new BusterMax();
     }
     
@@ -24,12 +29,13 @@ public class BusterMaxCheat extends MegaCheat {
     @Override
     public void enableCheat() {
         super.enableCheat();
-        MegaCheat.player.getMegaBuster().attachBusterPart(this.busterUpgrade);
+        this.player.getMegaBuster().attachBusterPart(this.busterUpgrade);
     }
     
+    @Override
     public void disableCheat() {
         super.disableCheat();
-        MegaCheat.player.getMegaBuster().removeBusterPart(this.busterUpgrade);
+        this.player.getMegaBuster().removeBusterPart(this.busterUpgrade);
     }
 
     @Override
