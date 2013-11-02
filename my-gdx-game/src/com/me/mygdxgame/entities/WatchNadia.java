@@ -2,6 +2,7 @@ package com.me.mygdxgame.entities;
 
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -22,19 +23,35 @@ public class WatchNadia implements Damageable {
     
     private Sprite watchNadia;
     private static final int MAX_HEALTH = 1;
+    private static final float DEFAULT_VOLUME = 0.5f;
     private int health;
     private int x, y;
+    private MegaPlayer player;
+    private Sound itemGetSound = null;
+    private float volume;
+
     
-    public WatchNadia(Texture sprite, int x, int y) {
+    public WatchNadia(Texture sprite, MegaPlayer player, Sound itemGetSound, float volume, int x, int y) {
         this.watchNadia = new Sprite(sprite);
+        this.player = player;
+        this.itemGetSound = itemGetSound;
+        this.volume = volume;
         this.health = MAX_HEALTH;
         this.x = x;
         this.y = y;
     }
     
+    public WatchNadia(Texture sprite, MegaPlayer player, Sound itemGetSound, int x, int y) {
+        this(sprite, player, itemGetSound, WatchNadia.DEFAULT_VOLUME, x, y);
+    }
+    
     @Override
     public void damage(Damager damager) {
-        this.health = 0;
+        if (this.getState() != EntityState.Destroyed) {
+            itemGetSound.play(this.volume);
+            this.health = 0;
+            this.player.setGeminiEnabled(true);
+        }
     }
 
     @Override
