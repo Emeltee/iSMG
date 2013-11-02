@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.buster.MegaBuster;
 import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
@@ -30,7 +31,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
     private static final int HITBOX_OFFSET_Y = 5;
-    private static final float MAX_BUSTER_COOLDOWN = 0.3f;
+    //private static final float MAX_BUSTER_COOLDOWN = 0.3f;
     private static final float MAX_FLINCH_TIME = 0.3f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     public static final float MAX_SPEED = 8.0f;
@@ -41,11 +42,11 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float DECELERATION = 60.0f;
     private static final short RUN_FRAMERATE = 5;
     private static final short MAX_RUN_FRAMES = 4;
-    private static final int BASE_SHOT_SPEED = 300;
-    private static final int BASE_SHOT_POWER = 1;
+    //private static final int BASE_SHOT_SPEED = 300;
+    //private static final int BASE_SHOT_POWER = 1;
     private static final float SHOT_OFFSET_Y = 16;
     private static final float SHOT_OFFSET_X = 16;
-    private static final float BASE_SHOT_RANGE = 300;
+    //private static final float BASE_SHOT_RANGE = 300;
     private static final float WATER_MOVEMENT_FACTOR = 1.5f;
     
     private static final float SFX_VOLUME = 0.5f;
@@ -53,6 +54,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Vector3 position = new Vector3();
     private Vector3 velocity = new Vector3();
     private Vector3 shotOrigin = new Vector3();
+    private MegaBuster busterGun;
+    private BusterShot tempShot;
     private int health = MegaPlayer.MAX_HEALTH;
     private Collection<GameEntity> obstacles = null;
     private Collection<Damageable> targets = null;
@@ -142,6 +145,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
+        this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);
         this.geminiEnabled = false;
         
         this.runRight[0] = new TextureRegion(spritesheet, 0, 256,
@@ -250,6 +254,10 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
+    }
+    
+    public MegaBuster getMegaBuster() {
+        return this.busterGun;        
     }
     
     public void applyForce(Vector3 force) {
@@ -654,6 +662,26 @@ public class MegaPlayer implements GameEntity, Damageable {
         }
         
         // Shooting.
+        
+        if (this.busterGun.canMakeShot(deltaTime) && Gdx.input.isKeyPressed(Keys.SPACE)) {
+            this.shotOrigin.set(this.position);
+            this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
+            ShotDirection shotDir = ShotDirection.LEFT;
+            
+            if (this.isFacingRight) {
+                this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
+                shotDir = ShotDirection.RIGHT;
+            }
+            
+            if (geminiEnabled) {
+                this.busterGun.setShootSound(this.resources.geminiSound);
+            }
+            
+            this.tempShot = this.busterGun.makeShot(shotOrigin, shotDir, this.obstacles, this.targets);            
+            this.createdEntities.offer(((geminiEnabled) ? new GeminiShot(tempShot) : tempShot));
+        }
+        
+        /*
         if (this.busterCooldown > 0) {
             this.busterCooldown = Math.max(this.busterCooldown - deltaTime, 0);
         } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
@@ -696,7 +724,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                             this.obstacles, this.targets));
                 }
             }
-        }
+        }*/
     }
     
     /**
