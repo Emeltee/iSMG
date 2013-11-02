@@ -4,17 +4,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
+import com.me.mygdxgame.entities.MegaPlayer;
+import com.me.mygdxgame.utilities.GameCheat;
 
-public class JumpSpringsCheat extends MegaCheat {
+public class JumpSpringsCheat extends GameCheat {
 
+    private MegaPlayer player;
+    
+    public JumpSpringsCheat(MegaPlayer player) {
+        super();
+        this.player = player;
+    }
+    
     public void enableCheat() {
         super.enableCheat();
-        MegaCheat.player.setJumpSpringsEnabled(true);        
+        this.player.setJumpSpringsEnabled(true);        
     }
     
     public void disableCheat() {
         super.disableCheat();
-        MegaCheat.player.setJumpSpringsEnabled(false);
+        this.player.setJumpSpringsEnabled(false);
     }
     
     @Override

@@ -29,7 +29,6 @@ import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.cheats.BusterMaxCheat;
 import com.me.mygdxgame.cheats.GeminiShotCheat;
 import com.me.mygdxgame.cheats.JumpSpringsCheat;
-import com.me.mygdxgame.cheats.MegaCheat;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Door.DoorState;
 import com.me.mygdxgame.entities.InfinityWaterfall;
@@ -445,11 +444,10 @@ public class SeeteufelScreen implements GameScreen {
         // Setup cheatcode engine
         this.cheatEngine = new GameCheatListener(10, this.itemGet);
         this.defaultProcessor = Gdx.input.getInputProcessor();
-        MegaCheat.player = this.player;
-        MegaCheat.enemy = this.seeSide;
-        this.cheatEngine.addCheat(new BusterMaxCheat());
-        this.cheatEngine.addCheat(new JumpSpringsCheat());
-        this.cheatEngine.addCheat(new GeminiShotCheat());
+        
+        this.cheatEngine.addCheat(new BusterMaxCheat(this.player));
+        this.cheatEngine.addCheat(new JumpSpringsCheat(this.player));
+        this.cheatEngine.addCheat(new GeminiShotCheat(this.player));
         
         // Set up first map.
         this.entities.add(this.refractor);
