@@ -328,32 +328,32 @@ public class SeeteufelScreen implements GameScreen {
                 this.renderMap1(0, perspCam, orthoCam);
             }
             else {
-                this.updateMap1(deltaTime, difficulty);
                 this.renderMap1(deltaTime, perspCam, orthoCam);
+                this.updateMap1(deltaTime, difficulty);
             }
         } else if (this.currentMap == 2) {
             if (this.isPaused) {
                 this.renderMap2(0, perspCam, orthoCam);
             }
             else {
-                this.updateMap2(deltaTime, difficulty);
                 this.renderMap2(deltaTime, perspCam, orthoCam);
+                this.updateMap2(deltaTime, difficulty);
             }
         } else if (this.currentMap == 3) {
             if (this.isPaused) {
                 this.renderMap3(0, perspCam, orthoCam);
             }
             else {
-                this.updateMap3(deltaTime, difficulty);
                 this.renderMap3(deltaTime, perspCam, orthoCam);
+                this.updateMap3(deltaTime, difficulty);
             }
         } else {
             if (this.isPaused) {
                 this.renderMap4(0, perspCam, orthoCam);
             }
             else {
-                this.updateMap4(deltaTime, difficulty);
                 this.renderMap4(deltaTime, perspCam, orthoCam);
+                this.updateMap4(deltaTime, difficulty);
             }
         }
         
@@ -895,7 +895,6 @@ public class SeeteufelScreen implements GameScreen {
     private void renderMap2(float deltaTime, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
         // Update camera according to current map state.
         // Rises slowly as room floods. Stays static prior.
-        Vector3 playerPos = this.player.getPosition();
         orthoCam.position.x = SeeteufelScreen.MAP2_CAM_X;
         orthoCam.position.y = (float) Math.floor(this.map2Y + this.cameraShake);
         orthoCam.update();
