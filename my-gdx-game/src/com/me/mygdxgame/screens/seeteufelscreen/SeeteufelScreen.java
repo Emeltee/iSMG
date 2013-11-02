@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +26,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
+import com.me.mygdxgame.cheats.BusterMaxCheat;
+import com.me.mygdxgame.cheats.MegaCheat;
 import com.me.mygdxgame.entities.Door;
 import com.me.mygdxgame.entities.Door.DoorState;
 import com.me.mygdxgame.entities.InfinityWaterfall;
@@ -42,6 +45,7 @@ import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
+import com.me.mygdxgame.utilities.GameCheatListener;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
 import com.me.mygdxgame.utilities.GameState;
@@ -160,6 +164,10 @@ public class SeeteufelScreen implements GameScreen {
     private boolean secondWaterfallFell = false;
     private boolean isPaused = false;
     private boolean pauseButtonTrigger = false;
+    
+    // Cheat Code Support variables
+    private GameCheatListener cheatEngine;
+    private InputProcessor defaultProcessor;
     
     /** Container class for textures used by the SeeteufelScreen maps.*/
     public static class MapTiles {
@@ -310,6 +318,13 @@ public class SeeteufelScreen implements GameScreen {
         if (this.pauseButtonTrigger && Gdx.input.isKeyPressed(Keys.TAB)) {
             this.isPaused = !this.isPaused;
             this.pauseButtonTrigger = false;
+            
+            // Toggle the Cheat Listener whenever paused state changes
+            if (this.isPaused) { 
+                Gdx.input.setInputProcessor(this.cheatEngine);
+            } else {
+                Gdx.input.setInputProcessor(this.defaultProcessor);
+            }
         }
         
         // Determine if fps display is enabled.
@@ -424,6 +439,13 @@ public class SeeteufelScreen implements GameScreen {
                 FirstMap.GROUND_START_Y);
         /* this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
                 FirstMap.GROUND_START_Y); */
+        
+        // Setup cheatcode engine
+        this.cheatEngine = new GameCheatListener(10, this.itemGet);
+        this.defaultProcessor = Gdx.input.getInputProcessor();
+        MegaCheat.player = this.player;
+        MegaCheat.enemy = this.seeSide;
+        this.cheatEngine.addCheat(new BusterMaxCheat());
         
         // Set up first map.
         this.entities.add(this.refractor);
