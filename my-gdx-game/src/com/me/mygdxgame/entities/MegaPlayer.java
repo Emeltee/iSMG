@@ -255,6 +255,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
+        if (geminiEnabled && this.busterGun != null) {
+            this.busterGun.setShootSound(this.resources.geminiSound);
+        } else if (!geminiEnabled && this.busterGun != null) {
+            this.busterGun.setShootSound(this.resources.shootSound);
+        }
+        
     }
     
     public boolean isGeminiEnabled() {
@@ -688,10 +694,6 @@ public class MegaPlayer implements GameEntity, Damageable {
             if (this.isFacingRight) {
                 this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
                 shotDir = ShotDirection.RIGHT;
-            }
-            
-            if (geminiEnabled) {
-                this.busterGun.setShootSound(this.resources.geminiSound);
             }
             
             this.tempShot = this.busterGun.makeShot(shotOrigin, shotDir, this.obstacles, this.targets);            
