@@ -13,7 +13,7 @@ public class GameCheatListener implements InputProcessor {
     
     /* Listens for key sequences to apply cheats.  */
     
-    protected static final int DEFAULT_MAX = 10;
+    private static final float SFX_VOLUME = 0.5f;
     
     protected List<GameCheat> cheats;    
     protected List<Integer> keySequence;
@@ -69,7 +69,7 @@ public class GameCheatListener implements InputProcessor {
         
         if (success) {
             // Let player know a cheat is enabled
-            successSound.play();
+            successSound.play(SFX_VOLUME);
         }
         
     }
