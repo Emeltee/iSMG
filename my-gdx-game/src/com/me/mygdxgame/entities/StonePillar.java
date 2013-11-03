@@ -84,7 +84,7 @@ public class StonePillar implements Updatable {
 
     @Override
     public int getHeight() {
-        return this.height + StonePillar.PILLAR_BASE_H * 2;
+        return this.height;// + StonePillar.PILLAR_BASE_H * 2;
     }
 
 }
