@@ -105,6 +105,6 @@ public class LightPillar implements Updatable {
 
     @Override
     public int getHeight() {
-        return this.height + LightPillar.BEAM_H * 2;
+        return this.height;// + LightPillar.BEAM_H * 2;
     }
 }
