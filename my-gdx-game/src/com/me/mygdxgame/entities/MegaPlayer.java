@@ -11,12 +11,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.armor.NormalJacket;
 import com.me.mygdxgame.buster.GeminiBuster;
 import com.me.mygdxgame.buster.MegaBuster;
 import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.entities.projectiles.GeminiShot;
+import com.me.mygdxgame.utilities.ArmorJacket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
@@ -58,6 +60,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Vector3 shotOrigin = new Vector3();
     private MegaBuster busterGun;
     private MegaBuster tempBuster;
+    private ArmorJacket armor;
     private BusterShot tempShot;
     private int health = MegaPlayer.MAX_HEALTH;
     private Collection<GameEntity> obstacles = null;
@@ -149,7 +152,8 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
-        this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);;
+        this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);
+        this.armor = new NormalJacket();
         this.geminiEnabled = false;
         
         this.runRight[0] = new TextureRegion(spritesheet, 0, 256,
@@ -291,6 +295,14 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.busterGun;        
     }
     
+    public ArmorJacket getArmor() {
+    	return this.armor;
+    }
+    
+    public void setArmor(ArmorJacket jacket) {
+    	this.armor = jacket;
+    }
+    
     public void applyForce(Vector3 force) {
         this.velocity.add(force);
     }
@@ -324,7 +336,10 @@ public class MegaPlayer implements GameEntity, Damageable {
             
             this.resources.hurtSound.play(SFX_VOLUME);
             
-            this.health -= damager.getPower();
+            int damage = damager.getPower();
+            damage = (int) Math.min(damage, damage * this.armor.getDefenseFactor());
+            
+            this.health -= damage;
             this.health = Math.max(this.health, 0);
             this.health = Math.min(this.health, MegaPlayer.MAX_HEALTH);
             this.flinchTimer = MegaPlayer.MAX_FLINCH_TIME;
