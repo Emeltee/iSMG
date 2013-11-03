@@ -20,6 +20,7 @@ public class GeminiBuster extends MegaBuster {
     @Override
     public BusterShot makeShot(Vector3 shotOrigin, ShotDirection dir,
             Collection<GameEntity> obstacles, Collection<Damageable> targets) {
+
         return new GeminiShot(super.makeShot(shotOrigin, dir, obstacles, targets));
     }
     
