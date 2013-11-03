@@ -2,9 +2,12 @@ package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.LightBorder;
+import com.me.mygdxgame.entities.LightPillar;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
@@ -17,6 +20,9 @@ public class SecondMap extends GameMap {
     private Sprite wallSprite;
     private Sprite shaftBackgroundSprite;
     private Sprite arenaBackgroundSprite;
+    private LightPillar [] pillars;
+    private LightBorder upperBorder;
+    private LightBorder lowerBorder;
 
     public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
@@ -35,7 +41,7 @@ public class SecondMap extends GameMap {
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
             GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
     
-    public SecondMap(SeeteufelScreen.MapTiles tiles, int height) {
+    public SecondMap(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int height) {
         
         this.height = height;
         
@@ -48,6 +54,22 @@ public class SecondMap extends GameMap {
         this.arenaBackgroundSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, (ARENA_HEIGHT - 1) * GROUND_DIM);
         this.arenaBackgroundSprite.setU2(GROUND_WIDTH + ARENA_WIDTH - 1);
         this.arenaBackgroundSprite.setV2(ARENA_HEIGHT - 1);
+        
+        int arenaStartX = GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1);
+        int arenaStartY = GROUND_ORIGIN_Y + (this.height + 1) * GROUND_DIM;      
+        int borderWidth = (ARENA_WIDTH + GROUND_WIDTH - 2) * GROUND_DIM;
+        
+        this.lowerBorder = new LightBorder(spriteSheet, arenaStartX, arenaStartY, borderWidth);        
+        int pillarOffsetY = lowerBorder.getHeight();
+        this.upperBorder = new LightBorder(spriteSheet, arenaStartX, arenaStartY + ((ARENA_HEIGHT - 2) * GROUND_DIM) - pillarOffsetY, borderWidth);
+        
+        
+        
+        this.pillars = new LightPillar[] {
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 1, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY)),
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 4, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY)),
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 7, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY))
+        };
         
         // Create walls/floors.
         this.obstacles = new Rectangle [] {
@@ -91,6 +113,15 @@ public class SecondMap extends GameMap {
             renderer.drawSprite(this.wallSprite);
         }
         
+        // Pillars
+        for (LightPillar pillar: this.pillars) {
+            pillar.draw(renderer);
+        }
+        
+        // Borders
+        this.upperBorder.draw(renderer);
+        this.lowerBorder.draw(renderer);
+        
         // Debug
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
@@ -99,7 +130,12 @@ public class SecondMap extends GameMap {
 
     @Override
     public void update(float deltaTime) {
-        // Nothing.
+        for (LightPillar pillar: this.pillars) {
+            pillar.update(deltaTime);
+        }
+      
+        this.upperBorder.update(deltaTime);
+        this.lowerBorder.update(deltaTime);
     }
 
 }
