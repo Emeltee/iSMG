@@ -23,7 +23,6 @@ public class SecondMap extends GameMap {
     private Sprite arenaTransitionSprite;
     private LightPillar [] pillars;
     private LightBorder upperBorder;
-    private LightBorder lowerBorder;
 
     public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
@@ -56,25 +55,30 @@ public class SecondMap extends GameMap {
         this.arenaBackgroundSprite.setU2((GROUND_WIDTH + ARENA_WIDTH - 1) / (float) 2);
         this.arenaBackgroundSprite.setV2((ARENA_HEIGHT - 1) / (float) 2);
         
-        this.arenaTransitionSprite = new Sprite(tiles.smallMazeTex);
-        this.arenaTransitionSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, GROUND_DIM);
-        this.arenaTransitionSprite.setU2(GROUND_WIDTH + ARENA_WIDTH - 1);
+        this.arenaTransitionSprite = new Sprite(tiles.greyBlockTex);
+        this.arenaTransitionSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + this.height * GROUND_DIM, (GROUND_WIDTH - 1) * GROUND_DIM, GROUND_DIM);
+        this.arenaTransitionSprite.setU2(GROUND_WIDTH - 1);
         this.arenaTransitionSprite.setV2(1);
+        
+        /*this.arenaTransitionSprite = new Sprite(tiles.greyBlockTex);
+        this.arenaTransitionSprite.setBounds(GROUND_ORIGIN_X, GROUND_ORIGIN_Y + (this.height-1) * GROUND_DIM, (GROUND_WIDTH - 1) * GROUND_DIM, GROUND_DIM * 2);
+        this.arenaTransitionSprite.setU2(GROUND_WIDTH - 1);
+        this.arenaTransitionSprite.setV2(2);*/
         
         int arenaStartX = GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1);
         int arenaStartY = GROUND_ORIGIN_Y + (this.height + 1) * GROUND_DIM;      
         int borderWidth = (ARENA_WIDTH + GROUND_WIDTH - 2) * GROUND_DIM;
         
-        this.lowerBorder = new LightBorder(spriteSheet, arenaStartX, arenaStartY, borderWidth);        
-        int pillarOffsetY = lowerBorder.getHeight();
-        this.upperBorder = new LightBorder(spriteSheet, arenaStartX, arenaStartY + ((ARENA_HEIGHT - 2) * GROUND_DIM) - pillarOffsetY, borderWidth);
+        int borderOffsetY = 10;
+        
+        this.upperBorder = new LightBorder(spriteSheet, arenaStartX, arenaStartY + ((ARENA_HEIGHT - 2) * GROUND_DIM) - borderOffsetY, borderWidth);
         
         
         
         this.pillars = new LightPillar[] {
-                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 1, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY)),
-                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 4, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY)),
-                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 7, arenaStartY + pillarOffsetY, (ARENA_HEIGHT - 2) * GROUND_DIM - (2 * pillarOffsetY))
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 1, arenaStartY, (ARENA_HEIGHT - 2) * GROUND_DIM - (1 * borderOffsetY)),
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 4, arenaStartY, (ARENA_HEIGHT - 2) * GROUND_DIM - (1 * borderOffsetY)),
+                new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 7, arenaStartY, (ARENA_HEIGHT - 2) * GROUND_DIM - (1 * borderOffsetY))
         };
         
         // Create walls/floors.
@@ -127,7 +131,6 @@ public class SecondMap extends GameMap {
         
         // Borders
         this.upperBorder.draw(renderer);
-        this.lowerBorder.draw(renderer);
         
         // Debug
         if (this.debugMode) {
@@ -142,7 +145,6 @@ public class SecondMap extends GameMap {
         }
       
         this.upperBorder.update(deltaTime);
-        this.lowerBorder.update(deltaTime);
     }
 
 }
