@@ -21,6 +21,17 @@ public class BusterMaxCheat extends GameCheat {
         this.busterUpgrade = new BusterMax();
     }
     
+    
+    
+    @Override
+    public boolean isEnabled() {
+        if (this.player != null) {
+            return this.player.getMegaBuster().hasBusterPart(busterUpgrade);
+        } else {
+            return super.isEnabled();    
+        }        
+    }
+
     @Override
     public String getDescription() {
         return "'Buster Max' Enhancement";

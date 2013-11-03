@@ -101,6 +101,10 @@ public class MegaBuster {
         return sum;
     }
     
+    public boolean hasBusterPart(BusterPart attachment) {
+        return this.attachments.contains(attachment);
+    }
+    
     public boolean attachBusterPart(BusterPart attachment) {
         if (this.attachments.size() < this.attachmentLimit()) {
             this.attachments.add(attachment);
@@ -111,7 +115,7 @@ public class MegaBuster {
     }
     
     public boolean removeBusterPart(BusterPart attachment) {
-        if (this.attachments.contains(attachment)) {
+        if (this.hasBusterPart(attachment)) {
             this.attachments.remove(attachment);
             return true;
         } else {
@@ -161,16 +165,16 @@ public class MegaBuster {
     private Color calcShotColor() {
         Color result;
         switch(this.calcAttackBoost()) {
-            case 1: result = new Color(1.0f, 0.8f, 0.8f, 1.0f); // Red
+            case 1: result = new Color(8.0f, 0.6f, 0.8f, 1.0f); // Purple
+                break;    
+            case 2: result = new Color(.8f, .8f, 1.0f, 1.0f); // Blue
                 break;
-            case 2: result = new Color(0.6f, 1.0f, 0.6f, 1.0f); // Green
-                break;
-            case 3: result = new Color(1.0f, 1.0f, 0.7f, 1.0f); // Yellow
+            case 3: result = new Color(0.6f, 1.0f, 0.6f, 1.0f); // Green
                 break;            
-            case 4: result = new Color(8.0f, 0.6f, 0.8f, 1.0f); // Purple
+            case 4: result = new Color(1.0f, 0.8f, 0.8f, 1.0f); // Red
                 break;
-            case 5: result = new Color(.8f, .8f, 1.0f, 1.0f); // Blue
-                break;
+            case 5: result = new Color(1.0f, 1.0f, 0.3f, 1.0f); // Yellow
+                break;    
             case 0:
             default:
                 result = Color.WHITE; // No colorization

@@ -22,6 +22,7 @@ import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
+import com.me.mygdxgame.utilities.BusterPart;
 
 public class MegaPlayer implements GameEntity, Damageable {
 
@@ -56,6 +57,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Vector3 velocity = new Vector3();
     private Vector3 shotOrigin = new Vector3();
     private MegaBuster busterGun;
+    private MegaBuster tempBuster;
     private BusterShot tempShot;
     private int health = MegaPlayer.MAX_HEALTH;
     private Collection<GameEntity> obstacles = null;
@@ -258,11 +260,15 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.geminiEnabled = geminiEnabled;
 
         if (geminiEnabled) {
-            this.busterGun = new GeminiBuster(spritesheet, this.resources.geminiSound, this.resources.shotMissSound);
+            this.tempBuster = new GeminiBuster(this.spritesheet, this.resources.geminiSound, this.resources.shotMissSound);            
         } else {
-            this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);;
+            this.busterGun = new MegaBuster(this.spritesheet, this.resources.shootSound, this.resources.shotMissSound);
         }
         
+        for (BusterPart bp: this.busterGun.getAttachments()) {
+            tempBuster.attachBusterPart(bp);
+        }
+        this.busterGun = this.tempBuster;        
     }
     
     public boolean isGeminiEnabled() {

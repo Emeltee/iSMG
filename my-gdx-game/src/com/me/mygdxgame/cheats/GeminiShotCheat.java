@@ -16,11 +16,26 @@ public class GeminiShotCheat extends GameCheat {
         this.player = player;
     }
     
+    
+    
+    @Override
+    public boolean isEnabled() {
+        if (this.player != null) {
+            return this.player.isGeminiEnabled();
+        } else {
+            return super.isEnabled();
+        }
+    }
+
+
+
+    @Override
     public void enableCheat() {
         super.enableCheat();
         this.player.setGeminiEnabled(true);        
     }
     
+    @Override
     public void disableCheat() {
         super.disableCheat();
         this.player.setGeminiEnabled(false);
