@@ -20,6 +20,7 @@ public class SecondMap extends GameMap {
     private Sprite wallSprite;
     private Sprite shaftBackgroundSprite;
     private Sprite arenaBackgroundSprite;
+    private Sprite arenaTransitionSprite;
     private LightPillar [] pillars;
     private LightBorder upperBorder;
     private LightBorder lowerBorder;
@@ -50,10 +51,15 @@ public class SecondMap extends GameMap {
         this.shaftBackgroundSprite.setBounds(GROUND_DIM, GROUND_START_Y, (GROUND_WIDTH - 2) * GROUND_DIM, (this.height - 1) * GROUND_DIM);
         this.shaftBackgroundSprite.setU2(GROUND_WIDTH - 2);
         this.shaftBackgroundSprite.setV2(this.height - 1);
-        this.arenaBackgroundSprite = new Sprite(tiles.smallMazeTex);
-        this.arenaBackgroundSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, (ARENA_HEIGHT - 1) * GROUND_DIM);
-        this.arenaBackgroundSprite.setU2(GROUND_WIDTH + ARENA_WIDTH - 1);
-        this.arenaBackgroundSprite.setV2(ARENA_HEIGHT - 1);
+        this.arenaBackgroundSprite = new Sprite(tiles.largeMazeTex);
+        this.arenaBackgroundSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + (this.height+1) * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, (ARENA_HEIGHT - 1) * GROUND_DIM);
+        this.arenaBackgroundSprite.setU2((GROUND_WIDTH + ARENA_WIDTH - 1) / (float) 2);
+        this.arenaBackgroundSprite.setV2((ARENA_HEIGHT - 1) / (float) 2);
+        
+        this.arenaTransitionSprite = new Sprite(tiles.smallMazeTex);
+        this.arenaTransitionSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + this.height * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, GROUND_DIM);
+        this.arenaTransitionSprite.setU2(GROUND_WIDTH + ARENA_WIDTH - 1);
+        this.arenaTransitionSprite.setV2(1);
         
         int arenaStartX = GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1);
         int arenaStartY = GROUND_ORIGIN_Y + (this.height + 1) * GROUND_DIM;      
@@ -104,6 +110,7 @@ public class SecondMap extends GameMap {
         // Background.
         renderer.drawSprite(this.shaftBackgroundSprite);
         renderer.drawSprite(this.arenaBackgroundSprite);
+        renderer.drawSprite(this.arenaTransitionSprite);
 
         // Walls
         for (Rectangle rect : this.obstacles) {

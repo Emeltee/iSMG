@@ -175,6 +175,7 @@ public class SeeteufelScreen implements GameScreen {
         public Texture rockTex = null;
         public Texture wallTex = null;
         public Texture smallMazeTex = null;
+        public Texture largeMazeTex = null;
         public Texture stairTex = null;
         public Texture pillarTex = null;
         public Texture greyBlockTex = null;
@@ -193,6 +194,9 @@ public class SeeteufelScreen implements GameScreen {
                 
                 this.smallMazeTex = new Texture("img/tile4.png");
                 this.smallMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
+                
+                this.largeMazeTex = new Texture("img/tile6.png");
+                this.largeMazeTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
                 
                 this.pillarTex = new Texture("img/tile3.png");
                 this.pillarTex.setWrap(TextureWrap.Repeat, TextureWrap.Repeat);
