@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.buster.GeminiBuster;
 import com.me.mygdxgame.buster.MegaBuster;
 import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
@@ -146,7 +147,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.position.set(initialPosition);
         this.obstacles = obstacles;
         this.targets = targets;
-        this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);
+        this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);;
         this.geminiEnabled = false;
         
         this.runRight[0] = new TextureRegion(spritesheet, 0, 256,
@@ -255,10 +256,11 @@ public class MegaPlayer implements GameEntity, Damageable {
     
     public void setGeminiEnabled(boolean geminiEnabled) {
         this.geminiEnabled = geminiEnabled;
-        if (geminiEnabled && this.busterGun != null) {
-            this.busterGun.setShootSound(this.resources.geminiSound);
-        } else if (!geminiEnabled && this.busterGun != null) {
-            this.busterGun.setShootSound(this.resources.shootSound);
+
+        if (geminiEnabled) {
+            this.busterGun = new GeminiBuster(spritesheet, this.resources.geminiSound, this.resources.shotMissSound);
+        } else {
+            this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);;
         }
         
     }
@@ -697,7 +699,7 @@ public class MegaPlayer implements GameEntity, Damageable {
             }
             
             this.tempShot = this.busterGun.makeShot(shotOrigin, shotDir, this.obstacles, this.targets);            
-            this.createdEntities.offer(((geminiEnabled) ? new GeminiShot(tempShot) : tempShot));
+            this.createdEntities.offer(this.tempShot);
         }
         
         /*
