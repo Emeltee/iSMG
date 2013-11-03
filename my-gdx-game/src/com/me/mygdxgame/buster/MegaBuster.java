@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
@@ -35,7 +36,7 @@ public class MegaBuster {
     private static final float SFX_VOLUME = 0.5f;
         
     private float energyTimer; // buster cooldown
-    
+       
     public MegaBuster(Texture spriteSheet, Sound shootSound, Sound missSound) {
         this.spritesheet = spriteSheet;
         this.missSound = missSound;        
@@ -127,6 +128,10 @@ public class MegaBuster {
         }
     }
     
+    public List<BusterPart> getAttachments() {
+        return this.attachments;
+    }
+    
     public int attachmentLimit() {
         return MegaBuster.MAX_ATTACHMENTS + ((this.adapterPlugEnabled) ? 1 : 0); 
     }
@@ -148,8 +153,33 @@ public class MegaBuster {
                                 this.rapidStat(), dir,
                                 this.attackStat(), this.rangeStat(),
                                 obstacles, targets);
+        shot.setShotColor(this.calcShotColor());
+        shot.setShotScale(this.calcShotScale());
         return shot;        
     }
     
+    private Color calcShotColor() {
+        Color result;
+        switch(this.calcAttackBoost()) {
+            case 1: result = new Color(1.0f, 0.8f, 0.8f, 1.0f); // Red
+                break;
+            case 2: result = new Color(0.6f, 1.0f, 0.6f, 1.0f); // Green
+                break;
+            case 3: result = new Color(1.0f, 1.0f, 0.7f, 1.0f); // Yellow
+                break;            
+            case 4: result = new Color(8.0f, 0.6f, 0.8f, 1.0f); // Purple
+                break;
+            case 5: result = new Color(.8f, .8f, 1.0f, 1.0f); // Blue
+                break;
+            case 0:
+            default:
+                result = Color.WHITE; // No colorization
+        }
+        return result;
+    }
+    
+    private float calcShotScale() {
+        return Math.min(1.5f, 1.0f + 0.5f*(this.calcAttackBoost() / 5));        
+    }
     
 }

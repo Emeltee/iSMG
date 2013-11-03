@@ -52,6 +52,11 @@ public class BusterShot implements GameEntity, Damager {
     
     protected EntityState state;
     
+    /** Colorization of BusterShot. Defaults to no colorization. */
+    private Color shotColor = Color.WHITE;
+    /** Size scaling of BusterShot. By default scaled as normal. */
+    private float shotScale = 1.0f;
+    
     /** Areas of the map to look out for. */
     protected Collection<GameEntity> obstacles;
     /** Stuff to hurt.*/
@@ -132,7 +137,7 @@ public class BusterShot implements GameEntity, Damager {
     public void draw(Renderer renderer) {
         
         if (this.state == EntityState.Running) {
-            renderer.drawRegion(bullet, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
+            renderer.drawRegion(bullet, this.position.x, this.position.y, this.shotColor, this.shotScale, this.shotScale, 30 * this.animationTimer);
         }
     }
 
@@ -184,6 +189,22 @@ public class BusterShot implements GameEntity, Damager {
     @Override
     public int getKnockback() {
         return 0;
+    }
+    
+    public Color getShotColor() {
+        return this.shotColor;
+    }
+    
+    public void setShotColor(Color shotColor) {
+        this.shotColor = shotColor;
+    }
+    
+    public float getShotScale() {
+        return this.shotScale;
+    }
+    
+    public void setShotScale(float shotScale){
+        this.shotScale = shotScale;
     }
 
 }
