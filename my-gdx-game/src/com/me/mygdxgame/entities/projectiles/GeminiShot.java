@@ -53,6 +53,7 @@ public class GeminiShot extends BusterShot {
 
     public GeminiShot(BusterShot shot) {
         this(shot.spriteSheet, shot.missSound, shot.position, shot.speed, shot.dir, shot.power, shot.range, shot.obstacles, shot.targets);
+        this.setShotScale(shot.getShotScale());
     }
     
     @Override
