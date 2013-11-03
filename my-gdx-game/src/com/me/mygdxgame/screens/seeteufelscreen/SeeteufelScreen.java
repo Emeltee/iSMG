@@ -282,7 +282,7 @@ public class SeeteufelScreen implements GameScreen {
         
         // Load maps.
         this.map1 = new FirstMap(this.t_tiles1, this.mapTiles);
-        this.map2 = new SecondMap(this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
+        this.map2 = new SecondMap(this.t_tiles1, this.mapTiles, SeeteufelScreen.MAP2_HEIGHT);
         this.currentMap = 1;
     }
 
