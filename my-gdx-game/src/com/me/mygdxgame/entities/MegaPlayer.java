@@ -266,7 +266,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         if (geminiEnabled) {
             this.tempBuster = new GeminiBuster(this.spritesheet, this.resources.geminiSound, this.resources.shotMissSound);            
         } else {
-            this.busterGun = new MegaBuster(this.spritesheet, this.resources.shootSound, this.resources.shotMissSound);
+            this.tempBuster = new MegaBuster(this.spritesheet, this.resources.shootSound, this.resources.shotMissSound);
         }
         
         for (BusterPart bp: this.busterGun.getAttachments()) {
