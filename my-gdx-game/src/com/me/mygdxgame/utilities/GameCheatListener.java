@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 public class GameCheatListener implements InputProcessor {
@@ -86,9 +87,19 @@ public class GameCheatListener implements InputProcessor {
         // Converts a key sequence to a string for easy code matching
         StringBuilder builder = new StringBuilder();
         for(Integer key: seq) {
-            builder.append(key);            
+            builder.append(sanitizeWASD(key));            
         }
         return builder.toString();
+    }
+    
+    public int sanitizeWASD(int keyCode) {
+    	// Converts Up/Down/Left/Right and W/A/S/D to common numerics to appease PC gaming purists
+    	// This may lead to ambiguities in code sequences that require both letters and directions.
+    	if (keyCode == Input.Keys.UP || keyCode == Input.Keys.W) return -2;
+    	if (keyCode == Input.Keys.DOWN || keyCode == Input.Keys.S) return -3;
+    	if (keyCode == Input.Keys.LEFT || keyCode == Input.Keys.A) return -4;
+    	if (keyCode == Input.Keys.RIGHT || keyCode == Input.Keys.D) return -5;
+    	return keyCode;
     }
     
     public List<GameCheat> getAllCheats() {
