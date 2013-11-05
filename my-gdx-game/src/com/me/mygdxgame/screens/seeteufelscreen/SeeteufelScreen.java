@@ -43,6 +43,7 @@ import com.me.mygdxgame.entities.obstacles.FallingPlatform;
 import com.me.mygdxgame.entities.obstacles.Platform;
 import com.me.mygdxgame.entities.progressbars.BonneHealthBar;
 import com.me.mygdxgame.entities.progressbars.MegaHealthBar;
+import com.me.mygdxgame.entities.projectiles.Rubble;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
 import com.me.mygdxgame.utilities.Damageable;
@@ -882,6 +883,10 @@ public class SeeteufelScreen implements GameScreen {
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
+            // TODO hackish
+            if (e instanceof Rubble) {
+                ((Rubble) e).setWaterLevel(this.map2WaterY, this.splash);
+            }
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
             }
@@ -1108,6 +1113,10 @@ public class SeeteufelScreen implements GameScreen {
         // Update and draw all other generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
+            // TODO hackish
+            if (e instanceof Rubble) {
+                ((Rubble) e).setWaterLevel(this.map2WaterY, this.splash);
+            }
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
             }
