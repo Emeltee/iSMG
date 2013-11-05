@@ -18,10 +18,10 @@ public class Splash implements GameEntity {
     public static final float MAX_INIT_Y_VEL = 150;
     public static final float MIN_INIT_X_VEL = -75;
     public static final float MAX_INIT_X_VEL = 75;
+    public static final int DEFAULT_RADIUS = 3;
     
     private static final float GRAVITY_FACTOR = -400;
     private static final float RADIUS_FALLOFF = 0.05f;
-    private static final int DEFAULT_RADIUS = 3;
     private static final Color DEFAULT_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
     
     private Vector2 position = new Vector2();

@@ -51,7 +51,7 @@ public abstract class Rubble implements GameEntity, Damager {
     protected int knockback = 0;
     protected float scale = 1.0f;
     
-    protected boolean isUnderwater = false;
+    protected boolean isUnderwater = true;
     
     protected ArrayList<GameEntity> createdEntities = new ArrayList<GameEntity>();
     
@@ -64,7 +64,6 @@ public abstract class Rubble implements GameEntity, Damager {
         if (this.isUnderwater) {
             if (this.position.y > waterLevel) {
                 this.isUnderwater = false;
-                splash(splashSound);
             }
         }
         else if (this.position.y < waterLevel) {
@@ -75,8 +74,16 @@ public abstract class Rubble implements GameEntity, Damager {
     
     private void splash(Sound splashSound) {
         float adjustedX = this.position.x + this.rubble.getRegionWidth() / 2;
-        for (int x = 0; x < 8; x++) {
-            this.createdEntities.add(new Splash(adjustedX, this.position.y));
+        for (int x = 0; x < 4; x++) {
+            this.createdEntities.add(new Splash(adjustedX, this.position.y,
+                    (float) (Math.random() * Splash.MAX_INIT_X_VEL),
+                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
+                    Splash.DEFAULT_RADIUS));
+            this.createdEntities.add(new Splash(adjustedX, this.position.y,
+                    (float) (-Math.random() * Splash.MAX_INIT_X_VEL),
+                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
+                    Splash.DEFAULT_RADIUS));
+
         }
         splashSound.play(0.2f);
     }
