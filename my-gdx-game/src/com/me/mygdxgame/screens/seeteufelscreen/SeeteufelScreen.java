@@ -385,6 +385,7 @@ public class SeeteufelScreen implements GameScreen {
             this.music2.pause();
             int halfWidth = Gdx.graphics.getWidth() / 2;
             int halfHeight = Gdx.graphics.getHeight() / 2;
+            this.font.setScale(1.5f, 1.5f);
             this.hudRenderer.drawRect(ShapeType.Filled, new Color(0, 0, 0, 0.5f), -halfWidth, -halfHeight, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             int pauseOffsetX = (int)(this.font.getBounds("Paused").width / 2);
             int pauseOffsetY = (int)(this.font.getBounds("Paused").height / 2);
@@ -393,14 +394,13 @@ public class SeeteufelScreen implements GameScreen {
             // Draw text indicating all active cheats.
             int cheatTextX = -Gdx.graphics.getWidth() / 2;
             int cheatTextY = Gdx.graphics.getHeight() / 2;
-            this.font.setScale(0.8f, 0.8f);
+            this.font.setScale(1, 1);
             for (GameCheat cheat : this.cheatEngine.getAllCheats()) {
                 if (cheat.isEnabled()) {
                     this.hudRenderer.drawText(this.font, cheat.getDescription(), cheatTextX, cheatTextY);
                     cheatTextY -= this.font.getBounds(cheat.getDescription()).height;
                 }
             }
-            this.font.setScale(1, 1);
         }
         else if (this.displayFps) {
            this.hudRenderer.drawText(this.font, Integer.toString(Gdx.graphics.getFramesPerSecond()), 0, 0);
