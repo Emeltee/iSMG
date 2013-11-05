@@ -1,11 +1,14 @@
 package com.me.mygdxgame.entities.projectiles;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
@@ -48,8 +51,34 @@ public abstract class Rubble implements GameEntity, Damager {
     protected int knockback = 0;
     protected float scale = 1.0f;
     
+    protected boolean isUnderwater = false;
+    
+    protected ArrayList<GameEntity> createdEntities = new ArrayList<GameEntity>();
+    
     public Rubble(int x, int y, int width, int height) {
         this.hitbox.set(x, y, width, height);
+    }
+    
+    public void setWaterLevel(float waterLevel, Sound splashSound) {
+        
+        if (this.isUnderwater) {
+            if (this.position.y > waterLevel) {
+                this.isUnderwater = false;
+                splash(splashSound);
+            }
+        }
+        else if (this.position.y < waterLevel) {
+            this.isUnderwater = true;
+            splash(splashSound);
+        }
+    }
+    
+    private void splash(Sound splashSound) {
+        float adjustedX = this.position.x + this.rubble.getRegionWidth() / 2;
+        for (int x = 0; x < 8; x++) {
+            this.createdEntities.add(new Splash(adjustedX, this.position.y));
+        }
+        splashSound.play(0.2f);
     }
     
     @Override
@@ -117,12 +146,18 @@ public abstract class Rubble implements GameEntity, Damager {
 
     @Override
     public boolean hasCreatedEntities() {
-        return false;
+        return !this.createdEntities.isEmpty();
     }
 
     @Override
     public GameEntity[] getCreatedEntities() throws NoSuchElementException {
-        throw new NoSuchElementException();
+        if (this.createdEntities.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        GameEntity[] entities = new GameEntity[this.createdEntities.size()];
+        entities = this.createdEntities.toArray(entities);
+        this.createdEntities.clear();
+        return entities;
     }
     
     @Override
