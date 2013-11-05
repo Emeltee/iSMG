@@ -47,6 +47,7 @@ import com.me.mygdxgame.screens.seeteufelscreen.maps.FirstMap;
 import com.me.mygdxgame.screens.seeteufelscreen.maps.SecondMap;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
+import com.me.mygdxgame.utilities.GameCheat;
 import com.me.mygdxgame.utilities.GameCheatListener;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameScreen;
@@ -386,6 +387,18 @@ public class SeeteufelScreen implements GameScreen {
             int halfHeight = Gdx.graphics.getHeight() / 2;
             this.hudRenderer.drawRect(ShapeType.Filled, new Color(0, 0, 0, 0.5f), -halfWidth, -halfHeight, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             this.hudRenderer.drawText(this.font, "Paused", 0, 0);
+            
+            // Draw text indicating all active cheats.
+            int cheatTextX = -Gdx.graphics.getWidth() / 2;
+            int cheatTextY = Gdx.graphics.getHeight() / 2;
+            this.font.setScale(0.8f, 0.8f);
+            for (GameCheat cheat : this.cheatEngine.getAllCheats()) {
+                if (cheat.isEnabled()) {
+                    this.hudRenderer.drawText(this.font, cheat.getDescription(), cheatTextX, cheatTextY);
+                    cheatTextY -= this.font.getBounds(cheat.getDescription()).height;
+                }
+            }
+            this.font.setScale(1, 1);
         }
         else if (this.displayFps) {
            this.hudRenderer.drawText(this.font, Integer.toString(Gdx.graphics.getFramesPerSecond()), 0, 0);
