@@ -17,8 +17,8 @@ public class GeminiShot extends BusterShot {
     // TODO
     //private static final float MAX_MOVEMEMT = Math.min(GEMINI_W, GEMINI_H);
     
-    //private static final int MAX_SHOTS = 6;
-    //private static int currentShots = 0;
+    private static final int MAX_SHOTS = 6;
+    private static int currentShots = 0;
 
     public static final int MAX_DEFLECTS = 6;
 
@@ -42,10 +42,10 @@ public class GeminiShot extends BusterShot {
         this.bullet.setRegionX(this.bullet.getRegionX() + this.bullet.getRegionWidth());
         this.bullet.setRegionWidth(regionWidth);
         
-        /*GeminiShot.currentShots++;
+        GeminiShot.currentShots++;
         if (GeminiShot.currentShots >= GeminiShot.MAX_SHOTS) {
-            this.range = 0;
-        }*/
+            this.destroy();
+        }
         
         this.isDeflected = false;
         this.numDeflects = 0;
@@ -67,8 +67,8 @@ public class GeminiShot extends BusterShot {
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
                 this.state = EntityState.Destroyed;
-                //GeminiShot.currentShots--;
-                this.missSound.play();
+                GeminiShot.currentShots--;
+//                this.missSound.play();
                 return;
             }
             
@@ -107,7 +107,7 @@ public class GeminiShot extends BusterShot {
                     if (hitBox.overlaps(this.hitBox)) {
                         target.damage(this);
                         this.state = EntityState.Destroyed;
-                        //GeminiShot.currentShots--;
+                        GeminiShot.currentShots--;
                         return;
                     }
                 }
@@ -173,7 +173,7 @@ public class GeminiShot extends BusterShot {
     public void destroy() {
         if (this.state == EntityState.Running) {
             this.state = EntityState.Destroyed;
-            //GeminiShot.currentShots--;
+            GeminiShot.currentShots--;
         }
     }
 }

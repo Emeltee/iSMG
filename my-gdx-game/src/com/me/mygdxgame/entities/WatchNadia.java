@@ -25,10 +25,13 @@ public class WatchNadia implements Damageable {
     private static final int MAX_HEALTH = 1;
     private static final float DEFAULT_VOLUME = 0.5f;
     private int health;
-    private int x, y;
     private MegaPlayer player;
     private Sound itemGetSound = null;
     private float volume;
+    
+    private Rectangle hitBox = new Rectangle(0, 0, 0, 0);
+    private Rectangle[] hitAreas = new Rectangle[] {this.hitBox};
+    private Vector3 position = new Vector3();
 
     
     public WatchNadia(Texture sprite, MegaPlayer player, Sound itemGetSound, float volume, int x, int y) {
@@ -37,8 +40,9 @@ public class WatchNadia implements Damageable {
         this.itemGetSound = itemGetSound;
         this.volume = volume;
         this.health = MAX_HEALTH;
-        this.x = x;
-        this.y = y;
+        this.hitBox.set(x, y, this.getWidth(), this.getHealth());
+        this.position.x = x;
+        this.position.y = y;
     }
     
     public WatchNadia(Texture sprite, MegaPlayer player, Sound itemGetSound, int x, int y) {
@@ -66,7 +70,7 @@ public class WatchNadia implements Damageable {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle [] { new Rectangle(this.x, this.y, this.watchNadia.getWidth(), this.watchNadia.getHeight()) };
+        return this.hitAreas;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class WatchNadia implements Damageable {
     @Override
     public void draw(Renderer renderer) {
         if (this.getState() == EntityState.Running) {
-            renderer.drawRegion(this.watchNadia, this.x, this.y);
+            renderer.drawRegion(this.watchNadia, this.hitBox.x, this.hitBox.y);
         }
     }
 
@@ -103,7 +107,7 @@ public class WatchNadia implements Damageable {
 
     @Override
     public Vector3 getPosition() {
-        return new Vector3(this.x, this.y, 0);
+        return this.position;
     }
 
     @Override

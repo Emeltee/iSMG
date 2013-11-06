@@ -33,6 +33,7 @@ public class Platform implements Damageable {
     protected int health;
     protected Rectangle hitbox;
     protected Rubble[] rubble = null;
+    private Rectangle[] hitArea = new Rectangle[1];
     protected static final int RUBBLE_LIFE = 500;
     
     public Platform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int x, int y) {
@@ -43,6 +44,7 @@ public class Platform implements Damageable {
         this.y = y;
         this.hitbox = new Rectangle(this.x, this.y, PLATFORM_W, PLATFORM_H);
         this.health = MAX_HEALTH;
+        this.hitArea[0] = this.hitbox;
     }
     
     @Override
@@ -105,7 +107,7 @@ public class Platform implements Damageable {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle [] { this.hitbox };
+        return this.hitArea;
     }
     
     public void explode() {
@@ -123,12 +125,6 @@ public class Platform implements Damageable {
                 new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
                         new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
                         5, new GameEntity [0], new Damageable [0], 0.5f),
-                new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
-                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        5, new GameEntity [0], new Damageable [0], 0.5f),
-                new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
-                        new Vector3((100 + ((float)Math.random() * 50)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        5, new GameEntity [0], new Damageable [0], 0.5f)
         };
     }
 

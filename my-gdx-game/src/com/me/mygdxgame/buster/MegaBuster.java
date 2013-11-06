@@ -7,9 +7,7 @@ import java.util.List;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
-import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.utilities.BusterPart;
@@ -18,24 +16,24 @@ import com.me.mygdxgame.utilities.GameEntity;
 
 public class MegaBuster {
 
-    private static final int MAX_ATTACHMENTS = 2;
-    private List<BusterPart> attachments;
-    private boolean adapterPlugEnabled;
-    private Texture spritesheet;
-    private Sound missSound;
-    private Sound shootSound;
+    protected static final int MAX_ATTACHMENTS = 2;
+    protected List<BusterPart> attachments;
+    protected boolean adapterPlugEnabled;
+    protected Texture spritesheet;
+    protected Sound missSound;
+    protected Sound shootSound;
     
-    private static final int BASE_SHOT_ATTACK = 1;
-    private static final int BASE_SHOT_ENERGY = 3;
-    private static final int BASE_SHOT_RANGE = 300;
-    private static final int BASE_SHOT_RAPID = 300;
-    private static final int MAX_SHOT_RAPID = 600;
-    private static final int MAX_SHOT_ATTACK = 5;
-    private static final int MAX_SHOT_RANGE = 800;
-    private static final int MAX_SHOT_ENERGY = 9;
-    private static final float SFX_VOLUME = 0.5f;
+    protected static final int BASE_SHOT_ATTACK = 1;
+    protected static final int BASE_SHOT_ENERGY = 3;
+    protected static final int BASE_SHOT_RANGE = 300;
+    protected static final int BASE_SHOT_RAPID = 300;
+    protected static final int MAX_SHOT_RAPID = 600;
+    protected static final int MAX_SHOT_ATTACK = 5;
+    protected static final int MAX_SHOT_RANGE = 800;
+    protected static final int MAX_SHOT_ENERGY = 9;
+    protected static final float SFX_VOLUME = 0.5f;
         
-    private float energyTimer; // buster cooldown
+    protected float energyTimer; // buster cooldown
        
     public MegaBuster(Texture spriteSheet, Sound shootSound, Sound missSound) {
         this.spritesheet = spriteSheet;
@@ -151,6 +149,7 @@ public class MegaBuster {
     
     public BusterShot makeShot(Vector3 shotOrigin, ShotDirection dir, Collection<GameEntity> obstacles, Collection<Damageable> targets) {
         this.energyTimer = 1 / (float)this.energyStat();
+//        this.shootSound.stop();
         this.shootSound.play(SFX_VOLUME);
         BusterShot shot = new BusterShot(this.spritesheet,
                                 this.missSound, shotOrigin,
@@ -162,7 +161,7 @@ public class MegaBuster {
         return shot;        
     }
     
-    private Color calcShotColor() {
+    protected Color calcShotColor() {
         Color result;
         switch(this.calcAttackBoost()) {
             case 1: result = new Color(8.0f, 0.6f, 0.8f, 1.0f); // Purple
@@ -182,7 +181,7 @@ public class MegaBuster {
         return result;
     }
     
-    private float calcShotScale() {
+    protected float calcShotScale() {
         return Math.min(1.5f, 1.0f + 0.5f*(this.calcAttackBoost() / 5));        
     }
     

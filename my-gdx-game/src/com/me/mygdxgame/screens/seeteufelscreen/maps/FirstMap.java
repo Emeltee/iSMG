@@ -69,10 +69,10 @@ public class FirstMap extends GameMap {
         this.smallMazeSprite = new Sprite(tiles.smallMazeTex);
         this.smallMazeSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH * GROUND_DIM, ROOM_HEIGHT * GROUND_DIM);
         this.smallMazeSprite.setU2(GROUND_WIDTH);
-        this.smallMazeSprite.setV2(5);
+        this.smallMazeSprite.setV2(ROOM_HEIGHT);
         this.pillarSprite = new Sprite(tiles.pillarTex);
         this.pillarSprite.setSize(32, 36 * 6);
-        this.pillarSprite.setV2(6);
+        this.pillarSprite.setV2(ROOM_HEIGHT);
         
         this.greyBlockRegion = new TextureRegion(tiles.greyBlockTex, 0, 0, GROUND_DIM, GROUND_DIM); // This could be a sprite but diagonalLeft/Right need to be updated..
         this.pedistalRegion = new TextureRegion(spriteSheet, 165, 0, 55, 17);
@@ -119,7 +119,7 @@ public class FirstMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Renderer renderer) {
+    public void render(float deltaTime, Rectangle visibleRegion, Renderer renderer) {
         
         // Main background.
         renderer.drawSprite(this.smallMazeSprite);

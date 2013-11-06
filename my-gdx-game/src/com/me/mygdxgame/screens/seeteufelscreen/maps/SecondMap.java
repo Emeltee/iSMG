@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.LightBorder;
 import com.me.mygdxgame.entities.LightPillar;
 import com.me.mygdxgame.entities.StonePillar;
@@ -40,9 +41,13 @@ public class SecondMap extends GameMap {
             ARENA_WIDTH = 10, // Ground area of upper area
             ENTRANCE_PLAT_HEIGHT = 3; // Height of the platform the entrance is to be on.
     
+    private int totalPixelHeight = 0;
+    
+    
     private Rectangle[] obstacles = null;
     private GenericEntity returnObstacles = null;
-    private static final Vector3 INIT_POS = new Vector3(FirstMap.GROUND_DIM + 10, FirstMap.GROUND_DIM * (ENTRANCE_PLAT_HEIGHT + 1), 0); 
+    private static final Vector3 INIT_POS = new Vector3(FirstMap.GROUND_DIM + 10, FirstMap.GROUND_DIM * (ENTRANCE_PLAT_HEIGHT + 1), 0);
+    private static final float PARALLAX_FACTOR = 0.5f;
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
     public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
@@ -54,11 +59,13 @@ public class SecondMap extends GameMap {
         this.tiles = tiles;
         this.height = height;
         
+        this.totalPixelHeight = ARENA_HEIGHT * GROUND_DIM + height * GROUND_DIM;
+        
         this.wallSprite = new Sprite(tiles.wallTex);
         this.shaftBackgroundSprite = new Sprite(tiles.smallMazeTex);
         this.shaftBackgroundSprite.setBounds(GROUND_DIM, GROUND_START_Y, (GROUND_WIDTH - 2) * GROUND_DIM, (this.height - 1) * GROUND_DIM);
         this.shaftBackgroundSprite.setU2(GROUND_WIDTH - 2);
-        this.shaftBackgroundSprite.setV2(this.height - 1);
+        this.shaftBackgroundSprite.setV2(MyGdxGame.SCREEN_HEIGHT / SecondMap.GROUND_DIM);
         this.arenaBackgroundSprite = new Sprite(tiles.largeMazeTex);
         this.arenaBackgroundSprite.setBounds(GROUND_ORIGIN_X - GROUND_DIM * (ARENA_WIDTH - 1), GROUND_ORIGIN_Y + (this.height+1) * GROUND_DIM, (ARENA_WIDTH + GROUND_WIDTH - 1) * GROUND_DIM, (ARENA_HEIGHT - 1) * GROUND_DIM);
         this.arenaBackgroundSprite.setU2((GROUND_WIDTH + ARENA_WIDTH - 1) / (float) 2);
@@ -113,12 +120,31 @@ public class SecondMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Renderer renderer) {
+    public void render(float deltaTime, Rectangle visibleRegion, Renderer renderer) {
 
-        // Background.
+        // Shaft background.
+        float maxVisibleY = visibleRegion.getY() + visibleRegion.height; 
+        float adjustedMinY = Math.max(visibleRegion.y, 0);
+        float adjustedRegionHeight = visibleRegion.height;
+        if (maxVisibleY > this.totalPixelHeight) {
+            adjustedRegionHeight -= maxVisibleY - this.totalPixelHeight;
+        }
+        this.shaftBackgroundSprite.setBounds(this.shaftBackgroundSprite.getX(), adjustedMinY, this.shaftBackgroundSprite.getWidth(), adjustedRegionHeight);
+        float adjustedBackgroundV = -visibleRegion.getY() * PARALLAX_FACTOR / GROUND_DIM;
+        this.shaftBackgroundSprite.setV2(adjustedBackgroundV);
+        this.shaftBackgroundSprite.setV(adjustedBackgroundV - adjustedRegionHeight / GROUND_DIM);
         renderer.drawSprite(this.shaftBackgroundSprite);
-        renderer.drawSprite(this.arenaBackgroundSprite);
-        renderer.drawSprite(this.arenaTransitionSprite);
+        
+        // Arena background.
+        if (maxVisibleY >= this.arenaTransitionSprite.getY()) {
+            renderer.drawSprite(this.arenaBackgroundSprite);
+            renderer.drawSprite(this.arenaTransitionSprite);
+         
+            // Arena pillars
+            for (LightPillar pillar: this.pillars) {
+                pillar.draw(renderer);
+            }
+        } 
 
         // Walls
         for (Rectangle rect : this.obstacles) {
@@ -126,11 +152,6 @@ public class SecondMap extends GameMap {
             this.wallSprite.setU2(rect.width / GROUND_DIM);
             this.wallSprite.setV2(rect.height / GROUND_DIM);
             renderer.drawSprite(this.wallSprite);
-        }
-        
-        // Pillars
-        for (LightPillar pillar: this.pillars) {
-            pillar.draw(renderer);
         }
         
         /*

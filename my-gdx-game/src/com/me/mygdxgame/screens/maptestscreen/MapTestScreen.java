@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GameScreen;
@@ -21,6 +22,8 @@ public class MapTestScreen implements GameScreen {
     
     /** Tracks camera position.*/
     private Vector3 camPos = new Vector3(MapTestScreen.CAM_INITIAL_POSITION);
+    
+    private Rectangle visibleArea = new Rectangle(-1000, -1000, 2000, 2000);
 
     /** Constructor.
      * 
@@ -72,7 +75,7 @@ public class MapTestScreen implements GameScreen {
         // Make a renderer.
         Renderer renderer = new Renderer(perspCam.combined);
 
-        this.map.render(deltaTime, renderer);
+        this.map.render(deltaTime, visibleArea, renderer);
     }
 
     @Override

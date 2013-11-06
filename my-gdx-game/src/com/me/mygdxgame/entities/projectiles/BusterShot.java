@@ -49,6 +49,7 @@ public class BusterShot implements GameEntity, Damager {
     protected float distanceTraveled = 0;
     /** Hitbox.*/
     protected Rectangle hitBox = new Rectangle(0, 0, BusterShot.BULLET_W, BusterShot.BULLET_H);
+    protected Rectangle[] hitAreas = new Rectangle[] {this.hitBox};
     
     protected EntityState state;
     
@@ -97,7 +98,7 @@ public class BusterShot implements GameEntity, Damager {
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
                 this.state = EntityState.Destroyed;
-                this.missSound.play();
+                //this.missSound.play();
                 return;
             }
             
@@ -121,7 +122,7 @@ public class BusterShot implements GameEntity, Damager {
                 for (Rectangle r: entity.getHitArea()) {
                     if (r.overlaps(this.hitBox)) {
                         this.state = EntityState.Destroyed;
-                        this.missSound.play();
+                        //this.missSound.play();
                         return;
                     }
                 }
@@ -158,7 +159,7 @@ public class BusterShot implements GameEntity, Damager {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle[] {this.hitBox};
+        return this.hitAreas;
     }
 
     @Override

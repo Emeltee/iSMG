@@ -41,7 +41,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final float ROCKET_SPEED = 200.0f;
     private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
-    private static final float SINK_EXPLOSION_DELAY = 0.1f;
+    private static final float SINK_EXPLOSION_DELAY = 0.2f;
     private static final int[] SHOT_HEIGHTS = new int[] {60, 60, 60, 60, 60, 
         60 + MegaPlayer.HITBOX_HEIGHT, 60 + MegaPlayer.HITBOX_HEIGHT * 2};
     private static final int BASE_SHOT_SPEED = 300;
@@ -191,7 +191,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
                 if (this.attackDelayTimer > attackDelay) {
                     
                     this.attackDelayTimer = 0;
-                    this.shoot.play(SFX_VOLUME);
+                    //this.shoot.play(SFX_VOLUME);
                     
                     // Decide whether to attack a ceiling tile in addition to the normal attack.
                     // Ramp up to +0.1 the normal rate as damage is done.

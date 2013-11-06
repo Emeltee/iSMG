@@ -48,10 +48,13 @@ public abstract class GameMap {
      * @param deltaTime
      *            The amount of time in seconds that has passed since the
      *            previous render call.
+     * @param visibleRegion
+     *            A Rectangle representing the visible area of the screen. May
+     *            be used to cull elements that are not visible.
      * @param renderer
      *            Renderer to use for drawing.
      */
-    public abstract void render(float deltaTime, Renderer renderer);
+    public abstract void render(float deltaTime, Rectangle visibleRegion, Renderer renderer);
     
     /**
      * Sets the debug flag. In debug mode, obstacles should be drawn to the

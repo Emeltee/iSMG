@@ -17,12 +17,15 @@ public class FallingPlatform extends Platform {
     private int destinationY;
     private boolean hasLanded;
     private Sound landingSound;
+    private Rectangle[] emptyHitArea = new Rectangle[0];
+    private Rectangle[] hitArea = new Rectangle[1];
     
     public FallingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, Sound landSound, int x, int y, int destinationY) {
         super(spriteSheet, tiles, x, y);
         this.destinationY = destinationY;
         this.hasLanded = true;
         this.landingSound = landSound;
+        this.hitArea[0] = this.hitbox;
     }
     
     public void update(float deltaTime) {
@@ -39,6 +42,7 @@ public class FallingPlatform extends Platform {
                     this.hitbox.y = this.y;
                 } else {
                     this.hasLanded = true;
+//                    this.landingSound.stop();
                     this.landingSound.play();
                 }
             }
@@ -47,7 +51,7 @@ public class FallingPlatform extends Platform {
     
     public Rectangle [] getHitArea() {
         // Prevent collision detection until the platform lands
-        return (this.hasLanded) ? new Rectangle [] { new Rectangle(this.hitbox) } : new Rectangle [] {};
+        return (this.hasLanded) ? this.hitArea : this.emptyHitArea;
     }
     
     public void setTargetY(int targetY) {
