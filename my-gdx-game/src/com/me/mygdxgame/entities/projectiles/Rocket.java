@@ -164,6 +164,7 @@ public class Rocket implements GameEntity, Damager {
         this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
         
         // Play sound.
+//        this.explosion.stop();
         this.explosion.play(SFX_VOLUME);
         
         // Set object state.

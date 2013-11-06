@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
@@ -26,6 +27,7 @@ public class EntityTestScreen implements GameScreen {
     private LinkedList<GameEntity> toRemove = new LinkedList<GameEntity>();
     private LinkedList<GameEntity[]> toAdd = new LinkedList<GameEntity[]>();
     private EntityTestMap map = null;
+    private Rectangle visibleArea = new Rectangle(-1000, -1000, 2000, 2000);
     
     /**
      * Constructor.
@@ -140,7 +142,7 @@ public class EntityTestScreen implements GameScreen {
         this.toRemove.clear();
 
         // Render obstacles.
-        this.map.render(deltaTime, renderer);
+        this.map.render(deltaTime, visibleArea, renderer);
     }
 
     @Override

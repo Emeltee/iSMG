@@ -14,10 +14,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.armor.NormalJacket;
 import com.me.mygdxgame.buster.GeminiBuster;
 import com.me.mygdxgame.buster.MegaBuster;
-import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
-import com.me.mygdxgame.entities.projectiles.GeminiShot;
 import com.me.mygdxgame.utilities.ArmorJacket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
@@ -71,7 +69,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     private boolean isInAir = false;
     private boolean isJumping = false;
     private boolean canJump = true;
-    private float busterCooldown = 0;
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = false;
@@ -312,12 +309,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     public void setIsUnderwater(boolean isUnderwater, boolean createSplash) {
-        if (createSplash && this.isUnderwater != isUnderwater) {
-            float adjustedX = this.position.x + MegaPlayer.SPRITE_WIDTH / 2;
-            for (int x = 0; x < 8; x++) {
-                this.createdEntities.add(new Splash(adjustedX, this.position.y));
-            }
-        }
+//        if (createSplash && this.isUnderwater != isUnderwater) {
+//            float adjustedX = this.position.x + MegaPlayer.SPRITE_WIDTH / 2;
+//            for (int x = 0; x < 5; x++) {
+//                this.createdEntities.add(new Splash(adjustedX, this.position.y));
+//            }
+//        }
         this.isUnderwater = isUnderwater;
     }
     
@@ -722,51 +719,6 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.tempShot = this.busterGun.makeShot(shotOrigin, shotDir, this.obstacles, this.targets);            
             this.createdEntities.offer(this.tempShot);
         }
-        
-        /*
-        if (this.busterCooldown > 0) {
-            this.busterCooldown = Math.max(this.busterCooldown - deltaTime, 0);
-        } else if (Gdx.input.isKeyPressed(Keys.SPACE)) {
-            
-            this.shotOrigin.set(this.position);
-            this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
-
-            this.busterCooldown = MegaPlayer.MAX_BUSTER_COOLDOWN;             
-            if (this.isFacingRight) {
-                this.shotOrigin.x += MegaPlayer.SHOT_OFFSET_X;
-                if (geminiEnabled) {
-                    this.resources.geminiSound.play(SFX_VOLUME);
-                    this.createdEntities.offer(new GeminiShot(this.spritesheet,
-                            this.resources.shotMissSound, this.shotOrigin,
-                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
-                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
-                            this.obstacles, this.targets));
-                } else {
-                    this.resources.shootSound.play(SFX_VOLUME);
-                    this.createdEntities.offer(new BusterShot(this.spritesheet,
-                            this.resources.shotMissSound, this.shotOrigin,
-                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.RIGHT,
-                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
-                            this.obstacles, this.targets)); 
-                }
-            } else {
-                if (geminiEnabled) {
-                    this.resources.geminiSound.play(SFX_VOLUME);
-                    this.createdEntities.offer(new GeminiShot(this.spritesheet,
-                        this.resources.shotMissSound, this.shotOrigin,
-                        MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
-                        MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
-                        this.obstacles, this.targets));
-                } else {
-                    this.resources.shootSound.play(SFX_VOLUME);
-                    this.createdEntities.offer(new BusterShot(this.spritesheet,
-                            this.resources.shotMissSound, this.shotOrigin,
-                            MegaPlayer.BASE_SHOT_SPEED, ShotDirection.LEFT,
-                            MegaPlayer.BASE_SHOT_POWER, MegaPlayer.BASE_SHOT_RANGE,
-                            this.obstacles, this.targets));
-                }
-            }
-        }*/
     }
     
     /**

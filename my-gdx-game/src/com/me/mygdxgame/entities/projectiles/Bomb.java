@@ -57,6 +57,8 @@ public class Bomb implements GameEntity, Damager {
     private Sound explosion = null;
     
     private Explosion[] explosions;
+    
+    private Rectangle[] hitAreas = new Rectangle[1];
   
     public Bomb(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power,
             int knockback, GameEntity [] obstacles, Damageable[] targets) {
@@ -72,6 +74,7 @@ public class Bomb implements GameEntity, Damager {
         this.knockback = knockback;
         this.targets = targets;
         this.status = EntityState.Running;
+        this.hitAreas[0] = this.hitBox;
     }
     
     
@@ -175,6 +178,7 @@ public class Bomb implements GameEntity, Damager {
             this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
             
             // Play sound.
+//            this.explosion.stop();
             this.explosion.play(SFX_VOLUME);
             
             // Set state.
@@ -185,7 +189,7 @@ public class Bomb implements GameEntity, Damager {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle[] {this.hitBox};
+        return this.hitAreas;
     }
 
 

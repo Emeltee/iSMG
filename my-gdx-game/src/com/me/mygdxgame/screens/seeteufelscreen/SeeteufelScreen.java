@@ -102,6 +102,9 @@ public class SeeteufelScreen implements GameScreen {
     
     private static final String WIN_MESSAGE = "Press Enter to try again.";
     
+    private static final int PAUSE_KEY = Keys.SHIFT_LEFT;
+    private static final int FPS_KEY = Keys.BACKSLASH;
+    
     // State.
     private GameState state = GameState.Running;
         
@@ -158,8 +161,12 @@ public class SeeteufelScreen implements GameScreen {
     private Collection<Damageable> ceilingTargets = new LinkedList<Damageable>();
     private LinkedList<Damageable> playerTargets = new LinkedList<Damageable>();
     private LinkedList<LinkedList<Damageable>> seeteufelTargets = new LinkedList<LinkedList<Damageable>>();
+    private LinkedList<LinkedList<Damageable>> removedSeeteufelTargets = new LinkedList<LinkedList<Damageable>>();
+    private LinkedList<Damageable> room2InitialStairs = new LinkedList<Damageable>();
+    private LinkedList<Damageable> room2NonTargettedStairs = new LinkedList<Damageable>();
     private LinkedList<Integer> seeteufelTargetLevels = new LinkedList<Integer>();
     private Rectangle map2Ceiling = null;
+    private Rectangle visibleRegion = new Rectangle();
     
     private boolean isMap2Flooding = false;
     private boolean displayFps = false;
@@ -320,10 +327,10 @@ public class SeeteufelScreen implements GameScreen {
     public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {   
         
         // Determine if paused.
-        if (!Gdx.input.isKeyPressed(Keys.TAB)) {
+        if (!Gdx.input.isKeyPressed(PAUSE_KEY)) {
             this.pauseButtonTrigger = true;
         }
-        if (this.pauseButtonTrigger && Gdx.input.isKeyPressed(Keys.TAB)) {
+        if (this.pauseButtonTrigger && Gdx.input.isKeyPressed(PAUSE_KEY)) {
             this.isPaused = !this.isPaused;
             this.pauseButtonTrigger = false;
             
@@ -336,10 +343,10 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Determine if fps display is enabled.
-        if (!Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+        if (!Gdx.input.isKeyPressed(FPS_KEY)) {
             this.displayFpsButtonTrigger = true;
         }
-        if (this.displayFpsButtonTrigger && Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {
+        if (this.displayFpsButtonTrigger && Gdx.input.isKeyPressed(FPS_KEY)) {
             this.displayFps = !this.displayFps;
             this.displayFpsButtonTrigger = false;
         }
@@ -381,31 +388,40 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Draw paused overlay or fps display, if needed.
+        int halfWidth = Gdx.graphics.getWidth() / 2;
+        int halfHeight = Gdx.graphics.getHeight() / 2;
+        int cheatTextX = -halfWidth;
+        int cheatTextY = halfHeight;
+        float cheatTextHeight = this.font.getBounds("TEST").height;
         if (this.isPaused) {
+            // Stop music and draw black overlay.
             this.music1.pause();
             this.music2.pause();
-            int halfWidth = Gdx.graphics.getWidth() / 2;
-            int halfHeight = Gdx.graphics.getHeight() / 2;
-            this.font.setScale(1.5f, 1.5f);
-            this.hudRenderer.drawRect(ShapeType.Filled, new Color(0, 0, 0, 0.5f), -halfWidth, -halfHeight, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            int pauseOffsetX = (int)(this.font.getBounds("Paused").width / 2);
-            int pauseOffsetY = (int)(this.font.getBounds("Paused").height / 2);
-            this.hudRenderer.drawText(this.font, "Paused", -pauseOffsetX, -pauseOffsetY);
-            
-            // Draw text indicating all active cheats.
-            int cheatTextX = -Gdx.graphics.getWidth() / 2;
-            int cheatTextY = Gdx.graphics.getHeight() / 2;
+            this.hudRenderer.drawRect(ShapeType.Filled, new Color(0, 0, 0, 0.5f),
+                    -halfWidth, -halfHeight, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        if (this.displayFps) {
             this.font.setScale(1, 1);
+            String fpsString = Integer.toString(Gdx.graphics.getFramesPerSecond());
+            this.hudRenderer.drawText(this.font, fpsString, cheatTextX, cheatTextY);
+            cheatTextY -= cheatTextHeight;
+        }
+        if (this.isPaused) {
+            // Draw text indicating all active cheats.
             for (GameCheat cheat : this.cheatEngine.getAllCheats()) {
                 if (cheat.isEnabled()) {
                     this.hudRenderer.drawText(this.font, cheat.getDescription(), cheatTextX, cheatTextY);
-                    cheatTextY -= this.font.getBounds(cheat.getDescription()).height;
+                    cheatTextY -= cheatTextHeight;
                 }
             }
+            // Draw pause message.
+            this.font.setScale(1.5f, 1.5f);
+            int pauseOffsetX = (int)(this.font.getBounds("Paused").width / 2);
+            int pauseOffsetY = (int)(this.font.getBounds("Paused").height / 2);
+            this.hudRenderer.drawText(this.font, "Paused", -pauseOffsetX, -pauseOffsetY);
         }
-        else if (this.displayFps) {
-           this.hudRenderer.drawText(this.font, Integer.toString(Gdx.graphics.getFramesPerSecond()), 0, 0);
-        }
+        // Reset fonst size.
+        this.font.setScale(1, 1);
         
         // Flush renderer.
         Renderer.flush();
@@ -433,6 +449,9 @@ public class SeeteufelScreen implements GameScreen {
         this.map2WaterY = SeeteufelScreen.MAP2_INITIAL_CAM_Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
         this.seeteufelTargets.clear();
         this.seeteufelTargetLevels.clear();
+        this.removedSeeteufelTargets.clear();
+        this.room2InitialStairs.clear();
+        this.room2NonTargettedStairs.clear();
         this.cameraShake = 0;
         this.music1.stop();
         this.music2.stop();
@@ -489,15 +508,9 @@ public class SeeteufelScreen implements GameScreen {
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
             if (e.getState() == EntityState.Destroyed) {
-                // TODO, Hackish.
-                if (e instanceof WatchNadia) {
-                    this.player.setGeminiEnabled(true);
-                    this.itemGet.play(SFX_VOLUME);
-                }
                 this.toRemove.addFirst(e);              
             }
             if (e.hasCreatedEntities()) {
-
                 this.toAdd.addFirst(e.getCreatedEntities());
             }
         }
@@ -554,10 +567,14 @@ public class SeeteufelScreen implements GameScreen {
         
         // Update camera. Clamp position at edges of room.
         orthoCam.position.x = this.player.getPosition().x;
-        if ((orthoCam.position.x - MyGdxGame.SCREEN_WIDTH / 2.0f) <= FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) {
-            orthoCam.position.x = (FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) + MyGdxGame.SCREEN_WIDTH / 2.0f;
-        } else if ((orthoCam.position.x + MyGdxGame.SCREEN_WIDTH / 2.0f) >= FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) {
-            orthoCam.position.x = (FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) - MyGdxGame.SCREEN_WIDTH / 2.0f;
+        float halfWidth = MyGdxGame.SCREEN_WIDTH / 2.0f;
+        float minVisibleX = orthoCam.position.x - halfWidth;
+        float minVisibleY = orthoCam.position.y - MyGdxGame.SCREEN_HEIGHT / 2.0f;
+        float maxVisibleX = orthoCam.position.x + halfWidth;
+        if (minVisibleX <= FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) {
+            orthoCam.position.x = (FirstMap.GROUND_ORIGIN_X - FirstMap.GROUND_DIM) + halfWidth;
+        } else if (maxVisibleX >= FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) {
+            orthoCam.position.x = (FirstMap.GROUND_END_X + FirstMap.GROUND_DIM) - halfWidth;
         }
         
         orthoCam.position.y = SeeteufelScreen.MAP1_CAM_Y;
@@ -567,7 +584,8 @@ public class SeeteufelScreen implements GameScreen {
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.map1.render(deltaTime, renderer);
+        this.visibleRegion.set(minVisibleX, minVisibleY, MyGdxGame.SCREEN_WIDTH, MyGdxGame.SCREEN_HEIGHT);
+        this.map1.render(deltaTime, this.visibleRegion, renderer);
         
         // Update and draw all generic entities.
         for (GameEntity e : this.entities) {
@@ -638,6 +656,7 @@ public class SeeteufelScreen implements GameScreen {
             destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             this.obstacles.add(destructableTile);
             this.entities.add(destructableTile);
+            this.room2InitialStairs.add(destructableTile);
             
             if (currentTileX % SeeteufelScreen.MAP2_STAIR_STEP_LENGTH == 0) {
                 currentTileY++;
@@ -655,8 +674,6 @@ public class SeeteufelScreen implements GameScreen {
             int currentYCoord = (int) (currentTileY * (SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, currentYCoord);
             this.seeteufelTargets.peek().add(destructableTile);
-            this.obstacles.add(destructableTile);
-            this.entities.add(destructableTile);
             
             if (platformDirection) {
                 currentTileX++;
@@ -691,20 +708,30 @@ public class SeeteufelScreen implements GameScreen {
             }
         }
         
-        // Remove the second and third staircases (the first two "real" one)
-        // from being targeted, to give the player a moment to adapt. Remove
-        // the very last stairs since they will only be partially finished.
-        this.seeteufelTargets.removeLast();
-        this.seeteufelTargets.removeLast();
+        // Remove the second and third staircases (the first two "real" ones)
+        // from being targeted, to give the player a moment to adapt.
+        LinkedList<Damageable> removedList = this.seeteufelTargets.removeLast();
+        this.obstacles.addAll(removedList);
+        this.entities.addAll(removedList);
+        this.room2NonTargettedStairs.addAll(removedList);
+        removedList = this.seeteufelTargets.removeLast();
+        this.obstacles.addAll(removedList);
+        this.entities.addAll(removedList);
+        this.room2NonTargettedStairs.addAll(removedList);
         this.seeteufelTargetLevels.removeLast();
         this.seeteufelTargetLevels.removeLast();
         
-        LinkedList<Damageable> topStairs = this.seeteufelTargets.removeFirst();
-        for (Damageable d : topStairs) {
-            this.obstacles.remove(d);
-            this.entities.remove(d);
-        }
+        this.seeteufelTargets.removeFirst();
         this.seeteufelTargetLevels.removeFirst();
+
+        // At this point, only the non-targeted stairs are in the obstacle and
+        // entity lists. To reduce the number of collision checks entities will
+        // need to do, platforms will be added from the target list into the
+        // obstacle list as the player moves up through the level. For now, add
+        // only the first stairs set to be targeted.
+        removedList = this.seeteufelTargets.getLast();
+        this.obstacles.addAll(removedList);
+        this.entities.addAll(removedList);
     }
     
     private int[] getSeeteufelTargets(Damageable[] currentTargets) {
@@ -780,15 +807,15 @@ public class SeeteufelScreen implements GameScreen {
         // Activate flooding once player moves above certain x.
         int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
-            if (!this.music1.isPlaying()) {
-                // Check if intro music was simply paused.
-                if (this.music1.getPosition() != 0) {
-                    this.music1.play();
-                }
-                else if (!this.music2.isPlaying()) {
-                    this.music2.play();
-                }
-            }
+//            if (!this.music1.isPlaying()) {
+//                // Check if intro music was simply paused.
+//                if (this.music1.getPosition() != 0) {
+//                    this.music1.play();
+//                }
+//                else if (!this.music2.isPlaying()) {
+//                    this.music2.play();
+//                }
+//            }
             // Raise water only after waterfalls have reached bottom.
             if (this.firstWaterfallFell) {
                 if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
@@ -808,7 +835,7 @@ public class SeeteufelScreen implements GameScreen {
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
             // Activate chase sequence.
             this.isMap2Flooding = true;
-            this.music1.play();
+//            this.music1.play();
             this.seeSplash.play(SFX_VOLUME);
             this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
@@ -864,6 +891,30 @@ public class SeeteufelScreen implements GameScreen {
                     currentTargets = currentTargetList.toArray(currentTargets);
                     int[] targets = this.getSeeteufelTargets(currentTargets);
                     
+                    // Add/remove obstacles and entities based on what is in
+                    // range, determined by the current targets.
+                    LinkedList<Damageable> removedList = null;
+                    this.removedSeeteufelTargets.add(currentTargetList);
+                    if (this.removedSeeteufelTargets.size() > 3) {
+                        removedList = this.removedSeeteufelTargets.removeFirst();
+                        GenericDamager damager = new GenericDamager(1, 0);
+                        for (Damageable platform : removedList) {
+                            platform.damage(damager);
+                        }
+//                        this.explosion.play(SFX_VOLUME);
+                        if (!this.room2NonTargettedStairs.isEmpty()) {
+                            this.obstacles.removeAll(this.room2NonTargettedStairs);
+                            this.entities.removeAll(this.room2NonTargettedStairs);
+                            this.room2NonTargettedStairs.clear();
+                        }
+                    }
+                    if (!this.seeteufelTargets.isEmpty()) {
+                        removedList = this.seeteufelTargets.getLast();
+                        this.obstacles.addAll(removedList);
+                        this.entities.addAll(removedList);
+                    }
+                    
+                    // Attack targets.
                     for (int x : targets) {
                         this.seeFront.attack(currentTargets[x]);
                     }
@@ -907,7 +958,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.player.setIsUnderwater(true, true);
             }
         } else if (this.player.getIsUnderwater()) {
-            this.splash.play(SFX_VOLUME);
+            //this.splash.play(SFX_VOLUME);
             this.player.setIsUnderwater(false, true);
         }
         // Update internal logic and draw.
@@ -960,7 +1011,10 @@ public class SeeteufelScreen implements GameScreen {
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map
-        this.map2.render(deltaTime, renderer);
+        float minVisibleX = orthoCam.position.x - MyGdxGame.SCREEN_WIDTH / 2.0f;
+        float minVisibleY = orthoCam.position.y - MyGdxGame.SCREEN_HEIGHT / 2.0f;
+        this.visibleRegion.set(minVisibleX, minVisibleY, MyGdxGame.SCREEN_WIDTH, MyGdxGame.SCREEN_HEIGHT);
+        this.map2.render(deltaTime, this.visibleRegion, renderer);
         
         this.room2Fall1.draw(renderer);
         this.room2Fall2.draw(renderer);
@@ -1068,15 +1122,15 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Keep the music playing.
-        if (!this.music1.isPlaying()) {
-            // Check if intro music was simply paused.
-            if (this.music1.getPosition() != 0) {
-                this.music1.play();
-            }
-            else if (!this.music2.isPlaying()) {
-                this.music2.play();
-            }
-        }
+//        if (!this.music1.isPlaying()) {
+//            // Check if intro music was simply paused.
+//            if (this.music1.getPosition() != 0) {
+//                this.music1.play();
+//            }
+//            else if (!this.music2.isPlaying()) {
+//                this.music2.play();
+//            }
+//        }
         
         // If water has not yet reached the top of the shaft, keep raising it.
         if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
@@ -1135,7 +1189,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.player.setIsUnderwater(true, true);
             }
         } else if (this.player.getIsUnderwater()) {
-            this.splash.play(SFX_VOLUME);
+//            this.splash.play(SFX_VOLUME);
             this.player.setIsUnderwater(false, true);
         }
         this.player.update(deltaTime);
@@ -1223,7 +1277,11 @@ public class SeeteufelScreen implements GameScreen {
         Renderer renderer = new Renderer(orthoCam.combined);
         
         // Draw the map.
-        this.map2.render(deltaTime, renderer);
+        float halfWidth = MyGdxGame.SCREEN_WIDTH / 2.0f;
+        float minVisibleX = orthoCam.position.x - halfWidth;
+        float minVisibleY = orthoCam.position.y - MyGdxGame.SCREEN_HEIGHT / 2.0f;
+        this.visibleRegion.set(minVisibleX, minVisibleY, MyGdxGame.SCREEN_WIDTH, MyGdxGame.SCREEN_HEIGHT);
+        this.map2.render(deltaTime, this.visibleRegion, renderer);
         
         // Update falls.
         this.room2Fall1.draw(renderer);

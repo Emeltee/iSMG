@@ -64,7 +64,7 @@ public class EntityTestMap extends GameMap {
     }
 
     @Override
-    public void render(float deltaTime, Renderer renderer) {
+    public void render(float deltaTime, Rectangle visibleRegion, Renderer renderer) {
         GameMap.drawObstacles(renderer, obstacles, Color.RED);
     }
 
