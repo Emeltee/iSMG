@@ -29,7 +29,6 @@ public class GeminiBuster extends MegaBuster {
                                   this.attackStat(), this.rangeStat(),
                                   obstacles, targets);
         if (shot.getState() != EntityState.Destroyed) {
-            shot.setShotColor(this.calcShotColor());
             shot.setShotScale(this.calcShotScale());
             this.shootSound.play(SFX_VOLUME);
         }
