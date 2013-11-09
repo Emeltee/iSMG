@@ -40,7 +40,7 @@ public class WatchNadia implements Damageable {
         this.itemGetSound = itemGetSound;
         this.volume = volume;
         this.health = MAX_HEALTH;
-        this.hitBox.set(x, y, this.getWidth(), this.getHealth());
+        this.hitBox.set(x, y, this.getWidth(), this.getHeight());
         this.position.x = x;
         this.position.y = y;
     }

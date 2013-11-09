@@ -27,22 +27,23 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int TARGET_Y_OFFSET = 20;
     private static final int BASE_WIDTH = 72;
     
-    private static final int MAX_HEALTH = 150;
+    private static final int MAX_HEALTH = 130;
     private static final int FRONT_ARM_FRAMERATE = 6;
     private static final int SIDE_ARM_FRAMERATE = 10;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
     private static final float MOVE_SPEED = 2f;
     private static final float BASE_ATTACK_DELAY = 1.0f;
-    private static final float MIN_ATTACK_DELAY = 0.4f;
+    private static final float MIN_ATTACK_DELAY = 0.5f;
     private static final float ATTACK_DELAY_RAMP = 0.004f;
     private static final float CEILING_ATTACK_CHANCE = 0.2f;
+    private static final float CEILING_ATTACK_COOLDOWN = 1f;
     private static final int ROCKET_POWER = 8;
     private static final int ROCKET_KNOCKBACK = 15;
     private static final float ROCKET_SPEED = 200.0f;
     private static final int SINK_SPEED = 50;
     private static final int SINK_DEPTH = 150;
     private static final float SINK_EXPLOSION_DELAY = 0.2f;
-    private static final int[] SHOT_HEIGHTS = new int[] {60, 60, 60, 60, 60, 
+    private static final int[] SHOT_HEIGHTS = new int[] {60, 60, 60, 60, 
         60 + MegaPlayer.HITBOX_HEIGHT, 60 + MegaPlayer.HITBOX_HEIGHT * 2};
     private static final int BASE_SHOT_SPEED = 300;
     private static final int BASE_SHOT_POWER = 5;
@@ -81,6 +82,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private LinkedList<Explosion> explosions = new LinkedList<Explosion>();
     
     private float attackDelayTimer = 0;
+    private float cielingAttackDelayTimer = 0;
     private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
     
     private Rectangle[] hitArea = new Rectangle[1];
@@ -187,15 +189,21 @@ public class SeeteufelSide implements GameEntity, Damageable {
             } else {
                 // Attack.
                 this.attackDelayTimer += deltaTime;
+                this.cielingAttackDelayTimer += deltaTime;
                 float attackDelay = Math.max(MIN_ATTACK_DELAY, BASE_ATTACK_DELAY - (MAX_HEALTH - this.health) * ATTACK_DELAY_RAMP);
                 if (this.attackDelayTimer > attackDelay) {
                     
                     this.attackDelayTimer = 0;
-                    //this.shoot.play(SFX_VOLUME);
+                    this.shoot.play(SFX_VOLUME);
                     
                     // Decide whether to attack a ceiling tile in addition to the normal attack.
-                    // Ramp up to +0.1 the normal rate as damage is done.
-                    float ceilingAttackChance = CEILING_ATTACK_CHANCE + 0.1f * ((MAX_HEALTH - this.health) / (float)MAX_HEALTH);
+                    // Ramp up to +0.1 the normal rate as damage is done. Impose a minimum delay
+                    // between ceiling attacks.
+                    float ceilingAttackChance = 0;
+                    if (this.cielingAttackDelayTimer >= CEILING_ATTACK_COOLDOWN) {
+                        ceilingAttackChance = CEILING_ATTACK_CHANCE + 0.1f * ((MAX_HEALTH - this.health) / (float)MAX_HEALTH);
+                        this.cielingAttackDelayTimer = 0;
+                    }
                     if (Math.random() <= ceilingAttackChance) {
                         if (!this.ceilingTargets.isEmpty()) {
                             int index = (int) (Math.random() * this.ceilingTargets.size());

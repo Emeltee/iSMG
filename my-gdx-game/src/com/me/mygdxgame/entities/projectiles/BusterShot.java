@@ -98,7 +98,7 @@ public class BusterShot implements GameEntity, Damager {
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
                 this.state = EntityState.Destroyed;
-                //this.missSound.play();
+                this.missSound.play();
                 return;
             }
             
@@ -122,7 +122,7 @@ public class BusterShot implements GameEntity, Damager {
                 for (Rectangle r: entity.getHitArea()) {
                     if (r.overlaps(this.hitBox)) {
                         this.state = EntityState.Destroyed;
-                        //this.missSound.play();
+                        this.missSound.play();
                         return;
                     }
                 }
