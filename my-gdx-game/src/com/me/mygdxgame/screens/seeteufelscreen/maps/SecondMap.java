@@ -1,9 +1,6 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -11,13 +8,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.entities.LightBorder;
 import com.me.mygdxgame.entities.LightPillar;
-import com.me.mygdxgame.entities.StonePillar;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
-import com.me.mygdxgame.utilities.Updatable;
 
 public class SecondMap extends GameMap {
     
@@ -27,10 +22,7 @@ public class SecondMap extends GameMap {
     private Sprite arenaBackgroundSprite;
     private Sprite arenaTransitionSprite;
     private LightPillar [] pillars;
-    private List<Updatable> stairPillars;
     private LightBorder upperBorder;
-    private Texture spriteSheet;
-    private SeeteufelScreen.MapTiles tiles;
 
     public static final int GROUND_DIM = 32; // Width of ground tile
     public static final int GROUND_ORIGIN_X = 0,  // Origin X point
@@ -55,8 +47,6 @@ public class SecondMap extends GameMap {
     
     public SecondMap(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int height) {
         
-        this.spriteSheet = spriteSheet;
-        this.tiles = tiles;
         this.height = height;
         
         this.totalPixelHeight = ARENA_HEIGHT * GROUND_DIM + height * GROUND_DIM;
@@ -89,9 +79,7 @@ public class SecondMap extends GameMap {
                 new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 4, arenaStartY, (ARENA_HEIGHT - 2) * GROUND_DIM - (1 * borderOffsetY)),
                 new LightPillar(spriteSheet, arenaStartX + GROUND_DIM * 7, arenaStartY, (ARENA_HEIGHT - 2) * GROUND_DIM - (1 * borderOffsetY))
         };
-        
-        this.stairPillars = this.makeStairPillars();
-        
+                
         // Create walls/floors.
         this.obstacles = new Rectangle [] {
                 new Rectangle (GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_WIDTH * GROUND_DIM, GROUND_DIM),
@@ -139,11 +127,6 @@ public class SecondMap extends GameMap {
         if (maxVisibleY >= this.arenaTransitionSprite.getY()) {
             renderer.drawSprite(this.arenaBackgroundSprite);
             renderer.drawSprite(this.arenaTransitionSprite);
-         
-            // Arena pillars
-            for (LightPillar pillar: this.pillars) {
-                pillar.draw(renderer);
-            }
         } 
 
         // Walls
@@ -154,12 +137,12 @@ public class SecondMap extends GameMap {
             renderer.drawSprite(this.wallSprite);
         }
         
-        /*
-        for (Updatable pillar: this.stairPillars) {
-            pillar.draw(renderer);
-        }*/
-        
-        //this.drawStopGaps(renderer, this.tiles);
+        // Arena pillars.
+        if (maxVisibleY >= this.arenaTransitionSprite.getY()) {
+            for (LightPillar pillar: this.pillars) {
+                pillar.draw(renderer);
+            }
+        } 
         
         // Borders
         this.upperBorder.draw(renderer);
@@ -177,65 +160,5 @@ public class SecondMap extends GameMap {
         }
       
         this.upperBorder.update(deltaTime);
-        /*
-        for (Updatable pillar: this.stairPillars) {
-            pillar.update(deltaTime);
-        }*/
     }
-    
-    private List<Updatable> makeStairPillars() {
-        List<Updatable> result = new ArrayList<Updatable>();
-        float beginY = 9.5f;
-        float stairH = 4.5f;
-        float height = this.height - beginY - stairH;
-        
-        int pHeight1 = 2 * GROUND_DIM;
-        int pHeight2 = 3 * GROUND_DIM;
-        int pHeight3 = 4 * GROUND_DIM;
-        int pHeight4 = 7 * GROUND_DIM;
-        
-        int xRight = 7 * GROUND_DIM;
-        int xLeft = (GROUND_WIDTH - 7) * GROUND_DIM;
-        int xOffset = 3 * GROUND_DIM;
-        int yOffset = GROUND_DIM / 2;
-        
-        int stoneOffset = (GROUND_DIM - new StonePillar(this.spriteSheet, this.tiles, -100, -100, 0).getWidth()) / 2;
-        
-        float pos = beginY;
-        while (pos <= height) {
-            int currentY = (int)(pos * GROUND_DIM);
-            // Right side pillars
-            result.add(new StonePillar(this.spriteSheet, this.tiles, xRight + (0 * xOffset) + stoneOffset, currentY + (0 * yOffset), pHeight3));
-            result.add(new LightPillar(this.spriteSheet, xRight + (1 * xOffset), currentY + (1 * yOffset), pHeight2));
-            result.add(new StonePillar(this.spriteSheet, this.tiles, xRight + (2 * xOffset) + stoneOffset, currentY + (2 * yOffset), pHeight1));
-            result.add(new LightPillar(this.spriteSheet, xRight + (3 * xOffset) + GROUND_DIM, currentY + (3 * yOffset), pHeight4));
-                        
-            currentY += stairH * GROUND_DIM;
-            
-            // Left side pillars
-            result.add(new LightPillar(this.spriteSheet, xLeft - (0 * xOffset), currentY - (1 * yOffset), pHeight3));
-            result.add(new StonePillar(this.spriteSheet, this.tiles, xLeft - (1 * xOffset) + stoneOffset, currentY + (0 * yOffset), pHeight2));
-            result.add(new LightPillar(this.spriteSheet, xLeft - (2 * xOffset), currentY + (1 * yOffset), pHeight1));
-            result.add(new StonePillar(this.spriteSheet, this.tiles, xLeft - (3 * xOffset) - 2*GROUND_DIM + stoneOffset, currentY + (3 * yOffset), pHeight4));
-            
-            pos += 2 * stairH - 1;
-        }
-        
-        
-        return result;
-    }
-    
-    private void drawStopGaps(Renderer renderer, SeeteufelScreen.MapTiles tiles) {
-    	Sprite gapSprite = new Sprite(tiles.greyBlockTex);
-    	for (Updatable u: this.stairPillars) {
-    		int gapY = (int)u.getPosition().y + u.getHeight();
-    		int gapX = (int)u.getPosition().x;
-    		gapX -= gapX % GROUND_DIM;
-    		gapSprite.setBounds(gapX, gapY, gapSprite.getWidth(), gapSprite.getHeight());
-    		gapSprite.setU2(1);
-    		gapSprite.setV2(1);
-    		renderer.drawSprite(gapSprite);
-    	}
-    }
-
 }

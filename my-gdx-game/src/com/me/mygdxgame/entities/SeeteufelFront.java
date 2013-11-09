@@ -141,7 +141,7 @@ public class SeeteufelFront implements GameEntity {
             this.attackDelayTimer += deltaTime;
         } else if (!this.targets.isEmpty()) {
             this.attackDelayTimer = 0;
-            //this.shoot.play(SFX_VOLUME);
+            this.shoot.play(SFX_VOLUME);
             Damageable target = this.targets.removeLast();
             Rectangle targetHitArea = target.getHitArea()[0];
             Vector3 rocketPosition = this.position.cpy();

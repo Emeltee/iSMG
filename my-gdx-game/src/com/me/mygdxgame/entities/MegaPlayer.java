@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.armor.NormalJacket;
 import com.me.mygdxgame.buster.GeminiBuster;
 import com.me.mygdxgame.buster.MegaBuster;
+import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.utilities.ArmorJacket;
@@ -64,6 +65,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private Collection<GameEntity> obstacles = null;
     private Collection<Damageable> targets = null;
     private Rectangle hitBox = new Rectangle(0, 0, MegaPlayer.HITBOX_WIDTH, MegaPlayer.HITBOX_HEIGHT);
+    private Rectangle[] hitAreas = new Rectangle[] {this.hitBox};
     private int animationTimer = 0;
     private int prevFrame = 0;
     private boolean isInAir = false;
@@ -309,12 +311,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     public void setIsUnderwater(boolean isUnderwater, boolean createSplash) {
-//        if (createSplash && this.isUnderwater != isUnderwater) {
-//            float adjustedX = this.position.x + MegaPlayer.SPRITE_WIDTH / 2;
-//            for (int x = 0; x < 5; x++) {
-//                this.createdEntities.add(new Splash(adjustedX, this.position.y));
-//            }
-//        }
+        if (createSplash && this.isUnderwater != isUnderwater) {
+            float adjustedX = this.position.x + MegaPlayer.SPRITE_WIDTH / 2;
+            for (int x = 0; x < 5; x++) {
+                this.createdEntities.add(new Splash(adjustedX, this.position.y));
+            }
+        }
         this.isUnderwater = isUnderwater;
     }
     
@@ -365,7 +367,7 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     @Override
     public Rectangle[] getHitArea() {
-        return new Rectangle[] {this.hitBox};
+        return this.hitAreas;
     }
 
     @Override

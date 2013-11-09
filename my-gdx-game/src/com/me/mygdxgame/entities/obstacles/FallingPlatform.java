@@ -42,7 +42,7 @@ public class FallingPlatform extends Platform {
                     this.hitbox.y = this.y;
                 } else {
                     this.hasLanded = true;
-//                    this.landingSound.stop();
+                    this.landingSound.stop();
                     this.landingSound.play();
                 }
             }

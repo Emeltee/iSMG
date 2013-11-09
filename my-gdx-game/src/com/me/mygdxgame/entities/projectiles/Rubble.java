@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
@@ -72,18 +73,18 @@ public abstract class Rubble implements GameEntity, Damager {
     }
     
     private void splash(Sound splashSound) {
-//        float adjustedX = this.position.x + this.rubble.getRegionWidth() / 2;
-//        for (int x = 0; x < 2; x++) {
-//            this.createdEntities.add(new Splash(adjustedX, this.position.y,
-//                    (float) (Math.random() * Splash.MAX_INIT_X_VEL),
-//                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
-//                    Splash.DEFAULT_RADIUS));
-//            this.createdEntities.add(new Splash(adjustedX, this.position.y,
-//                    (float) (-Math.random() * Splash.MAX_INIT_X_VEL),
-//                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
-//                    Splash.DEFAULT_RADIUS));
-//
-//        }
+        float adjustedX = this.position.x + this.rubble.getRegionWidth() / 2;
+        for (int x = 0; x < 2; x++) {
+            this.createdEntities.add(new Splash(adjustedX, this.position.y,
+                    (float) (Math.random() * Splash.MAX_INIT_X_VEL),
+                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
+                    Splash.DEFAULT_RADIUS));
+            this.createdEntities.add(new Splash(adjustedX, this.position.y,
+                    (float) (-Math.random() * Splash.MAX_INIT_X_VEL),
+                    (float) ((Math.random() * 0.25 + 0.75) * (Splash.MAX_INIT_Y_VEL * 1.5f)),
+                    Splash.DEFAULT_RADIUS));
+
+        }
         //splashSound.play(0.2f);
     }
     

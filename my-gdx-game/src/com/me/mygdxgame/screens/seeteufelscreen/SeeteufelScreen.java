@@ -70,8 +70,8 @@ public class SeeteufelScreen implements GameScreen {
     private static final Vector2 PLAYER_HEALTH_POS = new Vector2(SCREEN_LEFT + 10, SCREEN_BOTTOM + 10);
     private static final int ENEMY_HEALTH_TARGET_X = (int) (SeeteufelScreen.PLAYER_HEALTH_POS.x);
     private static final int MAP1_CAM_Y = SeeteufelScreen.SCREEN_BOTTOM / 5;
-    private static final float MAP2_CAM_SPEED_1 = 35f;
-    private static final float MAP2_CAM_SPEED_2 = 50f;
+    private static final float MAP2_CAM_SPEED_1 = 25;
+    private static final float MAP2_CAM_SPEED_2 = 35;
     private static final float MAP2_CAM_X = (SecondMap.GROUND_DIM * SecondMap.GROUND_WIDTH) / 2.0f;
     private static final Vector3 MAP2_SEETEUFEL_INIT_POS = new Vector3(MAP2_CAM_X, SeeteufelScreen.MAP2_PIXEL_HEIGHT / 2, 0);
     private static final Color WATER_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
@@ -734,9 +734,16 @@ public class SeeteufelScreen implements GameScreen {
         this.entities.addAll(removedList);
     }
     
-    private int[] getSeeteufelTargets(Damageable[] currentTargets) {
+    private int[] getSeeteufelTargets(Damageable[] currentTargets, boolean isUpperArea) {
         
-        int[] targets = new int[4];
+        // Target an extra platform when you reach the upper half of the room.
+        int[] targets = null;
+        if (isUpperArea) {
+            targets = new int[4];
+        }
+        else {
+            targets = new int[3];
+        }
 
         // First target, random platform that isn't the first one on the
         // stairs (so as not to create a ledge that can't be jumped up).
@@ -766,16 +773,19 @@ public class SeeteufelScreen implements GameScreen {
                 Math.abs(targets[2] - targets[1]) == 1);
 
         // Fourth target. Random platform that isn't first or second or third
-        // target, isn't step 0, and isn't adjacent to both 0 and 1 and 2.
-        do {
-            targets[3] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+        // target, isn't step 0, and isn't adjacent to both 0 and 1 and 2. Target
+        // only if you are in the upper area of the shaft.
+        if (isUpperArea) {
+            do {
+                targets[3] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+            }
+            while (targets[3] == targets[0] ||
+                    targets[3] == targets[1] ||
+                    targets[3] == targets[2] ||
+                    Math.abs(targets[3] - targets[0]) == 1 ||
+                    Math.abs(targets[3] - targets[1]) == 1 ||
+                    Math.abs(targets[3] - targets[2]) == 1);
         }
-        while (targets[3] == targets[0] ||
-                targets[3] == targets[1] ||
-                targets[3] == targets[2] ||
-                Math.abs(targets[3] - targets[0]) == 1 ||
-                Math.abs(targets[3] - targets[1]) == 1 ||
-                Math.abs(targets[3] - targets[2]) == 1);
 
         return targets;
     }
@@ -807,15 +817,15 @@ public class SeeteufelScreen implements GameScreen {
         // Activate flooding once player moves above certain x.
         int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
-//            if (!this.music1.isPlaying()) {
-//                // Check if intro music was simply paused.
-//                if (this.music1.getPosition() != 0) {
-//                    this.music1.play();
-//                }
-//                else if (!this.music2.isPlaying()) {
-//                    this.music2.play();
-//                }
-//            }
+            if (!this.music1.isPlaying()) {
+                // Check if intro music was simply paused.
+                if (this.music1.getPosition() != 0) {
+                    this.music1.play();
+                }
+                else if (!this.music2.isPlaying()) {
+                    this.music2.play();
+                }
+            }
             // Raise water only after waterfalls have reached bottom.
             if (this.firstWaterfallFell) {
                 if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
@@ -835,7 +845,7 @@ public class SeeteufelScreen implements GameScreen {
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
             // Activate chase sequence.
             this.isMap2Flooding = true;
-//            this.music1.play();
+            this.music1.play();
             this.seeSplash.play(SFX_VOLUME);
             this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
@@ -889,7 +899,7 @@ public class SeeteufelScreen implements GameScreen {
                     LinkedList<Damageable> currentTargetList = this.seeteufelTargets.removeLast();
                     Damageable[] currentTargets = new Damageable[currentTargetList.size()];
                     currentTargets = currentTargetList.toArray(currentTargets);
-                    int[] targets = this.getSeeteufelTargets(currentTargets);
+                    int[] targets = this.getSeeteufelTargets(currentTargets, this.secondWaterfallFell);
                     
                     // Add/remove obstacles and entities based on what is in
                     // range, determined by the current targets.
@@ -901,7 +911,7 @@ public class SeeteufelScreen implements GameScreen {
                         for (Damageable platform : removedList) {
                             platform.damage(damager);
                         }
-//                        this.explosion.play(SFX_VOLUME);
+                        this.explosion.play(SFX_VOLUME);
                         if (!this.room2NonTargettedStairs.isEmpty()) {
                             this.obstacles.removeAll(this.room2NonTargettedStairs);
                             this.entities.removeAll(this.room2NonTargettedStairs);
@@ -959,7 +969,7 @@ public class SeeteufelScreen implements GameScreen {
             }
         } else if (this.player.getIsUnderwater()) {
             //this.splash.play(SFX_VOLUME);
-            this.player.setIsUnderwater(false, true);
+            this.player.setIsUnderwater(false, false);
         }
         // Update internal logic and draw.
         this.player.update(deltaTime);
@@ -1122,15 +1132,15 @@ public class SeeteufelScreen implements GameScreen {
         }
         
         // Keep the music playing.
-//        if (!this.music1.isPlaying()) {
-//            // Check if intro music was simply paused.
-//            if (this.music1.getPosition() != 0) {
-//                this.music1.play();
-//            }
-//            else if (!this.music2.isPlaying()) {
-//                this.music2.play();
-//            }
-//        }
+        if (!this.music1.isPlaying() && this.seeSide.getState() != EntityState.Destroyed) {
+            // Check if intro music was simply paused.
+            if (this.music1.getPosition() != 0) {
+                this.music1.play();
+            }
+            else if (!this.music2.isPlaying()) {
+                this.music2.play();
+            }
+        }
         
         // If water has not yet reached the top of the shaft, keep raising it.
         if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
@@ -1167,12 +1177,12 @@ public class SeeteufelScreen implements GameScreen {
         // Update and draw all other generic entities.
         for (GameEntity e : this.entities) {
             e.update(deltaTime);
-            // TODO hackish
-            if (e instanceof Rubble) {
-                ((Rubble) e).setWaterLevel(this.map2WaterY, this.splash);
-            }
             if (e.getState() == EntityState.Destroyed) {
                 this.toRemove.addFirst(e);              
+            }
+            else if (e instanceof Rubble) {
+                // TODO hackish. Set water level for new rubble.
+                ((Rubble) e).setWaterLevel(this.map2WaterY, this.splash);
             }
             if (e.hasCreatedEntities()) {
                 this.toAdd.addFirst(e.getCreatedEntities());
