@@ -34,15 +34,25 @@ public abstract class GameCheat {
     
     public String getSequenceString() {
     	Iterator<Integer> sequence = this.getSequence().iterator();
-    	StringBuilder builder = new StringBuilder(GameCheat.translateKeyCode(sequence.next()));
+    	StringBuilder builder = new StringBuilder("[" + GameCheat.translateKeyCode(sequence.next()) + "]");
     	while (sequence.hasNext()) {
-    		builder.append("," + GameCheat.translateKeyCode(sequence.next()));
+    		builder.append(" [" + GameCheat.translateKeyCode(sequence.next())+"]");
     	}
     	return builder.toString();
     	
     }
+        
+    @Override
+	public boolean equals(Object obj) {
+    	// Equality based on same key-sequence; this can avoid overlapping cheat-codes
+		if (obj instanceof GameCheat) {
+			return ((GameCheat)obj).getSequence().equals(this.getSequence());
+		} else {
+			return false;
+		}
+	}
 
-    protected static String translateKeyCode (int keyCode) {
+	protected static String translateKeyCode (int keyCode) {
     	// Translates Input.Keys constants into Strings
     	// (Used a regex on a function that translated awt constants
     	// to Input.Keys constants to make this.)

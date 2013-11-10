@@ -34,7 +34,7 @@ public class BusterMaxCheat extends GameCheat {
 
     @Override
     public String getDescription() {
-        return "'Buster Max' Enhancement";
+        return "Buster Max";
     }
     
     @Override

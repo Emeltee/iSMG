@@ -48,7 +48,7 @@ public class GeminiShotCheat extends GameCheat {
 
     @Override
     public String getDescription() {
-        return "Gemini Buster Shot";
+        return "Gemini Buster";
     }
 
 }
