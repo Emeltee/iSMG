@@ -119,6 +119,44 @@ public class GameCheatListener implements InputProcessor {
         return result;
     }
     
+    public List<GameCheat> getDisabledCheats() {
+    	List <GameCheat> result = new ArrayList<GameCheat> ();
+    	
+    	for (GameCheat gc: this.cheats) {
+    		if (!gc.isEnabled()) {
+    			result.add(gc);
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    public boolean containsCheat(GameCheat gc) {
+    	return this.getAllCheats().contains(gc);
+    }
+    
+    public boolean hasEnabledCheat(GameCheat gc) {
+    	return this.getEnabledCheats().contains(gc);
+    }
+    
+    public boolean containsCheats(GameCheat... gcs) {
+    	for (GameCheat gc: gcs) {
+    		if (!this.containsCheat(gc)) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    public boolean hasEnabledCheats(GameCheat... gcs) {
+    	for (GameCheat gc: gcs) {
+    		if (!this.hasEnabledCheat(gc)) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
     public void disableAllCheats() {
         for (GameCheat gc: this.cheats) {
             gc.disableCheat();
