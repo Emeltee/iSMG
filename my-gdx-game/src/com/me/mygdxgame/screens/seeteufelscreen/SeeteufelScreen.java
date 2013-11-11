@@ -182,6 +182,7 @@ public class SeeteufelScreen implements GameScreen {
     private InputProcessor defaultProcessor;
 	private GameCheat unlockedCheat;
 	private int winCount = 0; // DO NOT CHANGE ON INITIALIZE
+	private int busterWinCount;
     
     /** Container class for textures used by the SeeteufelScreen maps.*/
     public static class MapTiles {
@@ -1338,7 +1339,14 @@ public class SeeteufelScreen implements GameScreen {
     
     private void setupMap4() {
         this.missionComplete = new TextureRegion(this.t_tiles1, 0, 594, 208, 24);
-        this.winCount += 1;
+        this.winCount++;
+        
+        if (!this.cheatEngine.getEnabledCheats().contains(new GeminiShotCheat(player))
+        	&& !this.cheatEngine.getEnabledCheats().contains(new BusterMaxCheat(player))) {
+        	// TODO Amend GameCheatListener to have a hasCheat method, just for simplicity..
+        	this.busterWinCount++;
+        }
+        
         this.unlockedCheat = this.getUnlockedCheat();
     }
     
@@ -1363,48 +1371,67 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private void showUnlockedCheat(GameCheat cheat) {
+    	// Default message for no cheats unlocked
         String cheatHead = "";
         String cheatName = "Not all hidden treasures are refractors";
         String cheatSeq = "try again";
 
         // Unlocked Cheat Code
         if (this.unlockedCheat != null) {
+        	// Unlocked cheat details
         	cheatHead = "! New Ability Unlocked !";
         	cheatName = "GET EQUIPPED WITH: " + this.unlockedCheat.getDescription();
         	cheatSeq = this.unlockedCheat.getSequenceString();
         } else {
         	if (this.player.isGeminiEnabled()) {
-        		cheatName = "! CONGRATULATIONS !";
-        		cheatSeq = "You discovered the secret weapon 'Gemini Buster'.";
+        		// No cheats unlocked, but Gemini Buster Discovered
+        		cheatHead = "! CONGRATULATIONS !";
+        		cheatName = "You discovered the secret weapon 'Gemini Buster'.";
+        		cheatSeq = "There are more hidden secrets to be found. Keep playing!";
         	}
         }
                 
         TextBounds bounds = font.getBounds(cheatHead);
-        this.hudRenderer.drawText(font, cheatHead, -bounds.width / 2.0f, SCREEN_BOTTOM+4.5f*bounds.height);
+        this.hudRenderer.drawText(font, cheatHead, -bounds.width / 2.0f, SCREEN_BOTTOM + 4.5f * bounds.height);
         bounds = font.getBounds(cheatName);
-        this.hudRenderer.drawText(font, cheatName, -bounds.width / 2.0f, SCREEN_BOTTOM+3.0f*bounds.height);
-        bounds =font.getBounds(cheatSeq);
-        this.hudRenderer.drawText(font, cheatSeq, -bounds.width/2.0f, SCREEN_BOTTOM+1.5f*bounds.height);
+        this.hudRenderer.drawText(font, cheatName, -bounds.width / 2.0f, SCREEN_BOTTOM + 3.0f * bounds.height);
+        bounds = font.getBounds(cheatSeq);
+        this.hudRenderer.drawText(font, cheatSeq,  -bounds.width / 2.0f, SCREEN_BOTTOM + 1.5f * bounds.height);
     }
     
     private GameCheat getUnlockedCheat() {
     	// Maybe give up the JumpSprings cheat after beating it twice. (Revised: 4x) 
-    	// BusterMax if they've gotten the GeminiShot on their own.  (Revised: If they get Armor)
-    	// Armor if they finished with more than half health. (Revised: 2/3)
+    	// BusterMax if they've gotten the GeminiShot on their own.  (Revised: If they win 8x with just Buster)
+    	// Armor if they finished with more than half health. (Revised: 2/3 with Buster, full health with Gemini)
     	// GeminiShot code if they have Armor already enabled.. (Revised: If *everything* enabled)
     	
-    	List<GameCheat> currentCheats = this.cheatEngine.getEnabledCheats();
+    	GameCheat tempBusterMax = new BusterMaxCheat(player),
+    			  tempGeminiShot = new GeminiShotCheat(player),
+    			  tempJumpSprings = new JumpSpringsCheat(player),
+    			  tempKevlarOmega = new KevlarOmegaArmorCheat(player);
     	
-    	if (currentCheats.size() >= 4) {
-    		return new GeminiShotCheat(player);
-    	} else if (currentCheats.contains(new KevlarOmegaArmorCheat(player))) {
-    		return new BusterMaxCheat(player);
-    	} else if (this.player.getHealth() >= ((float)2 / 3 * (float)this.player.getMaxHealth())
-    			&& !currentCheats.contains(new BusterMaxCheat(player))) {
-    		return new KevlarOmegaArmorCheat(player);
-    	} else if (this.winCount >= 4) {
-    		return new JumpSpringsCheat(player);
+    	if (this.cheatEngine.getEnabledCheats().size() == this.cheatEngine.getAllCheats().size()) {
+    		// All cheats unlocked, show cheat code for GeminiBuster
+    		return tempGeminiShot;
+    	} else if (this.busterWinCount >= 8 
+    			   && !this.cheatEngine.hasEnabledCheat(tempBusterMax)) {
+    		// Won 8 times with buster, show cheat code for Buster Max
+    		return tempBusterMax;
+    	} else if ((this.player.getHealth() == this.player.getMaxHealth()
+    			    && this.cheatEngine.hasEnabledCheat(tempGeminiShot))
+    			|| (this.player.getHealth() >= ((float)2 / 3 * (float)this.player.getMaxHealth())
+    			    && !this.cheatEngine.hasEnabledCheat(tempBusterMax)
+    			    && !this.cheatEngine.hasEnabledCheat(tempGeminiShot))
+    			&& !this.cheatEngine.hasEnabledCheat(tempKevlarOmega)) {
+    		// Won with full health and GeminiBuster, or
+    		// Won with 2/3 health and MegaBuster, show KevlarOmega Cheat
+    		return tempKevlarOmega;
+    	} else if (this.winCount >= 4 && 
+    			   !this.cheatEngine.hasEnabledCheat(tempJumpSprings)) {
+    		// Won four times or more, show Jump Springs Cheat
+    		return tempJumpSprings;
     	} else {    	
+    		// None of the above, return nothing
     		return null;
     	}
     }
