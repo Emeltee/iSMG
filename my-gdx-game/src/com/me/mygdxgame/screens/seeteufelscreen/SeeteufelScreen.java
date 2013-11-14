@@ -1035,7 +1035,9 @@ public class SeeteufelScreen implements GameScreen {
                 playerPos.x <= 0) {
             this.currentMap = 3;
             this.setupMap3();
-            if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
+            // If player reaches top before the camera (not the water; minor distinction),
+            // set a flag to unlock a cheat code.
+            if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
                 this.reachedArenaBeforeWater = true;
             }
         }
@@ -1484,7 +1486,7 @@ public class SeeteufelScreen implements GameScreen {
     		return tempKevlarOmega;
     	} else if (this.reachedArenaBeforeWater && 
     			   !this.cheatEngine.hasEnabledCheat(tempJumpSprings)) {
-    		// Reached top of shaft before water, show Jump Springs Cheat
+    		// Reached top of shaft before the camera, show Jump Springs Cheat
     		return tempJumpSprings;
     	} else {    	
     		// None of the above, return nothing
