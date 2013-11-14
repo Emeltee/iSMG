@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
@@ -176,13 +174,13 @@ public class SeeteufelScreen implements GameScreen {
     private boolean secondWaterfallFell = false;
     private boolean isPaused = false;
     private boolean pauseButtonTrigger = false;
+    private boolean bypassedSeeteufel = false;
+    private boolean reachedArenaBeforeWater = false;
     
     // Cheat Code Support variables
     private GameCheatListener cheatEngine;
     private InputProcessor defaultProcessor;
 	private GameCheat unlockedCheat;
-	private int winCount = 0; // DO NOT CHANGE ON INITIALIZE
-	private int busterWinCount;
     
     /** Container class for textures used by the SeeteufelScreen maps.*/
     public static class MapTiles {
@@ -500,6 +498,9 @@ public class SeeteufelScreen implements GameScreen {
         // this.entities.add(this.bonus);
         this.obstacles.add(this.map1.getObstacles());
         // this.playerTargets.add(this.bonus);
+        
+        this.bypassedSeeteufel = false;
+        this.reachedArenaBeforeWater = false;
     }
 
     @Override
@@ -726,6 +727,10 @@ public class SeeteufelScreen implements GameScreen {
         this.seeteufelTargetLevels.removeLast();
         
         this.seeteufelTargets.removeFirst();
+        this.seeteufelTargetLevels.removeFirst();
+        
+        // Keep the last staircase, but prevent it from being targeted.
+        // This will allow the player the chance to jump to the room 2 exit early.
         this.seeteufelTargetLevels.removeFirst();
 
         // At this point, only the non-targeted stairs are in the obstacle and
@@ -984,11 +989,15 @@ public class SeeteufelScreen implements GameScreen {
         // Health bar.
         this.playerHealth.setValue((float)this.player.getHealth() / this.player.getMaxHealth());
         
-        // Exit the room. Do setup for room 3.
+        // Exit the room when player reaches the arena. Do setup for room 3.
         if (!this.player.getIsInAir() &&
-                playerPos.y >= (SeeteufelScreen.MAP2_HEIGHT + 0.5)* SecondMap.GROUND_DIM) {
+                playerPos.y >= (SeeteufelScreen.MAP2_HEIGHT + 0.5)* SecondMap.GROUND_DIM &&
+                playerPos.x <= 0) {
             this.currentMap = 3;
             this.setupMap3();
+            if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
+                this.reachedArenaBeforeWater = true;
+            }
         }
         
         // Remove or add to generic entity list as needed.
@@ -1005,6 +1014,19 @@ public class SeeteufelScreen implements GameScreen {
         }
         this.toAdd.clear();
         this.toRemove.clear();
+        
+        // Check if player has reached the final door and is exiting, bypassing the fight.
+        // Possible with the jump springs.
+        if (!this.player.getIsInAir() && 
+                this.player.getHitArea()[0].overlaps(this.room3Exit.getHitArea()[0]) &&
+                (Gdx.input.isKeyPressed(Input.Keys.DOWN) ||
+                Gdx.input.isKeyPressed(Input.Keys.S))) {
+            
+            this.bypassedSeeteufel = true;
+            
+            setupMap4();
+            this.currentMap = 4;
+        }
     }
     
     private void renderMap2(float deltaTime, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {
@@ -1339,13 +1361,9 @@ public class SeeteufelScreen implements GameScreen {
     
     private void setupMap4() {
         this.missionComplete = new TextureRegion(this.t_tiles1, 0, 594, 208, 24);
-        this.winCount++;
         
-        if (!this.cheatEngine.getEnabledCheats().contains(new GeminiShotCheat(player))
-        	&& !this.cheatEngine.getEnabledCheats().contains(new BusterMaxCheat(player))) {
-        	// TODO Amend GameCheatListener to have a hasCheat method, just for simplicity..
-        	this.busterWinCount++;
-        }
+        this.music1.stop();
+        this.music2.stop();
         
         this.unlockedCheat = this.getUnlockedCheat();
     }
@@ -1400,35 +1418,33 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private GameCheat getUnlockedCheat() {
-    	// Maybe give up the JumpSprings cheat after beating it twice. (Revised: 4x) 
-    	// BusterMax if they've gotten the GeminiShot on their own.  (Revised: If they win 8x with just Buster)
-    	// Armor if they finished with more than half health. (Revised: 2/3 with Buster, full health with Gemini)
-    	// GeminiShot code if they have Armor already enabled.. (Revised: If *everything* enabled)
-    	
+    	// Give up the JumpSprings cheat if player reaches third area before water stops rising.
+    	// BusterMax if they think to use the jump springs to bypass the Seeteufel.
+    	// Armor if they finished with more than 2/3 health.
+    	// GeminiShot code if everything else is enabled.
+        // Having the BusterMax equipped automatically precluded receiving any more codes (other than gemini).
+        
     	GameCheat tempBusterMax = new BusterMaxCheat(player),
     			  tempGeminiShot = new GeminiShotCheat(player),
     			  tempJumpSprings = new JumpSpringsCheat(player),
     			  tempKevlarOmega = new KevlarOmegaArmorCheat(player);
     	
     	if (this.cheatEngine.getEnabledCheats().size() == this.cheatEngine.getAllCheats().size()) {
-    		// All cheats unlocked, show cheat code for GeminiBuster
+    		// All cheats unlocked, show cheat code for GeminiBuster.
     		return tempGeminiShot;
-    	} else if (this.busterWinCount >= 8 
-    			   && !this.cheatEngine.hasEnabledCheat(tempBusterMax)) {
-    		// Won 8 times with buster, show cheat code for Buster Max
+    	} else if (this.bypassedSeeteufel &&
+    	        !this.cheatEngine.hasEnabledCheat(tempBusterMax)) {
+    		// Skipped Seeteufel with jump springs. Show BusterMax cheat.
     		return tempBusterMax;
-    	} else if ((this.player.getHealth() == this.player.getMaxHealth()
-    			    && this.cheatEngine.hasEnabledCheat(tempGeminiShot))
-    			|| (this.player.getHealth() >= ((float)2 / 3 * (float)this.player.getMaxHealth())
+    	} else if (!this.bypassedSeeteufel &&
+    	            this.player.getHealth() >= (2.0f / 3.0f * (float)this.player.getMaxHealth())
     			    && !this.cheatEngine.hasEnabledCheat(tempBusterMax)
-    			    && !this.cheatEngine.hasEnabledCheat(tempGeminiShot))
-    			&& !this.cheatEngine.hasEnabledCheat(tempKevlarOmega)) {
-    		// Won with full health and GeminiBuster, or
-    		// Won with 2/3 health and MegaBuster, show KevlarOmega Cheat
+    			    && !this.cheatEngine.hasEnabledCheat(tempKevlarOmega)) {
+    		// Won with with 2/3 health and MegaBuster, show KevlarOmega cheat.
     		return tempKevlarOmega;
-    	} else if (this.winCount >= 4 && 
+    	} else if (this.reachedArenaBeforeWater && 
     			   !this.cheatEngine.hasEnabledCheat(tempJumpSprings)) {
-    		// Won four times or more, show Jump Springs Cheat
+    		// Reached top of shaft before water, show Jump Springs Cheat
     		return tempJumpSprings;
     	} else {    	
     		// None of the above, return nothing
