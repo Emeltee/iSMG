@@ -98,6 +98,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float SFX_VOLUME = 0.5f;
+    private static final float MAP2_PLATFORM_DESTRUCTION_DELAY = 0.3f;
     
     private static final String WIN_MESSAGE = "Press Enter to try again.";
     
@@ -111,10 +112,6 @@ public class SeeteufelScreen implements GameScreen {
     private FirstMap map1;
     private SecondMap map2;
     private int currentMap;
-    private float map2Y = MAP2_INITIAL_CAM_Y;
-    private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
-    private float cameraShake = 0;
-    private Vector2 map3CamPos = new Vector2();
     
     // Resource files.
     private Texture t_tiles1;
@@ -166,6 +163,7 @@ public class SeeteufelScreen implements GameScreen {
     private LinkedList<Integer> seeteufelTargetLevels = new LinkedList<Integer>();
     private Rectangle map2Ceiling = null;
     private Rectangle visibleRegion = new Rectangle();
+    private LinkedList<Damageable> room2PlatformsToDestroy = new LinkedList<Damageable>();
     
     private boolean isMap2Flooding = false;
     private boolean displayFps = false;
@@ -176,6 +174,11 @@ public class SeeteufelScreen implements GameScreen {
     private boolean pauseButtonTrigger = false;
     private boolean bypassedSeeteufel = false;
     private boolean reachedArenaBeforeWater = false;
+    private float map2Y = MAP2_INITIAL_CAM_Y;
+    private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
+    private float cameraShake = 0;
+    private Vector2 map3CamPos = new Vector2();
+    private float map2PlatformDestuctionTimer = 0;
     
     // Cheat Code Support variables
     private GameCheatListener cheatEngine;
@@ -443,6 +446,7 @@ public class SeeteufelScreen implements GameScreen {
         this.obstacles.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
+        this.room2PlatformsToDestroy.clear();
         this.isMap2Flooding = false;
         this.firstWaterfallFell = false;
         this.secondWaterfallFell = false;
@@ -455,6 +459,7 @@ public class SeeteufelScreen implements GameScreen {
         this.room2InitialStairs.clear();
         this.room2NonTargettedStairs.clear();
         this.cameraShake = 0;
+        this.map2PlatformDestuctionTimer = 0;
         this.music1.stop();
         this.music2.stop();
         
@@ -823,7 +828,7 @@ public class SeeteufelScreen implements GameScreen {
         
         Vector3 playerPos = this.player.getPosition();
         
-        // Activate flooding once player moves above certain x.
+        // Activate flooding once player moves beyond a certain x.
         int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
             if (!this.music1.isPlaying()) {
@@ -835,10 +840,10 @@ public class SeeteufelScreen implements GameScreen {
                     this.music2.play();
                 }
             }
-            // Raise water only after waterfalls have reached bottom.
+            // Raise water only after waterfall has reached bottom.
             if (this.firstWaterfallFell) {
                 if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
-                    // Move cam faster once you reach a certain point.
+                    // Move camera faster once you reach a certain point.
                     if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y && this.secondWaterfallFell) {
                         float movement = SeeteufelScreen.MAP2_CAM_SPEED_2 * deltaTime;
                         this.map2Y += movement;
@@ -848,6 +853,7 @@ public class SeeteufelScreen implements GameScreen {
                     }
                     this.map2WaterY = this.map2Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
                 } else if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
+                    // Camera has reached the top of the shaft. Continue filling water until it is full.
                     this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
                 }
             }
@@ -903,6 +909,8 @@ public class SeeteufelScreen implements GameScreen {
             
             // Attack if water level is one block below the next staircase.
             if (!this.seeteufelTargetLevels.isEmpty()) {
+                
+                // Select and attack targets.
                 Integer currentLevel = this.seeteufelTargetLevels.removeLast();
                 if (this.map2WaterY >= currentLevel - SeeteufelScreen.MAP2_ENEMY_ATTACK_OFFSET) {
                     LinkedList<Damageable> currentTargetList = this.seeteufelTargets.removeLast();
@@ -911,22 +919,27 @@ public class SeeteufelScreen implements GameScreen {
                     int[] targets = this.getSeeteufelTargets(currentTargets, this.secondWaterfallFell);
                     
                     // Add/remove obstacles and entities based on what is in
-                    // range, determined by the current targets.
+                    // attack range, determined by the current targets. Platforms that
+                    // fall below the active area will be added to a list to be destroyed.
                     LinkedList<Damageable> removedList = null;
                     this.removedSeeteufelTargets.add(currentTargetList);
-                    if (this.removedSeeteufelTargets.size() > 3) {
+                    if (this.removedSeeteufelTargets.size() > 2) {
                         removedList = this.removedSeeteufelTargets.removeFirst();
-                        GenericDamager damager = new GenericDamager(1, 0);
-                        for (Damageable platform : removedList) {
-                            platform.damage(damager);
-                        }
-                        this.explosion.play(SFX_VOLUME);
+                        this.room2PlatformsToDestroy.addAll(removedList);
+                        
+                        // Remove untargeted platforms near the bottom of the room.
+                        // Only needs to be done once, the first time targets start getting removed.
                         if (!this.room2NonTargettedStairs.isEmpty()) {
-                            this.obstacles.removeAll(this.room2NonTargettedStairs);
-                            this.entities.removeAll(this.room2NonTargettedStairs);
+                            GenericDamager damager = new GenericDamager(1, 0);
+                            for (Damageable platform : this.room2NonTargettedStairs) {
+                                platform.damage(damager);
+                            }
                             this.room2NonTargettedStairs.clear();
+                            this.explosion.stop();this.explosion.play();
                         }
                     }
+                    
+                    // Add next flight of stairs as obstacles.
                     if (!this.seeteufelTargets.isEmpty()) {
                         removedList = this.seeteufelTargets.getLast();
                         this.obstacles.addAll(removedList);
@@ -937,6 +950,17 @@ public class SeeteufelScreen implements GameScreen {
                     for (int x : targets) {
                         this.seeFront.attack(currentTargets[x]);
                     }
+                    
+                    // If Seeteufel has nothing left to target, move remaining platforms to waiting list to be destroyed.
+                    if (this.seeteufelTargetLevels.isEmpty()) {
+                        while (!this.removedSeeteufelTargets.isEmpty()) {
+                            this.room2PlatformsToDestroy.addAll(this.removedSeeteufelTargets.removeFirst());
+                        }
+                        while (!this.seeteufelTargets.isEmpty()) {
+                            this.room2PlatformsToDestroy.addAll(this.seeteufelTargets.removeFirst());
+                        }
+                    }
+                    
                 } else {
                     this.seeteufelTargetLevels.addLast(currentLevel);
                 }
@@ -962,6 +986,22 @@ public class SeeteufelScreen implements GameScreen {
             }
             if (e.hasCreatedEntities()) {
                 this.toAdd.addFirst(e.getCreatedEntities());
+            }
+        }
+        
+        // Slowly destroy old platforms from the bottom up.
+        if (!this.room2PlatformsToDestroy.isEmpty()) {
+            this.map2PlatformDestuctionTimer += deltaTime;
+            if (this.map2PlatformDestuctionTimer >= MAP2_PLATFORM_DESTRUCTION_DELAY) {
+                Damageable target = this.room2PlatformsToDestroy.removeFirst();
+                while (!this.room2PlatformsToDestroy.isEmpty() &&
+                        target.getState() == EntityState.Destroyed) {
+                    target = this.room2PlatformsToDestroy.removeFirst();
+                }
+                target.damage(new GenericDamager(1, 0));
+                this.map2PlatformDestuctionTimer = 0;
+                this.explosion.stop();
+                this.explosion.play();
             }
         }
         
