@@ -31,7 +31,7 @@ public class Bomb implements GameEntity, Damager {
     /** TextureRegion representing the idle frame. */
     private TextureRegion bomb;
     /** Tracks the number of frames that have passed. Used to time animation. */
-    private short animationTimer = 0;
+    private float animationTimer = 0;
     /** General-purpose sprite sheet. */
     private Texture spriteSheet = null;
 
@@ -128,14 +128,14 @@ public class Bomb implements GameEntity, Damager {
             }
             
             // Every call, increment the animationTimer.
-            this.animationTimer++;
+            this.animationTimer += deltaTime;
         }
     }
 
     @Override
     public void draw(Renderer renderer) {
         if (this.status == EntityState.Running){
-            renderer.drawRegion(bomb, this.position.x, this.position.y, Color.WHITE, 1, 1, 30 * this.animationTimer);
+            renderer.drawRegion(bomb, this.position.x, this.position.y, Color.WHITE, 1, 1, (int) (300.0f * this.animationTimer));
             // TODO spriteBatch's draw() function won't manage the z-axis automatically. Fix manually with scaleX/scaleY params? 
             //MyGdxGame.currentGame.spriteBatch.draw(bomb, this.position.x, this.position.y, this.bomb.getRegionWidth() / 2.0f, this.bomb.getRegionHeight() / 2.0f, BOMB_W, BOMB_H, 1, 1, 30 * this.animationTimer);
         }

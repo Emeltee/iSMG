@@ -23,10 +23,10 @@ public class LightBorder implements Updatable {
     private static final int FRAME4_Y = 36;
     private static final int FRAME5_Y = 47;
     
-    private static final int FRAMERATE = 3;
+    private static final float FRAMERATE = 0.25f;
     
     private Sprite [] borderFrames;
-    private int animationTimer;
+    private float animationTimer;
     private int frame;
     private int x;
     private int y;
@@ -52,7 +52,7 @@ public class LightBorder implements Updatable {
     
     @Override
     public void update(float deltaTime) {
-        animationTimer++;
+        animationTimer += deltaTime;
         if (animationTimer > FRAMERATE) { 
             animationTimer = 0;
             frame = (frame + 1) % borderFrames.length;

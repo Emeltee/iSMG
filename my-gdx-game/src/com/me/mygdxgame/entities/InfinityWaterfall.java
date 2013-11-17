@@ -14,14 +14,14 @@ import com.me.mygdxgame.utilities.Renderer;
 public class InfinityWaterfall implements GameEntity {
 
     private static final int MIN_HEIGHT = 1;
-    private static final int ANIMATION_SPEED = 4;
-    private static final float TEX_V_DELTA = ANIMATION_SPEED / 30.0f;
+    private static final float ANIMATION_SPEED = 0.133f;
+    private static final float TEX_V_DELTA_SCALE = 2.5f;
     
     private final int y;
     private final int x;
     
     private int frame = 0;
-    private int animationTimer = 0;
+    private float animationTimer = 0.0f;
     private Sprite waterfall = null;
     private Rectangle hitbox = null;
     private Rectangle[] hitAreas = null;
@@ -63,15 +63,15 @@ public class InfinityWaterfall implements GameEntity {
     @Override
     public void update(float deltaTime) {
         // Animate waterfall body by shifting the texture coords.
-        this.waterfall.setV(this.waterfall.getV() - InfinityWaterfall.TEX_V_DELTA);
-        this.waterfall.setV2(this.waterfall.getV2() - InfinityWaterfall.TEX_V_DELTA);
+        this.waterfall.setV(this.waterfall.getV() - deltaTime * TEX_V_DELTA_SCALE);
+        this.waterfall.setV2(this.waterfall.getV2() - deltaTime * TEX_V_DELTA_SCALE);
         
         // Determine bottom animation frame.
         if (this.animationTimer >= InfinityWaterfall.ANIMATION_SPEED) {
             this.frame = (this.frame + 1) % this.waterfallEnd.length;
             this.animationTimer = 0;
         } else {
-            this.animationTimer++;
+            this.animationTimer += deltaTime;
         }
     }
 

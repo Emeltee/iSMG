@@ -21,7 +21,7 @@ public class Splash implements GameEntity {
     public static final int DEFAULT_RADIUS = 3;
     
     private static final float GRAVITY_FACTOR = -400;
-    private static final float RADIUS_FALLOFF = 0.05f;
+    private static final float RADIUS_FALLOFF = 1.5f;
     private static final Color DEFAULT_COLOR = new Color(0.5f, 0.5f, 1, 0.5f);
     
     private Vector2 position = new Vector2();
@@ -98,7 +98,7 @@ public class Splash implements GameEntity {
         this.hitbox.x = this.position.x;
         this.hitbox.y = this.position.y;
         
-        this.hitbox.width = Math.max(this.hitbox.width - Splash.RADIUS_FALLOFF, 0);
+        this.hitbox.width = Math.max(this.hitbox.width - Splash.RADIUS_FALLOFF * deltaTime, 0);
         this.hitbox.height = this.hitbox.width;
     }
 

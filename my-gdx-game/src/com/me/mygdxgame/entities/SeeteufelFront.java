@@ -20,9 +20,9 @@ public class SeeteufelFront implements GameEntity {
     private static final int BASE_WIDTH = 98;
     private static final int TARGET_Y_OFFSET = 20;
     
-    private static final int FRONT_ARM_FRAMERATE = 15;
-    private static final int BACK_ARM_FRAMERATE = 7;
-    private static final int GRAVITY_FACTOR = 500;
+    private static final float FRONT_ARM_FRAMERATE = 0.5f;
+    private static final float BACK_ARM_FRAMERATE = 0.233f;
+    private static final float GRAVITY_FACTOR = 500.0f;
     private static final float ATTACK_DELAY = 0.5f;
     private static final float ROCKET_SPEED = 200.0f;
     
@@ -45,8 +45,8 @@ public class SeeteufelFront implements GameEntity {
     
     private boolean frontArmFrame = true;
     private int backArmFrame = 0;
-    private int frontArmTimer = 0;
-    private int backArmTimer = 0;
+    private float frontArmTimer = 0;
+    private float backArmTimer = 0;
     private int targetY = 0;
     private boolean isFalling = false;
     
@@ -156,12 +156,12 @@ public class SeeteufelFront implements GameEntity {
         }
         
         // Determine animation frames.
-        this.backArmTimer++;
+        this.backArmTimer += deltaTime;
         if (this.backArmTimer >= SeeteufelFront.BACK_ARM_FRAMERATE) {
             this.backArmFrame = (this.backArmFrame + 1) % 3;
             this.backArmTimer = 0;
         }
-        this.frontArmTimer++;
+        this.frontArmTimer += deltaTime;
         if (this.frontArmTimer >= SeeteufelFront.FRONT_ARM_FRAMERATE) {
             this.frontArmFrame = !this.frontArmFrame;
             this.frontArmTimer = 0;

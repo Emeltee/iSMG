@@ -28,10 +28,10 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int BASE_WIDTH = 72;
     
     private static final int MAX_HEALTH = 130;
-    private static final int FRONT_ARM_FRAMERATE = 6;
-    private static final int SIDE_ARM_FRAMERATE = 10;
+    private static final float FRONT_ARM_FRAMERATE = 0.2f;
+    private static final float SIDE_ARM_FRAMERATE = 0.425f;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
-    private static final float MOVE_SPEED = 2f;
+    private static final float MOVE_SPEED = 60.0f;
     private static final float BASE_ATTACK_DELAY = 1.0f;
     private static final float MIN_ATTACK_DELAY = 0.5f;
     private static final float ATTACK_DELAY_RAMP = 0.004f;
@@ -71,8 +71,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private boolean frontArmAnimDir = true;
     private int frontArmFrame = 0;
     private int sideArmFrame = 0;
-    private int frontArmTimer = 0;
-    private int sideArmTimer = 0;
+    private float frontArmTimer = 0;
+    private float sideArmTimer = 0;
     private int targetY = 0;
     private EntityState state = EntityState.Running;
     private int health = MAX_HEALTH;
@@ -174,8 +174,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
             this.hitArea[0].y = this.position.y;
             
             if (this.moving) {
-                // Move left until you hit an obstacle.
-                this.position.x -= SeeteufelSide.MOVE_SPEED;
+                // Upon creation, move left until you hit an obstacle.
+                this.position.x -= SeeteufelSide.MOVE_SPEED * deltaTime;
                 this.movementHitArea.x = this.position.x - OBSTACLE_HITBOX_WIDTH / 2;
                 this.movementHitArea.y = this.position.y;
                 for (GameEntity entity : this.obstacles) {
@@ -266,12 +266,12 @@ public class SeeteufelSide implements GameEntity, Damageable {
             
             
             // Determine animation frames.
-            this.sideArmTimer++;
+            this.sideArmTimer += deltaTime;
             if (this.sideArmTimer >= SIDE_ARM_FRAMERATE) {
                 this.sideArmFrame = (this.sideArmFrame + 1) % 3;
                 this.sideArmTimer = 0;
             }
-            this.frontArmTimer++;
+            this.frontArmTimer += deltaTime;
             if (this.frontArmTimer >= FRONT_ARM_FRAMERATE) {
                 if (frontArmAnimDir) {
                     this.frontArmFrame++;

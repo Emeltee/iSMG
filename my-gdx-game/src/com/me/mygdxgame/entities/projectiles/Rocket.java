@@ -28,7 +28,7 @@ public class Rocket implements GameEntity, Damager {
     /** TextureRegion representing the idle frame. */
     private TextureRegion rocket;
     /** Tracks the number of frames that have passed. Used to time animation. */
-    private short animationTimer = 0;
+    private float animationTimer = 0;
     /** General-purpose sprite sheet. */
     private Texture spriteSheet = null;    
 
@@ -117,14 +117,14 @@ public class Rocket implements GameEntity, Damager {
             }
             
             // Every call, increment the animationTimer.
-            this.animationTimer++;
+            this.animationTimer += deltaTime;
         }
     }
 
     @Override
     public void draw(Renderer renderer) {
         if (this.state == EntityState.Running){
-            renderer.drawRegion(rocket, this.position.x, this.position.y, ROCKET_TINT, 1, 1, 30 * this.animationTimer);
+            renderer.drawRegion(rocket, this.position.x, this.position.y, ROCKET_TINT, 1, 1, (int) (300.0f * this.animationTimer));
         }
     }
 

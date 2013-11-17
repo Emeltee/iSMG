@@ -21,13 +21,13 @@ public class Explosion implements GameEntity {
     private static final int SPLODE_Y = 209;
     private static final int SPLODE_DIM = 32;
     
-    private static final int FRAMERATE = 3;
+    private static final float FRAMERATE = 0.06f;
     private static final int NUM_FRAMES = 4;
     
     private TextureRegion[] splode;
     private Vector3 position;
     private EntityState state;
-    private short animationTimer;
+    private float animationTimer;
     private int frame;
     private float spriteScale = 1.0f;
     
@@ -61,7 +61,7 @@ public class Explosion implements GameEntity {
                 this.animationTimer = 0;
             }        
                     
-            animationTimer++;        
+            animationTimer += deltaTime;        
             if (this.frame >= NUM_FRAMES) { this.state = EntityState.Destroyed; }
         }
 
