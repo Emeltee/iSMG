@@ -21,6 +21,7 @@ import com.me.mygdxgame.utilities.Renderer;
 public class FirstMap extends GameMap {
     
     private int animationFrame = 0;
+    private float animationTimer = 0;
     
     private Sprite rockSprite;
     private Sprite wallSprite;
@@ -101,7 +102,7 @@ public class FirstMap extends GameMap {
             temp.add(new StonePillar(spriteSheet, tiles, GROUND_ORIGIN_X + (2*i+1) * (GROUND_DIM/2) - (StonePillar.PILLAR_BASE_W / 2), GROUND_START_Y, 7*GROUND_DIM));
         }
         for (int i = 0; i < 8; i++) {
-            temp.add(new StonePillar(spriteSheet, tiles,PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i), GROUND_START_Y, 7*GROUND_DIM));
+            temp.add(new StonePillar(spriteSheet, tiles, PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i), GROUND_START_Y, 7*GROUND_DIM));
         }
         this.updatables = temp.toArray(new StonePillar[temp.size()]);
         temp.clear();
@@ -147,8 +148,8 @@ public class FirstMap extends GameMap {
         // Draw the waterfalls.
         renderer.drawRegion(this.grateRegion, PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 12, GROUND_START_Y + 64);
         renderer.drawRegion(this.grateRegion, PLATFORM_START_X + (int)(6 * GROUND_DIM) + 12, GROUND_START_Y + 64);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
-        renderer.drawRegion(this.waterfall[animationFrame / 4 % 5], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.waterfall[animationFrame], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
+        renderer.drawRegion(this.waterfall[animationFrame], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
         
         for (StonePillar pillar: this.updatables) {
             pillar.renderBody(renderer);
@@ -161,12 +162,15 @@ public class FirstMap extends GameMap {
         if (this.debugMode) {
             drawObstacles(renderer, this.getObstacles().getHitArea(), GameMap.DEFAULT_OBSTACLE_COLOR);
         }
-
     }
 
     @Override
     public void update(float deltaTime) {
         // Update animation frame
-        animationFrame = (animationFrame < 30) ? animationFrame + 1 : 0;
+        animationTimer += deltaTime;
+        if (animationTimer >= 0.1) {
+            animationFrame = (animationFrame + 1) % 5;
+            animationTimer = 0;
+        }
     }
 }

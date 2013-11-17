@@ -91,7 +91,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_STAIR_FLIGHT_X_OFFSET = 5;
     private static final int MAP2_STAIR_STEP_LENGTH = 3;
     private static final int MAP2_STAIR_IGNORE_LAST_TARGETS = 2;
-    private static final int MAP2_WATER_LATENT_RISE_RATE = 3;
+    private static final int MAP2_WATER_LATENT_RISE_RATE = 90;
     private static final int MAP2_WATER_WIDTH = SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM;
     private static final int MAP3_WATER_BASE_X = MAP2_PIXEL_HEIGHT - 500;
     private static final int MAP3_CAM_Y = 1700;
@@ -179,6 +179,7 @@ public class SeeteufelScreen implements GameScreen {
     private float cameraShake = 0;
     private Vector2 map3CamPos = new Vector2();
     private float map2PlatformDestuctionTimer = 0;
+    private float map3ExitBridgeFallTimer = 0;
     
     // Cheat Code Support variables
     private GameCheatListener cheatEngine;
@@ -330,7 +331,7 @@ public class SeeteufelScreen implements GameScreen {
 
     @Override
     public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {   
-        
+                
         // Determine if paused.
         if (!Gdx.input.isKeyPressed(PAUSE_KEY)) {
             this.pauseButtonTrigger = true;
@@ -460,6 +461,7 @@ public class SeeteufelScreen implements GameScreen {
         this.room2NonTargettedStairs.clear();
         this.cameraShake = 0;
         this.map2PlatformDestuctionTimer = 0;
+        this.map3ExitBridgeFallTimer = 0;
         this.music1.stop();
         this.music2.stop();
         
@@ -854,7 +856,10 @@ public class SeeteufelScreen implements GameScreen {
                     this.map2WaterY = this.map2Y - SeeteufelScreen.MAP2_WATER_Y_OFFSET;
                 } else if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT){
                     // Camera has reached the top of the shaft. Continue filling water until it is full.
-                    this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
+                    this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE * deltaTime;
+                    if (this.map2WaterY > SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
+                        this.map2WaterY = SeeteufelScreen.MAP2_PIXEL_HEIGHT;
+                    }
                 }
             }
         } else if (playerPos.x > SeeteufelScreen.MAP2_ACTIVATION_X) {
@@ -884,7 +889,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.room2Fall1.setHeight(targetWaterfalHeight);
             }
             else {
-                this.room2Fall1.setHeight(this.room2Fall1.getHeight() + 25);
+                this.room2Fall1.setHeight((int) (this.room2Fall1.getHeight() + 750.0f * deltaTime));
                 if (this.room2Fall1.getHeight() >= targetWaterfalHeight) {
                     this.firstWaterfallFell = true;
                     this.room2Fall1.setHeight(targetWaterfalHeight);
@@ -894,7 +899,7 @@ public class SeeteufelScreen implements GameScreen {
                 this.room2Fall2.setHeight(targetWaterfalHeight);
             }
             else if (this.map2Y > SeeteufelScreen.MAP2_CAM_INCREASE_SPEED_TIRGGER_Y) {
-                this.room2Fall2.setHeight(this.room2Fall2.getHeight() + 25);
+                this.room2Fall2.setHeight((int) (this.room2Fall2.getHeight() + 750.0f * deltaTime));
                 if (this.room2Fall2.getHeight() >= targetWaterfalHeight) {
                     this.secondWaterfallFell = true;
                     this.room2Fall2.setHeight(targetWaterfalHeight);
@@ -1185,12 +1190,12 @@ public class SeeteufelScreen implements GameScreen {
         // Have camera track player. Clamp at edges of room.
         Vector3 playerPos = this.player.getPosition();
         if (map3CamPos.x > playerPos.x) {
-            map3CamPos.x -= Math.min(MegaPlayer.MAX_SPEED, map3CamPos.x - playerPos.x);
+            map3CamPos.x -= Math.min(MegaPlayer.MAX_SPEED * deltaTime, map3CamPos.x - playerPos.x);
         } else if (map3CamPos.x < playerPos.x) {
-            map3CamPos.x += Math.min(MegaPlayer.MAX_SPEED, playerPos.x - map3CamPos.x);
+            map3CamPos.x += Math.min(MegaPlayer.MAX_SPEED * deltaTime, playerPos.x - map3CamPos.x);
         }
         if (map3CamPos.y < MAP3_CAM_Y) {
-            map3CamPos.y += Math.min(MegaPlayer.MAX_SPEED, MAP3_CAM_Y - map3CamPos.y);
+            map3CamPos.y += Math.min(MegaPlayer.MAX_SPEED * deltaTime, MAP3_CAM_Y - map3CamPos.y);
         }
         if (map3CamPos.x < MAP3_CAM_MIN_X) {
             map3CamPos.x = MAP3_CAM_MIN_X;
@@ -1212,7 +1217,10 @@ public class SeeteufelScreen implements GameScreen {
         
         // If water has not yet reached the top of the shaft, keep raising it.
         if (this.map2WaterY < SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
-            this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE;
+            this.map2WaterY += SeeteufelScreen.MAP2_WATER_LATENT_RISE_RATE * deltaTime;
+            if (this.map2WaterY > SeeteufelScreen.MAP2_PIXEL_HEIGHT) {
+                this.map2WaterY = SeeteufelScreen.MAP2_PIXEL_HEIGHT;
+            }
             this.seeFront.setTargetY((int)map2WaterY);
         }
         
@@ -1312,9 +1320,13 @@ public class SeeteufelScreen implements GameScreen {
                 this.playerHealth.setInDanger(false);
                 
                 if (!this.fallingBlocks.isEmpty()) {
-                    FallingPlatform currentBlock = this.fallingBlocks.removeFirst();
-                    currentBlock.fall();
-                    this.fallenBlocks.add(currentBlock);
+                    this.map3ExitBridgeFallTimer += deltaTime;
+                    if (this.map3ExitBridgeFallTimer >= 0.1f) {
+                        FallingPlatform currentBlock = this.fallingBlocks.removeFirst();
+                        currentBlock.fall();
+                        this.fallenBlocks.add(currentBlock);
+                        this.map3ExitBridgeFallTimer = 0;
+                    }
                 }
                 
                 this.music1.stop();

@@ -36,13 +36,13 @@ public abstract class Rubble implements GameEntity, Damager {
     protected Rectangle[] area = new Rectangle[] {this.hitbox};
     
     /** Factor for creating descending motion of rubble */
-    protected static final int GRAVITY = 800;
+    protected static final float GRAVITY = 800.0f;
     /** Factor that determines the rate at which x velocity moves towards 0.*/
-    protected static final int INERTIA = 200;
+    protected static final float INERTIA = 200.0f;
     /** X velocity at which object stops moving horizontally.*/
-    protected static final float MIN_X_VELOCITY = 0.2f;
+    protected static final float MIN_X_VELOCITY = 12.0f;
     /** Maximum fall rate.*/
-    private static final int MIN_Y_VELOCITY = -500;
+    private static final float MIN_Y_VELOCITY = -20000.0f;
     /** Texture-control variables (can't be constants because of superclass/subclass relationship) */
     protected int x, y, w, h;
     /** Damage factor for falling rubble */
@@ -96,8 +96,8 @@ public abstract class Rubble implements GameEntity, Damager {
             this.position.add(this.velocity.cpy().scl(deltaTime));
             
             // Adjust velocity. Y goes down, x moves towards 0.
-            this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY, this.velocity.y - Rubble.GRAVITY * deltaTime);
-            if (Math.abs(this.velocity.x) < Rubble.MIN_X_VELOCITY) {
+            this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY * deltaTime, this.velocity.y - Rubble.GRAVITY * deltaTime);
+            if (Math.abs(this.velocity.x) < Rubble.MIN_X_VELOCITY * deltaTime) {
                 this.velocity.x = 0;
             } else {
                 if (this.velocity.x > 0) {

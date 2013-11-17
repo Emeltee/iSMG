@@ -23,11 +23,11 @@ public class LightPillar implements Updatable {
     private static final int FRAME3_Y = 11;
     private static final int FRAME4_Y = 0;            
     
-    private static final int FRAMERATE = 3;
+    private static final float FRAMERATE = 0.15f;
     
     private Sprite [] pillarFrames;
     private TextureRegion lowerBase, upperBase;
-    private int animationTimer;
+    private float animationTimer;
     private int frame;
     private int x;
     private int y;
@@ -56,7 +56,7 @@ public class LightPillar implements Updatable {
     
     @Override
     public void update(float deltaTime) {
-        animationTimer++;
+        animationTimer += deltaTime;
         if (animationTimer > FRAMERATE) {
             animationTimer = 0;
             frame = (frame + 1) % (this.pillarFrames.length);

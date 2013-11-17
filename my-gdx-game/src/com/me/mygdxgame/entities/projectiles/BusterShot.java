@@ -29,7 +29,7 @@ public class BusterShot implements GameEntity, Damager {
     /** TextureRegion representing the idle frame. */
     protected TextureRegion bullet;
     /** Tracks the number of frames that have passed. Used to time animation. */
-    protected short animationTimer = 0;
+    protected float animationTimer = 0;
     /** General-purpose sprite sheet. */
     protected Texture spriteSheet = null;
     /** Sound to play upon destruction when no targets are hit.*/
@@ -129,7 +129,7 @@ public class BusterShot implements GameEntity, Damager {
             }
             
             // Every call, increment the animationTimer.
-            this.animationTimer++;
+            this.animationTimer += deltaTime;
         }
 
     }
@@ -138,7 +138,7 @@ public class BusterShot implements GameEntity, Damager {
     public void draw(Renderer renderer) {
         
         if (this.state == EntityState.Running) {
-            renderer.drawRegion(bullet, this.position.x, this.position.y, this.shotColor, this.shotScale, this.shotScale, 30 * this.animationTimer);
+            renderer.drawRegion(bullet, this.position.x, this.position.y, this.shotColor, this.shotScale, this.shotScale, (int) (300.0f * this.animationTimer));
         }
     }
 
