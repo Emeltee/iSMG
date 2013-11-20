@@ -39,7 +39,6 @@ import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.SeeteufelSide;
 import com.me.mygdxgame.entities.WatchNadia;
-import com.me.mygdxgame.entities.YunaHologram;
 import com.me.mygdxgame.entities.obstacles.DamagingPlatform;
 import com.me.mygdxgame.entities.obstacles.FallingPlatform;
 import com.me.mygdxgame.entities.obstacles.Platform;
