@@ -14,9 +14,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.armor.NormalJacket;
 import com.me.mygdxgame.buster.GeminiBuster;
 import com.me.mygdxgame.buster.MegaBuster;
+import com.me.mygdxgame.combo.HadoukenComboLeft;
+import com.me.mygdxgame.combo.HadoukenComboRight;
 import com.me.mygdxgame.entities.particles.Splash;
 import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
+import com.me.mygdxgame.entities.projectiles.Hadouken;
 import com.me.mygdxgame.utilities.ArmorJacket;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
@@ -24,6 +27,8 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 import com.me.mygdxgame.utilities.BusterPart;
+import com.me.mygdxgame.utilities.SpecialCombo;
+import com.me.mygdxgame.utilities.SpecialComboListener;
 
 public class MegaPlayer implements GameEntity, Damageable {
 
@@ -75,8 +80,18 @@ public class MegaPlayer implements GameEntity, Damageable {
     private float jumpThrustTimer = 0;
     private boolean isFacingRight = false;
     private boolean geminiEnabled = false;
-    private boolean jumpSpringsEnabled = false;
+    private boolean jumpSpringsEnabled = false;    
     private boolean isUnderwater = false;
+    
+    private SpecialComboListener megaComboEngine;
+    private boolean hadoukenEnabled = false;
+	private boolean isHadoukening = false;
+	private TextureRegion[] hadoukenLeft = new TextureRegion[3];
+	private TextureRegion[] hadoukenRight = new TextureRegion[3];
+	private float hadoukenTimer = 0.0f;
+	private static final float HADOUKEN_STARTUP_DELAY = 0.600f;
+	private static final float HADOUKEN_FRAME_TIME = HADOUKEN_STARTUP_DELAY / 3;
+	private static final int HADOUKEN_OFFSET_Y = 8;
     
     private Texture spritesheet = null;
     
@@ -99,7 +114,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private TextureRegion currentFrame = null;
 
 
-    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();
+    private LinkedList<GameEntity> createdEntities = new LinkedList<GameEntity>();	
     
     /**
      * Simple storage class to manage the resources required by MegaPlayer.
@@ -112,6 +127,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         public Sound landSound = null;
         public Sound hurtSound = null;
         public Sound geminiSound = null;
+        public Sound hadoukenSound = null;
         
         private boolean isLoaded = false;
         
@@ -124,6 +140,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-fire1.ogg"));
                 this.geminiSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-gemini-shot.ogg"));
                 this.shotMissSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-miss1.ogg"));
+                this.hadoukenSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-hadouken.ogg"));
                 
                 this.isLoaded = true;
             }
@@ -137,6 +154,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.landSound.dispose();
                 this.shootSound.dispose();
                 this.geminiSound.dispose();
+                this.hadoukenSound.dispose();
                 this.shotMissSound.dispose();
                 
                 this.isLoaded = false;
@@ -154,6 +172,10 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.busterGun = new MegaBuster(spritesheet, this.resources.shootSound, this.resources.shotMissSound);
         this.armor = new NormalJacket();
         this.geminiEnabled = false;
+        
+        this.megaComboEngine = new SpecialComboListener();
+        this.megaComboEngine.addCombo(new HadoukenComboRight());
+        this.megaComboEngine.addCombo(new HadoukenComboLeft());
         
         this.runRight[0] = new TextureRegion(spritesheet, 0, 256,
                 MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
@@ -251,6 +273,17 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpShootLeft[1] = new TextureRegion(this.jumpShootRight[1]);
         this.jumpShootLeft[1].flip(true, false);
         
+        this.hadoukenRight[0] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 2*MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        this.hadoukenRight[1] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 1*MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        this.hadoukenRight[2] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 0*MegaPlayer.SPRITE_HEIGHT + 0 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        
+        this.hadoukenLeft[0] = new TextureRegion(hadoukenRight[0]);
+        this.hadoukenLeft[0].flip(true, false);
+        this.hadoukenLeft[1] = new TextureRegion(hadoukenRight[1]);
+        this.hadoukenLeft[1].flip(true, false);
+        this.hadoukenLeft[2] = new TextureRegion(hadoukenRight[2]);
+        this.hadoukenLeft[2].flip(true, false);
+        
         // Set the default frame.
         this.currentFrame = this.standLeft;
     }
@@ -278,6 +311,32 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.geminiEnabled;
     }
     
+    public void setHadoukenEnabled(boolean hadoukenEnabled) {
+    	this.hadoukenEnabled = hadoukenEnabled;
+    }
+    
+    public boolean isHadoukenEnabled() {
+    	return this.hadoukenEnabled;
+    }
+    
+    private void fireHadouken() {    	    
+    	/* Plays the sound effect and creates a Hadouken projectile */
+    	this.resources.hadoukenSound.play(SFX_VOLUME);
+    	this.shotOrigin.set(this.position);
+        this.shotOrigin.y += MegaPlayer.HADOUKEN_OFFSET_Y;
+        ShotDirection shotDir = ShotDirection.LEFT;        
+        if (this.isFacingRight) {
+            this.shotOrigin.x += 1.5*MegaPlayer.SHOT_OFFSET_X;
+            shotDir = ShotDirection.RIGHT;
+        }        
+        this.tempShot = new Hadouken(this.spritesheet, this.resources.shotMissSound, this.shotOrigin, 300, shotDir, 1, 1, this.obstacles, this.targets);            
+        this.createdEntities.offer(this.tempShot);    	
+    }
+    
+    public SpecialComboListener getComboListener() {
+    	return this.megaComboEngine;
+    }
+       
     public void setJumpSpringsEnabled(boolean jumpSpringsEnabled) {
         this.jumpSpringsEnabled = jumpSpringsEnabled;
     }
@@ -369,13 +428,32 @@ public class MegaPlayer implements GameEntity, Damageable {
     public Rectangle[] getHitArea() {
         return this.hitAreas;
     }
-
+   
     @Override
     public void update(float deltaTime) {
 
+    	this.megaComboEngine.updateComboTimer(deltaTime);
+    	SpecialCombo match = this.megaComboEngine.getMatchedCombo();
+    	if (this.hadoukenEnabled && !this.isHadoukening 
+    		&& ! this.isInAir && this.getHealth() >= this.getMaxHealth() 
+    	    && match != null 
+    	    && (this.isFacingRight && match.equals(new HadoukenComboRight())
+    	        || !this.isFacingRight && match.equals(new HadoukenComboLeft()))) {
+    		this.isHadoukening = true;
+    		this.hadoukenTimer = HADOUKEN_STARTUP_DELAY;    	
+    	
+    	}
+
         // If not flinched, apply user controls. If flinched, just reduce flinch timer.
-        if (this.flinchTimer == 0) {
-            this.handleInput(deltaTime);
+        if (this.flinchTimer == 0) {    
+        	if (!this.isHadoukening) {
+        		this.handleInput(deltaTime);
+        	} else if (this.hadoukenTimer == 0){
+        		this.fireHadouken();
+        		this.isHadoukening = false;
+        	} else {
+        		this.hadoukenTimer = Math.max(this.hadoukenTimer - deltaTime, 0);
+        	}
         } else {
             this.flinchTimer = Math.max(this.flinchTimer - deltaTime, 0);
         }
@@ -461,8 +539,12 @@ public class MegaPlayer implements GameEntity, Damageable {
                 } else {
                     this.currentFrame = this.jumpRight[1];
                 }
+            } else if (this.isHadoukening) {
+            	float timeScaled = this.hadoukenTimer / HADOUKEN_STARTUP_DELAY;
+            	int animationFrame = (timeScaled < .25) ? 2 : (timeScaled < .50) ? 1 : 0;
+            	this.currentFrame = this.hadoukenRight[animationFrame];
             } else if (this.velocity.x == 0) {
-                if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+            	if (Gdx.input.isKeyPressed(Keys.SPACE)) {
                     this.currentFrame = this.standShootRight;
                 } else {
                     this.currentFrame = this.standRight;
@@ -511,6 +593,10 @@ public class MegaPlayer implements GameEntity, Damageable {
             } else {
                 this.currentFrame = this.jumpLeft[1];
             }
+        } else if (this.isHadoukening) {
+        	float timeScaled = this.hadoukenTimer / HADOUKEN_STARTUP_DELAY;
+        	int animationFrame = (timeScaled < .25) ? 2 : (timeScaled < .50) ? 1 : 0;
+        	this.currentFrame = hadoukenLeft[animationFrame];
         } else if (this.velocity.x == 0) {
             if (Gdx.input.isKeyPressed(Keys.SPACE)) {
                 this.currentFrame = this.standShootLeft;
@@ -656,7 +742,7 @@ public class MegaPlayer implements GameEntity, Damageable {
      * @param deltaTime This update's time delta.
      */
     private void handleInput(float deltaTime) {
-        
+    	
         // Acceleration based on key states.
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
             this.isFacingRight = false;
@@ -708,7 +794,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Shooting.
         
-        if (this.busterGun.canMakeShot(deltaTime) && Gdx.input.isKeyPressed(Keys.SPACE)) {
+        if (this.busterGun.canMakeShot(deltaTime) && Gdx.input.isKeyPressed(Keys.SPACE) && !this.isHadoukening) {
             this.shotOrigin.set(this.position);
             this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
             ShotDirection shotDir = ShotDirection.LEFT;

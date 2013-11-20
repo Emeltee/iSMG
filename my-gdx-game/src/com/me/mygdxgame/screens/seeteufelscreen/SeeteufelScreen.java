@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.MyGdxGame;
 import com.me.mygdxgame.cheats.BusterMaxCheat;
 import com.me.mygdxgame.cheats.GeminiShotCheat;
+import com.me.mygdxgame.cheats.HadoukenCheat;
 import com.me.mygdxgame.cheats.JumpSpringsCheat;
 import com.me.mygdxgame.cheats.KevlarOmegaArmorCheat;
 import com.me.mygdxgame.entities.Door;
@@ -37,6 +39,7 @@ import com.me.mygdxgame.entities.Refractor;
 import com.me.mygdxgame.entities.SeeteufelFront;
 import com.me.mygdxgame.entities.SeeteufelSide;
 import com.me.mygdxgame.entities.WatchNadia;
+import com.me.mygdxgame.entities.YunaHologram;
 import com.me.mygdxgame.entities.obstacles.DamagingPlatform;
 import com.me.mygdxgame.entities.obstacles.FallingPlatform;
 import com.me.mygdxgame.entities.obstacles.Platform;
@@ -492,12 +495,18 @@ public class SeeteufelScreen implements GameScreen {
         
         // Setup cheatcode engine
         this.cheatEngine = new GameCheatListener(10, this.itemGet);
-        this.defaultProcessor = Gdx.input.getInputProcessor();
+//        InputMultiplexer newDefaultProcessor = new InputMultiplexer();
+//        System.out.println("Player's combo engine is:"  + this.player.getComboListener());
+//        System.out.println("Default input processor is:"  + Gdx.input.getInputProcessor());
+//        newDefaultProcessor.addProcessor(this.player.getComboListener());        
+//        newDefaultProcessor.addProcessor(Gdx.input.getInputProcessor());
+        this.defaultProcessor = this.player.getComboListener();
         
         this.cheatEngine.addCheat(new BusterMaxCheat(this.player));
         this.cheatEngine.addCheat(new JumpSpringsCheat(this.player));
         this.cheatEngine.addCheat(new GeminiShotCheat(this.player));
         this.cheatEngine.addCheat(new KevlarOmegaArmorCheat(this.player));
+        this.cheatEngine.addCheat(new HadoukenCheat(this.player));
         
         // Set up first map.
         this.entities.add(this.refractor);
@@ -1459,7 +1468,7 @@ public class SeeteufelScreen implements GameScreen {
         		// No cheats unlocked, but Gemini Buster Discovered
         		cheatHead = "! CONGRATULATIONS !";
         		cheatName = "You discovered the secret weapon 'Gemini Buster'.";
-        		cheatSeq = "There are more hidden secrets to be found. Keep playing!";
+        		cheatSeq = "There are more hidden secrets for stylish players. Keep playing!";
         	}
         }
                 
