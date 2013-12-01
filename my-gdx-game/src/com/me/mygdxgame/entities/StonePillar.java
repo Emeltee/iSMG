@@ -8,9 +8,12 @@ import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.Renderer;
 import com.me.mygdxgame.utilities.Updatable;
 
+/**
+ * Simple cosmetic object that resembles a stone pillar. Can be stretched to
+ * fill any height.
+ */
 public class StonePillar implements Updatable {
 
-    // this.pillarTopBaseRegion = new TextureRegion(spriteSheet, 224, 160, 19, 15);
     public static final int PILLAR_BASE_X = 224;
     public static final int PILLAR_BASE_Y = 160;
     public static final int PILLAR_BASE_W = 19;
@@ -84,7 +87,7 @@ public class StonePillar implements Updatable {
 
     @Override
     public int getHeight() {
-        return this.height;// + StonePillar.PILLAR_BASE_H * 2;
+        return this.height;
     }
 
 }

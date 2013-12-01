@@ -14,6 +14,9 @@ import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A {@link GameMap} used by {@link SeeteufelScreen}.
+ */
 public class FirstMap extends GameMap {
     
     private int animationFrame = 0;

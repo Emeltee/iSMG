@@ -12,6 +12,10 @@ import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A variety of {@link BusterShot} with a high minimum power value. Color and
+ * scale cannot be altered.
+ */
 public class Hadouken extends BusterShot {
 	
 	private static final int HADOUKEN_1_X = 211;

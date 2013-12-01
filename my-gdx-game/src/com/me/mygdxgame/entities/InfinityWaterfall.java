@@ -11,6 +11,10 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A cosmetic {@link GameEntity} resembling a waterfall. May be stretched
+ * vertically to fill any height. Visuals will tile and animate as appropriate.
+ */
 public class InfinityWaterfall implements GameEntity {
 
     private static final int MIN_HEIGHT = 1;

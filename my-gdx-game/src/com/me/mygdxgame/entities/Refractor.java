@@ -14,7 +14,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-
+/**
+ * Simple cosmetic {@link GameEntity} resembling a giant crystal. Upon being
+ * collected via {@link #onTake()}, plays a sound and displays a short,
+ * temporary message.
+ */
 public class Refractor implements GameEntity {
 
     // Texture extraction constants 
@@ -101,6 +105,10 @@ public class Refractor implements GameEntity {
         throw new NoSuchElementException("No elements to return.");
     }
     
+    /**
+     * Call to "take" this entity. A brief message will be displayed, and after
+     * some time the entity will be destroyed.
+     */
     public void onTake() {
         // Originally this was going to have more logic, but it makes more sense
         // to put it in update().

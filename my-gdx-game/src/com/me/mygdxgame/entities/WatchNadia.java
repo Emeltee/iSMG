@@ -13,6 +13,13 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Essentially a companion class to {@link MegaPlayer}. Upon being damaged, sets
+ * a flag in MegaPlayer, changing the projectile it generates. Class name
+ * probably doesn't mean anything.
+ * 
+ * TODO Probably not the best way to go about this.
+ */
 public class WatchNadia implements Damageable {
     
     private Sprite watchNadia;

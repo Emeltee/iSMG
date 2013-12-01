@@ -7,6 +7,9 @@ import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
+/**
+ * A variety of {@link Rubble}.
+ */
 public class FatRubble extends Rubble {
     // Texture control constants, get passed up into super-class instance vars
     public static final int RUBBLE_X = 189;

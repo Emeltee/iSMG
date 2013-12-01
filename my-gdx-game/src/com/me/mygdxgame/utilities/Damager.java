@@ -1,7 +1,7 @@
 package com.me.mygdxgame.utilities;
 
 /**
- * Interface for objects that can deal power.
+ * Interface for objects that can deal damage.
  */
 public interface Damager extends GameEntity {
     

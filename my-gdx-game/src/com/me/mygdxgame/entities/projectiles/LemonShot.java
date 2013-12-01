@@ -9,6 +9,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.GameEntity;
 
+/**
+ * A variety of {@link BusterShot} with slightly altered visuals. Otherwise,
+ * they are functionally identical.
+ */
 public class LemonShot extends BusterShot {
 
     public LemonShot(Texture spriteSheet, Sound missSound, Vector3 position,

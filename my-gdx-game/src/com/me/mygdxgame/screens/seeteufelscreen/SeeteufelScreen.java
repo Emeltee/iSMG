@@ -59,7 +59,28 @@ import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 /**
- * TODO
+ * A more difficult platforming {@link GameScreen} intended to be used as a
+ * "boss" level. Involves three distinct stages.
+ * <p>
+ * The first stage is simply for buildup, and for introducing the player to the
+ * {@link GameEntity} they control if needed ({@link MegaPlayer}). Involves a
+ * small room containing a {@link Door} and a {@link Refractor}. The Door begins
+ * closed, but opens upon collecting the Refractor. Touching the door and
+ * pressing down moves to the second area.
+ * 
+ * The second area involves climbing upwards on a series of {@link Platform}s
+ * set up like stairs, as the visible area pans upwards and a
+ * {@link SeeteufelFront} destroys Platforms in a semi-random manner. Platforms
+ * should never be destroyed in such a way as to render the segment unbeatable.
+ * Falling below the visible area of the screen results in a loss. Part of the
+ * way through the segment, the rate at which the screen pans upwards will
+ * increase.
+ * <p>
+ * The third segment begins upon reaching the top of the second area, and
+ * involves a fight with a {@link SeeteufelSide}.
+ * <p>
+ * Upon clearing all three segments, a Door is opened through which the player
+ * may enter to win.
  */
 public class SeeteufelScreen implements GameScreen {
     

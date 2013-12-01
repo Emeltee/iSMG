@@ -7,12 +7,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Renderer;
 import com.me.mygdxgame.utilities.Updatable;
 
+/**
+ * Cosmetic {@link Updatable}. A thin horizontal border that may be tiled to
+ * will any width.
+ */
 public class LightBorder implements Updatable {
 
-    /* This is a background element, which isn't usually an entity,
-     * but it just makes sense for this, I think..
-     */   
-    
     private static final int BORDER_W = 10;
     private static final int BORDER_H = 10;
     

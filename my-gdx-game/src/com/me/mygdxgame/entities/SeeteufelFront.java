@@ -15,6 +15,16 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A {@link GameEntity} made specifically for {@link SeeteufelScreen}.
+ * <p>
+ * Takes a target Y coordinate. If it is above that coordinate, it will move
+ * downwards until it reaches it. Upon reaching the destination y, it creates a
+ * large number of {@link Splash} particles, as though landing in water. Given a
+ * target y above its current y, it simply snaps to that position. An outside
+ * entity such as a {@link GameScreen} can direct this entity to fire
+ * {@link Rocket}s at various targets.
+ */
 public class SeeteufelFront implements GameEntity {
     
     private static final int BASE_WIDTH = 98;

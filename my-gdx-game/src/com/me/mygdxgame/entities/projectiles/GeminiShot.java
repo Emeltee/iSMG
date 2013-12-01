@@ -10,16 +10,23 @@ import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 
+/**
+ * A variety of {@link BusterShot} with more power and range. Shot will also
+ * ricochet off of walls and ceiling for some time. After a number of ricochets,
+ * object will begin ignoring collision detections, causing it to fly off-screen
+ * and eventually destroy itself.
+ * <p>
+ * Only a set number may be in existence at any given time. This is managed by a
+ * static counter. Ensure that all instances are properly {@link #destroy()}ed
+ * or otherwise allowed to die naturally.
+ */
 public class GeminiShot extends BusterShot {
 
     private static final int GEMINI_W = 7;
     private static final int GEMINI_H = 5;
-    
     private static final int MAX_SHOTS = 6;
     private static int currentShots = 0;
-
     public static final int MAX_DEFLECTS = 6;
-
     public static enum ShotDeflection {
         UP, DOWN
     };

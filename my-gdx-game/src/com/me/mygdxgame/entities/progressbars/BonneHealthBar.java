@@ -8,6 +8,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.ProgressBar;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A horizontal Bonne-themed {@link ProgressBar}.
+ */
 public class BonneHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions
