@@ -9,6 +9,7 @@ import com.me.mygdxgame.utilities.GameCheat;
 
 public class HadoukenCheat extends GameCheat {
 
+	/** {link MegaPlayer} object to toggle Hadouken on and off */
 	private MegaPlayer player;
 	
 	public HadoukenCheat(MegaPlayer player) {
@@ -18,6 +19,10 @@ public class HadoukenCheat extends GameCheat {
 	
 	
 	@Override
+	/** Checks whether provided {@link MegaPlayer} object has Hadouken mode enabled.
+	 * (Note: Does not rely on the enabled flag from abstract super class {@link GameCheat}.)
+	 * @return Boolean indicating whether or not Hadouken mode is on.
+	 */
 	public boolean isEnabled() {
 		if (this.player != null) {
 			return this.player.isHadoukenEnabled();
@@ -27,6 +32,9 @@ public class HadoukenCheat extends GameCheat {
 	}
 
 	@Override
+	/** 
+	 * Enables the Hadouken mode state for provided {@link MegaPlayer} object.
+	 */
 	public void enableCheat() {
 		if (this.player != null) {
 			this.player.setHadoukenEnabled(true);
@@ -34,6 +42,9 @@ public class HadoukenCheat extends GameCheat {
  	}
 
 	@Override
+	/**
+	 * Disables the Hadouken mode state for provided {@link MegaPlayer} object.
+	 */
 	public void disableCheat() {
 		if (this.player != null) {
 			this.player.setHadoukenEnabled(false);
