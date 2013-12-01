@@ -11,8 +11,9 @@ import com.me.mygdxgame.utilities.EntityState;
  * While falling, an empty array will be returned when the hit area is queried.
  * Therefore, collisions should only register with it when it is at rest.
  * <p>
- * Once the destination y position is reached, the platform can be made to fall
- * again to some new target y.
+ * Once the destination y position is reached, the platform will stop falling,
+ * regardless of whether the target y is changed later. It can be made to fall
+ * again {@link #fall()}.
  */
 public class FallingPlatform extends Platform {
     

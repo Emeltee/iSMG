@@ -13,8 +13,8 @@ import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.GameEntity;
 
 /**
- * An obstacles that, when damaged, creates several rubble objects that fall 
- * downwards and damage targets on contact.
+ * An obstacles that, when damaged, creates several {@link Rubble} objects that
+ * fall downwards and damage targets on contact.
  */
 public class DamagingPlatform extends Platform {
 
