@@ -2,6 +2,11 @@ package com.me.mygdxgame.armor;
 
 import com.me.mygdxgame.utilities.ArmorJacket;
 
+/**
+ * Normal Jacket stats:
+ * No change
+ *
+ */
 
 public class NormalJacket implements ArmorJacket {
 

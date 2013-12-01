@@ -5,43 +5,72 @@ import java.util.List;
 
 import com.badlogic.gdx.Input;
 
-public abstract class GameCheat {    
+/** GameCheat class enables/disables an effect to the game 
+  * through void methods. Effects toggled by entering a key
+  * sequence. Key sequence is matched by {@link GameCheatListener}.
+  */
+
+public abstract class GameCheat {
     
-    /* GameCheat class enables/disables an effect to the game 
-     * through void methods. Effects toggled by entering a key
-     * sequence. Key sequence is matched by GameCheatListener.
-     */
-    
+	/** Flag indicating whether cheat is enabled. (Note: Not all cheats actually use this.) */
     protected boolean enabled;
     
     public GameCheat() {
         this.enabled = false;
     }    
     
+    /** Accessor for command sequence, ensures GameCheat objects provide key sequences for codes.
+     *  (Note: Integers should correspond to codes from the constants in Input.Keys.)
+     * @return A list of Integer key codes for command input sequence
+     */
     public abstract List<Integer> getSequence();
+    
+    /** Accessor for cheat description, guarantees GameCheat objects provide a description.
+     * @return A string name or description of the cheat's effect
+     */
     public abstract String getDescription();
     
+    /** Determines the enabled state of the cheat. May rely on the enabled instance var, but doesn't have to.
+     * @return A boolean indicating whether or not the cheat is enabled.
+     */
     public boolean isEnabled() {
         return this.enabled;        
     };    
     
+    /** Applies the effect of the cheat to the game. This may depend on any instance vars included
+     * per implementation of GameCheat. (Note: It may be necessary to track enabled status in this
+     * method, which the abstract GameCheat super-class provides by default.)
+     */
     public void enableCheat() {
         this.enabled = true; 
     };
+    
+    /** Removes the effect of the cheat from the game. This may depend on any instance vars
+     * included per implementation of GameCheat. (Note: It may be necessary to track enabled 
+     * status in this method, which the abstract GameCheat super-class provides by default.)
+     */
     public void disableCheat() {
         this.enabled = false; 
     };    
     
+    /** Translates the sequence of Integers into a String.
+     * @return A String representation of the command input sequence
+     */
     public String getSequenceString() {
     	Iterator<Integer> sequence = this.getSequence().iterator();
     	StringBuilder builder = new StringBuilder("[" + GameCheat.translateKeyCode(sequence.next()) + "]");
     	while (sequence.hasNext()) {
-    		builder.append(" [" + GameCheat.translateKeyCode(sequence.next())+"]");
+    		builder.append(" [" + GameCheat.translateKeyCode(sequence.next()) + "]");
     	}
     	return builder.toString();
     	
     }
         
+    /** Determines whether two cheats are equal based on their key input sequences.
+     * (Note: Matching cheats by command sequence should be sufficient for most cases, which
+     * the GameCheat abstract super-class provides by default, but additional logic may be
+     * necessary in some implementations of GameCheat.)
+     */
     @Override
 	public boolean equals(Object obj) {
     	// Equality based on same key-sequence; this can avoid overlapping cheat-codes
@@ -52,22 +81,24 @@ public abstract class GameCheat {
 		}
 	}
 
+    /** Maps Integer key codes from the Input.Keys set of constants to String values.
+     * @param keyCode
+     * @return A String representation of the provided keycode
+     */
 	protected static String translateKeyCode (int keyCode) {
-    	// Translates Input.Keys constants into Strings
-    	// (Used a regex on a function that translated awt constants
-    	// to Input.Keys constants to make this.)
-    	if (keyCode == Input.Keys.PLUS) return "PLUS";
-    	if (keyCode == Input.Keys.MINUS) return "MINUS";
-    	if (keyCode == Input.Keys.NUM_0) return "NUM_0";
-    	if (keyCode == Input.Keys.NUM_1) return "NUM_1";
-    	if (keyCode == Input.Keys.NUM_2) return "NUM_2";
-    	if (keyCode == Input.Keys.NUM_3) return "NUM_3";
-    	if (keyCode == Input.Keys.NUM_4) return "NUM_4";
-    	if (keyCode == Input.Keys.NUM_5) return "NUM_5";
-    	if (keyCode == Input.Keys.NUM_6) return "NUM_6";
-    	if (keyCode == Input.Keys.NUM_7) return "NUM_7";
-    	if (keyCode == Input.Keys.NUM_8) return "NUM_8";
-    	if (keyCode == Input.Keys.NUM_9) return "NUM_9";
+    	// (Note: I Used a regex on a function that translated awt constants to Input.Keys constants to make this. ^_^)
+    	if (keyCode == Input.Keys.PLUS) return "+";
+    	if (keyCode == Input.Keys.MINUS) return "-";
+    	if (keyCode == Input.Keys.NUM_0) return "0";
+    	if (keyCode == Input.Keys.NUM_1) return "1";
+    	if (keyCode == Input.Keys.NUM_2) return "2";
+    	if (keyCode == Input.Keys.NUM_3) return "3";
+    	if (keyCode == Input.Keys.NUM_4) return "4";
+    	if (keyCode == Input.Keys.NUM_5) return "5";
+    	if (keyCode == Input.Keys.NUM_6) return "6";
+    	if (keyCode == Input.Keys.NUM_7) return "7";
+    	if (keyCode == Input.Keys.NUM_8) return "8";
+    	if (keyCode == Input.Keys.NUM_9) return "9";
     	if (keyCode == Input.Keys.A) return "A";
     	if (keyCode == Input.Keys.B) return "B";
     	if (keyCode == Input.Keys.C) return "C";
@@ -96,21 +127,18 @@ public abstract class GameCheat {
     	if (keyCode == Input.Keys.Z) return "Z";
     	if (keyCode == Input.Keys.ALT_LEFT) return "ALT_LEFT";
     	if (keyCode == Input.Keys.ALT_RIGHT) return "ALT_RIGHT";
-    	if (keyCode == Input.Keys.BACKSLASH) return "BACKSLASH";
-    	if (keyCode == Input.Keys.COMMA) return "COMMA";
-    	if (keyCode == Input.Keys.DEL) return "DEL";
+    	if (keyCode == Input.Keys.BACKSLASH) return "\\";
+    	if (keyCode == Input.Keys.COMMA) return ",";
     	if (keyCode == Input.Keys.DPAD_LEFT) return "LEFT";
     	if (keyCode == Input.Keys.DPAD_RIGHT) return "RIGHT";
     	if (keyCode == Input.Keys.DPAD_UP) return "UP";
     	if (keyCode == Input.Keys.DPAD_DOWN) return "DOWN";
     	if (keyCode == Input.Keys.ENTER) return "ENTER";
     	if (keyCode == Input.Keys.HOME) return "HOME";
-    	if (keyCode == Input.Keys.MINUS) return "MINUS";
-    	if (keyCode == Input.Keys.PERIOD) return "PERIOD";
-    	if (keyCode == Input.Keys.PLUS) return "PLUS";
-    	if (keyCode == Input.Keys.SEMICOLON) return "SEMICOLON";
+    	if (keyCode == Input.Keys.PERIOD) return ".";
+    	if (keyCode == Input.Keys.SEMICOLON) return ";";
     	if (keyCode == Input.Keys.SHIFT_LEFT) return "SHIFT_LEFT";
-    	if (keyCode == Input.Keys.SLASH) return "SLASH";
+    	if (keyCode == Input.Keys.SLASH) return "/";
     	if (keyCode == Input.Keys.SPACE) return "SPACE";
     	if (keyCode == Input.Keys.TAB) return "TAB";
     	if (keyCode == Input.Keys.DEL) return "DEL";
@@ -133,7 +161,7 @@ public abstract class GameCheat {
     	if (keyCode == Input.Keys.F10) return "F10";
     	if (keyCode == Input.Keys.F11) return "F11";
     	if (keyCode == Input.Keys.F12) return "F12";
-    	if (keyCode == Input.Keys.COLON) return "COLON";
+    	if (keyCode == Input.Keys.COLON) return ":";
 
     	return "UNKNOWN";
     }

@@ -2,6 +2,10 @@ package com.me.mygdxgame.buster;
 
 import com.me.mygdxgame.utilities.BusterPart;
 
+/** 
+ * Buster MAX stats:
+ * All: MAX
+ */
 
 public class BusterMax implements BusterPart {
 
