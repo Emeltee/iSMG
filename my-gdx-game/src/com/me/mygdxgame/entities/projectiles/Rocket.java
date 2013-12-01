@@ -15,6 +15,10 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A simple {@link Damager} that travels in a specified direction at a constant
+ * speed until colliding with something or until an internal timer runs out.
+ */
 public class Rocket implements GameEntity, Damager {
     
     // Constants for extracting bullet from Texture

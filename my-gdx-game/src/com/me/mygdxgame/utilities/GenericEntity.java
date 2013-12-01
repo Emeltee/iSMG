@@ -8,7 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
- * Generic entity used to pass around static lists of obstacles.
+ * Generic entity used to pass around static lists of obstacles, retrieved via a
+ * call to {@link #getHitArea()}.
  */
 public class GenericEntity implements GameEntity {
     

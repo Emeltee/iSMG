@@ -6,7 +6,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 /**
- * Simple damager that can be used to deal damage/knockback anonymously.
+ * Simple damager that can be used to deal damage/knockback anonymously. Create
+ * with the attributes desired and pass to a {@link Damageable}.
  */
 public class GenericDamager implements Damager {
 

@@ -11,6 +11,10 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Simple yellow burst-looking particle. Hovers in the position it is created
+ * at until its animation finishes. No effects other than being visual sweetener.
+ */
 public class Explosion implements GameEntity {
 
     // Texture constants

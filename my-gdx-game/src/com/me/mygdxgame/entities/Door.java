@@ -11,6 +11,11 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A cosmetic {@link GameEntity} resembling an ornate stone/metal door. Has an
+ * open and closed state with corresponding visuals, which may be toggled at
+ * will.
+ */
 public class Door implements GameEntity {
     
     // Door has its own state, separate from Running/Destroyed

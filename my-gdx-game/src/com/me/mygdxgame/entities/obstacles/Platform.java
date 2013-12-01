@@ -17,6 +17,10 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A simple {@link Damageable} obstacle that explodes into {@link Rubble} upon
+ * being destroyed. Generated Rubble have no targets, and are purely cosmetic.
+ */
 public class Platform implements Damageable {
 
     protected static final int PLATFORM_X = 0;
@@ -110,7 +114,7 @@ public class Platform implements Damageable {
         return this.hitArea;
     }
     
-    public void explode() {
+    protected void explode() {
         // Since rubble stops when it hits an obstacle, this rectangle acts as a trap to stop the rubble after a certain point.
         this.rubble = new Rubble [] {
                 new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),

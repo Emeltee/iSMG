@@ -7,6 +7,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.Renderer;
 import com.me.mygdxgame.utilities.Updatable;
 
+/**
+ * Cosmetic {@link Updatable} resembling a pillar of light with stone pedestals
+ * at the top and bottom. May be stretched to fill any height; the center
+ * "light" area will tile as needed.
+ */
 public class LightPillar implements Updatable {
 
     private static final int PILLAR_BASE_X = 0;

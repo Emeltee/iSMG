@@ -11,6 +11,14 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Simple water splash particle. Take the form of small circles that fly upwards
+ * and then back down in an arch. Diameter of the circle shrinks over time, and
+ * particle is destroyed when either a timer runs out or its size gets small
+ * enough. Initial velocity/direction, size, and color can be specified.
+ * <p>
+ * No effects other than being visual sweetener.
+ */
 public class Splash implements GameEntity {
     
     // Minimum velocity values.

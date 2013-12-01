@@ -6,6 +6,14 @@ import com.badlogic.gdx.math.Rectangle;
 import com.me.mygdxgame.screens.seeteufelscreen.SeeteufelScreen;
 import com.me.mygdxgame.utilities.EntityState;
 
+/**
+ * An obstacle that can be made to fall downwards to some specified y position.
+ * While falling, an empty array will be returned when the hit area is queried.
+ * Therefore, collisions should only register with it when it is at rest.
+ * <p>
+ * Once the destination y position is reached, the platform can be made to fall
+ * again to some new target y.
+ */
 public class FallingPlatform extends Platform {
     
     private static final int GRAVITY = 400;
@@ -23,6 +31,7 @@ public class FallingPlatform extends Platform {
         this.hitArea[0] = this.hitbox;
     }
     
+    @Override
     public void update(float deltaTime) {
         if (this.status == EntityState.Running) {
             if (this.health <= 0) {
@@ -44,19 +53,38 @@ public class FallingPlatform extends Platform {
         }
     }
     
+    @Override
     public Rectangle [] getHitArea() {
         // Prevent collision detection until the platform lands
         return (this.hasLanded) ? this.hitArea : this.emptyHitArea;
     }
     
+    /**
+     * Sets the y coordinate that this platform should fall to upon calling
+     * {@link #fall()}. Target y may be changed mid-fall. Changing the target y
+     * to a position greater than or equal to the platform's current position
+     * will cause it to land.
+     * 
+     * @param targetY The y coordinate this platform should fall to.
+     */
     public void setTargetY(int targetY) {
         this.destinationY = targetY;
     }
     
+    /**
+     * Check whether or not this platform is falling or has fallen.
+     * 
+     * @return True if platform is at rest, false if it is falling.
+     */
     public boolean hasFallen() {
         return this.hasLanded;
     }
     
+    /**
+     * If platform is at rest, triggers a fall. Platform will begin moving
+     * downwards to its target y coordinate. Has no effect if platform is
+     * already falling.
+     */
     public void fall() {
         this.hasLanded = false;
     }

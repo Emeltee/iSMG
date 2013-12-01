@@ -15,6 +15,11 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Simple {@link Damager}s. Initial velocity is specified. Rubble then begins
+ * getting pulled downwards by gravity. Horizontal movement also slows to 0
+ * over time.
+ */
 public abstract class Rubble implements GameEntity, Damager {
     
     /** Sprite to be drawn */

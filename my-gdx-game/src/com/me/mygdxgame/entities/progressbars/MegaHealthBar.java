@@ -8,6 +8,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.me.mygdxgame.utilities.ProgressBar;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A vertical {@link ProgressBar} resembling the player's health bar from
+ * Mega Man Legends.
+ */
 public class MegaHealthBar implements ProgressBar {
 
     // Texture extraction coordinates and dimensions (Healthbar-chrome texture)

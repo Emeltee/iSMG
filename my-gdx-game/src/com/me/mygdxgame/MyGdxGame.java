@@ -18,6 +18,9 @@ import com.me.mygdxgame.utilities.GameState;
  * TODO Find a better way to test entities/maps so that it isn't necessary to
  *      come in here and set the screen to a test screen each time we want to check something.
  * TODO Physics is still slightly off when running at different frame rates. Fix.
+ * TODO sprites for common entities such as particles should maybe be pulled out
+ *      into their own sprite sheet, to remain in memory even as screens switch.
+ * TODO Real plugin system for MegaPlayer armor/weapons.
  */
 public class MyGdxGame implements ApplicationListener 
 {

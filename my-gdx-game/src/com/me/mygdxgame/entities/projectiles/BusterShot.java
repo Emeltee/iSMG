@@ -15,6 +15,10 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Simple {@link Damager} that moves at a constant speed to the left or right
+ * until hitting an obstacle or target, or until an internal timer runs out.
+ */
 public class BusterShot implements GameEntity, Damager {
     
     // Just controlling which way it goes.
@@ -62,8 +66,6 @@ public class BusterShot implements GameEntity, Damager {
     protected Collection<GameEntity> obstacles;
     /** Stuff to hurt.*/
     protected Collection<Damageable> targets;
-  
-    public BusterShot() {}
     
     public BusterShot(Texture spriteSheet, Sound missSound, Vector3 position, int speed,
             ShotDirection dir, int power, float range, Collection<GameEntity> obstacles,

@@ -15,9 +15,17 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * Simple {@link Damager} that moves in an arch. It starts with an initial
+ * velocity and slowly gets pulled downwards by gravity.
+ * <p>
+ * Is capable of moving and colliding with objects along the z axis, although
+ * this behavior has not been tested. For basic usage in 2D space, simply set
+ * the z velocity to 0.
+ */
 public class Bomb implements GameEntity, Damager {
     
-    // Constants for extracting bullet from Texture
+    // Constants for extracting image from Texture
     private static final int BOMB_X = 210;
     private static final int BOMB_Y = 175;
     private static final int BOMB_W = 16;

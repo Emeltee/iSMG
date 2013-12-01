@@ -22,6 +22,17 @@ import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
+/**
+ * A {@link GameEntity} made specifically for {@link SeeteufelScreen}.
+ * <p>
+ * On creation, moved to the left until hitting an obstacle. It then begins
+ * creating {@link Bomb}s, and {@link LemonShot}s aimed left. Can also fire
+ * {@link Rocket}s at targets above it; these are expected to be
+ * {@link DamagingPlatform}s. The rate of attack increases as health decreases.
+ * <p>
+ * Upon running out of health, entity will slowly sink downwards, eventually
+ * marking itself as {@link EntityState#Destroyed}.
+ */
 public class SeeteufelSide implements GameEntity, Damageable {
 
     private static final int TARGET_Y_OFFSET = 20;
