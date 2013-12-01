@@ -8,11 +8,6 @@ import com.me.mygdxgame.utilities.EntityState;
 
 public class FallingPlatform extends Platform {
     
-    /* This is untested, but it seems simple enough and I'm too tired to check,
-     * so if you're planning on finishing this tonight and there's a problem,
-     * there's a decent chance it's here.
-     */
-    
     private static final int GRAVITY = 400;
     private int destinationY;
     private boolean hasLanded;

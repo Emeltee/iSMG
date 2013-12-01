@@ -14,8 +14,6 @@ public class GeminiShot extends BusterShot {
 
     private static final int GEMINI_W = 7;
     private static final int GEMINI_H = 5;
-    // TODO
-    //private static final float MAX_MOVEMEMT = Math.min(GEMINI_W, GEMINI_H);
     
     private static final int MAX_SHOTS = 6;
     private static int currentShots = 0;
@@ -52,7 +50,8 @@ public class GeminiShot extends BusterShot {
     }
 
     public GeminiShot(BusterShot shot) {
-        this(shot.spriteSheet, shot.missSound, shot.position, shot.speed, shot.dir, shot.power, shot.range, shot.obstacles, shot.targets);
+        this(shot.spriteSheet, shot.missSound, shot.position, shot.speed, shot.dir,
+                shot.power, shot.range, shot.obstacles, shot.targets);
         this.setShotScale(shot.getShotScale());
     }
     
@@ -136,7 +135,8 @@ public class GeminiShot extends BusterShot {
                     if (!this.isDeflected) {
                         this.isDeflected = true;
                         this.dir2 = ShotDeflection.UP;
-                        this.dir = (this.dir == BusterShot.ShotDirection.LEFT) ? BusterShot.ShotDirection.RIGHT : BusterShot.ShotDirection.LEFT;
+                        this.dir = (this.dir == BusterShot.ShotDirection.LEFT) ? 
+                                BusterShot.ShotDirection.RIGHT : BusterShot.ShotDirection.LEFT;
                     }
                     
                     return;

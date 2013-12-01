@@ -42,7 +42,8 @@ public class HadoukenCheat extends GameCheat {
 
 	@Override
 	public List<Integer> getSequence() {
-		return Arrays.asList(new Integer[] {Input.Keys.DOWN, Input.Keys.RIGHT, Input.Keys.DOWN,Input.Keys.RIGHT,Input.Keys.SPACE});
+		return Arrays.asList(new Integer[] {Input.Keys.DOWN, Input.Keys.RIGHT,
+		        Input.Keys.DOWN,Input.Keys.RIGHT,Input.Keys.SPACE});
 	}
 
 	@Override

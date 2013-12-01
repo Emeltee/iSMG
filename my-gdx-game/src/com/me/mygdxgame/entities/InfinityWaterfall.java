@@ -79,7 +79,8 @@ public class InfinityWaterfall implements GameEntity {
     public void draw(Renderer renderer) {
         
         // Draw grating.
-        renderer.drawRegion(this.grateRegion, this.x + 1 - (this.grateRegion.getRegionWidth() - this.waterfall.getRegionWidth()) / 2.0f,
+        renderer.drawRegion(this.grateRegion, 
+                this.x + 1 - (this.grateRegion.getRegionWidth() - this.waterfall.getRegionWidth()) / 2.0f,
                 this.y - this.grateRegion.getRegionHeight() + 2);
         
         // Draw body.

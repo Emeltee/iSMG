@@ -21,12 +21,12 @@ import com.me.mygdxgame.entities.projectiles.BusterShot;
 import com.me.mygdxgame.entities.projectiles.BusterShot.ShotDirection;
 import com.me.mygdxgame.entities.projectiles.Hadouken;
 import com.me.mygdxgame.utilities.ArmorJacket;
+import com.me.mygdxgame.utilities.BusterPart;
 import com.me.mygdxgame.utilities.Damageable;
 import com.me.mygdxgame.utilities.Damager;
 import com.me.mygdxgame.utilities.EntityState;
 import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
-import com.me.mygdxgame.utilities.BusterPart;
 import com.me.mygdxgame.utilities.SpecialCombo;
 import com.me.mygdxgame.utilities.SpecialComboListener;
 
@@ -39,7 +39,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
     private static final int HITBOX_OFFSET_Y = 5;
-    //private static final float MAX_BUSTER_COOLDOWN = 0.3f;
     private static final float MAX_FLINCH_TIME = 0.3f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
     public static final float MAX_SPEED = 210.0f;
@@ -50,11 +49,8 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final float DECELERATION = 60.0f;
     private static final float RUN_FRAMERATE = 0.175f;
     private static final short MAX_RUN_FRAMES = 4;
-    //private static final int BASE_SHOT_SPEED = 300;
-    //private static final int BASE_SHOT_POWER = 1;
     private static final float SHOT_OFFSET_Y = 16;
     private static final float SHOT_OFFSET_X = 16;
-    //private static final float BASE_SHOT_RANGE = 300;
     private static final float WATER_MOVEMENT_FACTOR = 1.5f;
     
     private static final float SFX_VOLUME = 0.5f;
@@ -78,6 +74,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     private boolean canJump = true;
     private float flinchTimer = 0;
     private float jumpThrustTimer = 0;
+    private float appliedVerticalDelta = 0;
     private boolean isFacingRight = false;
     private boolean geminiEnabled = false;
     private boolean jumpSpringsEnabled = false;    
@@ -90,7 +87,6 @@ public class MegaPlayer implements GameEntity, Damageable {
 	private TextureRegion[] hadoukenRight = new TextureRegion[3];
 	private float hadoukenTimer = 0.0f;
 	private static final float HADOUKEN_STARTUP_DELAY = 0.600f;
-	private static final float HADOUKEN_FRAME_TIME = HADOUKEN_STARTUP_DELAY / 3;
 	private static final int HADOUKEN_OFFSET_Y = 8;
     
     private Texture spritesheet = null;
@@ -273,9 +269,12 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.jumpShootLeft[1] = new TextureRegion(this.jumpShootRight[1]);
         this.jumpShootLeft[1].flip(true, false);
         
-        this.hadoukenRight[0] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 2*MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.hadoukenRight[1] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 1*MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
-        this.hadoukenRight[2] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 0*MegaPlayer.SPRITE_HEIGHT + 0 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        this.hadoukenRight[0] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 
+                2 * MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        this.hadoukenRight[1] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH, 
+                1 * MegaPlayer.SPRITE_HEIGHT + 1 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
+        this.hadoukenRight[2] = new TextureRegion(spritesheet, 4*MegaPlayer.SPRITE_WIDTH,
+                0 * MegaPlayer.SPRITE_HEIGHT + 0 + 256, MegaPlayer.SPRITE_WIDTH, MegaPlayer.SPRITE_HEIGHT);
         
         this.hadoukenLeft[0] = new TextureRegion(hadoukenRight[0]);
         this.hadoukenLeft[0].flip(true, false);
@@ -329,7 +328,8 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.shotOrigin.x += 1.5*MegaPlayer.SHOT_OFFSET_X;
             shotDir = ShotDirection.RIGHT;
         }        
-        this.tempShot = new Hadouken(this.spritesheet, this.resources.shotMissSound, this.shotOrigin, 300, shotDir, 1, 1, this.obstacles, this.targets);            
+        this.tempShot = new Hadouken(this.spritesheet, this.resources.shotMissSound,
+                this.shotOrigin, 300, shotDir, 1, 1, this.obstacles, this.targets);            
         this.createdEntities.offer(this.tempShot);    	
     }
     
@@ -345,7 +345,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         return this.jumpSpringsEnabled;
     }
     
-    private float getJumpThrustLimit() {
+    private float computeJumpThrustLimit() {
         return MegaPlayer.MAX_JUMP_THRUST_TIME * ((this.jumpSpringsEnabled) ? 1.2f : 1.0f);
     }
     
@@ -432,6 +432,7 @@ public class MegaPlayer implements GameEntity, Damageable {
     @Override
     public void update(float deltaTime) {
 
+        // Check for button combos.
     	this.megaComboEngine.updateComboTimer(deltaTime);
     	SpecialCombo match = this.megaComboEngine.getMatchedCombo();
     	if (this.hadoukenEnabled && !this.isHadoukening 
@@ -444,6 +445,9 @@ public class MegaPlayer implements GameEntity, Damageable {
     	
     	}
 
+    	// Set value used for scaling jump thrust and gravity to default value.
+    	this.appliedVerticalDelta = deltaTime;
+    	
         // If not flinched, apply user controls. If flinched, just reduce flinch timer.
         if (this.flinchTimer == 0) {    
         	if (!this.isHadoukening) {
@@ -472,7 +476,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         // Apply constant forces.
         this.handlePhysics(deltaTime);
         
-        // Update visuals and play relevent sounds.
+        // Update visuals and play relevant sounds.
         this.determineFrame(deltaTime);
     }
 
@@ -483,15 +487,6 @@ public class MegaPlayer implements GameEntity, Damageable {
         float drawPositionY = this.position.y - MegaPlayer.HITBOX_OFFSET_Y;
         
         renderer.drawRegion(this.currentFrame, drawPositionX, drawPositionY);
-        
-//        // Test code. Draws hitbox as overlay.
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        MyGdxGame.currentGame.shapeRenderer.begin(ShapeType.Filled);
-//        MyGdxGame.currentGame.shapeRenderer.setColor(new Color(0, 0, 1, 0.5f));
-//        MyGdxGame.currentGame.shapeRenderer.setProjectionMatrix(MyGdxGame.currentGame.perspectiveCamera.combined);
-//        MyGdxGame.currentGame.shapeRenderer.rect(this.hitBox.x, this.hitBox.y, this.hitBox.width, this.hitBox.height);
-//        MyGdxGame.currentGame.shapeRenderer.end();
     }
 
     @Override
@@ -675,6 +670,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                         this.velocity.y = 0;
                         this.isJumping = false;
                         this.jumpThrustTimer = 0;
+                        this.isInAir = true;
                         return;
                     }
                 }
@@ -779,21 +775,24 @@ public class MegaPlayer implements GameEntity, Damageable {
         }
         
         // If already jumping, ascend upwards for as long as indicated by the
-        // timer.
+        // timer. Save amount of delta time applied; gravity will need to be
+        // scaled accordingly.
         if (this.isJumping) {
-            if (this.jumpThrustTimer < this.getJumpThrustLimit()) {
+            float jumpThrustTimeLimit = this.computeJumpThrustLimit();
+            if (this.jumpThrustTimer < jumpThrustTimeLimit) {
+                this.appliedVerticalDelta = Math.min(Math.abs(this.jumpThrustTimer - jumpThrustTimeLimit), deltaTime);
                 this.velocity.y = Math.max(this.velocity.y
-                        + (MegaPlayer.ACCELERATION * deltaTime),
-                        MegaPlayer.MAX_SPEED * deltaTime);
+                        + (MegaPlayer.ACCELERATION * this.appliedVerticalDelta),
+                        MegaPlayer.MAX_SPEED * this.appliedVerticalDelta);
                 this.jumpThrustTimer += deltaTime;
             } else {
+                this.appliedVerticalDelta = 0;
                 this.isJumping = false;
                 this.jumpThrustTimer = 0;
             }
         }
         
         // Shooting.
-        
         if (this.busterGun.canMakeShot(deltaTime) && Gdx.input.isKeyPressed(Keys.SPACE) && !this.isHadoukening) {
             this.shotOrigin.set(this.position);
             this.shotOrigin.y += MegaPlayer.SHOT_OFFSET_Y;
@@ -827,14 +826,13 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Apply gravity.
         if (this.isInAir) {
+            
             if (this.isUnderwater && velocity.y < 0) {
-                this.velocity.y = Math.max(this.velocity.y
-                        - (MegaPlayer.DECELERATION * deltaTime),
-                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED * deltaTime);
+                this.velocity.y = Math.max(this.velocity.y - (MegaPlayer.DECELERATION * this.appliedVerticalDelta),
+                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED * this.appliedVerticalDelta);
             } else {
-                this.velocity.y = Math.max(Math.min(this.velocity.y
-                        - (MegaPlayer.DECELERATION * deltaTime), MegaPlayer.MAX_SPEED),
-                        -MegaPlayer.MAX_FALL_SPEED * deltaTime);
+                this.velocity.y = Math.max(this.velocity.y - (MegaPlayer.DECELERATION * this.appliedVerticalDelta),
+                        -MegaPlayer.MAX_FALL_SPEED * this.appliedVerticalDelta);
             }
         }
     }

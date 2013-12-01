@@ -13,6 +13,11 @@ import com.me.mygdxgame.utilities.GameState;
 
 /**
  * Some game. Uses libGDX.
+ * 
+ * TODO Remove instanceofs.
+ * TODO Find a better way to test entities/maps so that it isn't necessary to
+ *      come in here and set the screen to a test screen each time we want to check something.
+ * TODO Physics is still slightly off when running at different frame rates. Fix.
  */
 public class MyGdxGame implements ApplicationListener 
 {
@@ -44,7 +49,7 @@ public class MyGdxGame implements ApplicationListener
 
     /** Constructor */
     public MyGdxGame() {
-
+        
     }
 
     @Override
@@ -79,7 +84,7 @@ public class MyGdxGame implements ApplicationListener
             this.perspectiveCamera.far = 5000.0f;
             this.perspectiveCamera.position.z = 256.0f;
             this.perspectiveCamera.update();
-
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +111,7 @@ public class MyGdxGame implements ApplicationListener
     
         // TODO Should choose boss/miniboss screens as appropriate.
         // TODO Need to to proper screen transitions.
-        //TODO If lives == 0, transition to Game Over.
+        // TODO If lives == 0, transition to Game Over.
         
         // If current screen has not reached a win or lose state, keep running.
         if (this.currentGameScreen.getState() == GameState.Running) {

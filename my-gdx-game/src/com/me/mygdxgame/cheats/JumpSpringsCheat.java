@@ -28,7 +28,8 @@ public class JumpSpringsCheat extends GameCheat {
     
     @Override
     public List<Integer> getSequence() {
-        return Arrays.asList(new Integer[]{ Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP });
+        return Arrays.asList(new Integer[]{ Keys.UP, Keys.UP, Keys.UP, 
+                Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP });
     }
 
     @Override

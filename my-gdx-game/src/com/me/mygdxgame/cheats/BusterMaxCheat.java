@@ -51,7 +51,8 @@ public class BusterMaxCheat extends GameCheat {
 
     @Override
     public List<Integer> getSequence() {
-        return Arrays.asList(new Integer[] { Keys.UP, Keys.UP, Keys.DOWN, Keys.DOWN, Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.B, Keys.A });
+        return Arrays.asList(new Integer[] { Keys.UP, Keys.UP, Keys.DOWN, Keys.DOWN, 
+                Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.B, Keys.A });
     }
 
 }

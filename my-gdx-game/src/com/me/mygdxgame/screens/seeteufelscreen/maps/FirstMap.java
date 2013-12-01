@@ -1,9 +1,6 @@
 package com.me.mygdxgame.screens.seeteufelscreen.maps;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,7 +14,6 @@ import com.me.mygdxgame.utilities.GameMap;
 import com.me.mygdxgame.utilities.GenericEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
-//TODO Horizontally tiled wallTex appear to have gaps between them.
 public class FirstMap extends GameMap {
     
     private int animationFrame = 0;
@@ -32,30 +28,32 @@ public class FirstMap extends GameMap {
 
     private TextureRegion grateRegion;
     private TextureRegion[] waterfall;
-    private StonePillar [] updatables;
+    private StonePillar [] stonePillars;
     
     private Rectangle[] obstacles = null;
     private GenericEntity returnObstacles = null;
 
-    // Since apparently this is a 3D space, which contains a sprawling infinity of
-    // floating point nonsense, and no precise integer pixel coordinates that one might
-    // use to find, say, the lower left corner of the screen ("field of view", whatever),
-    // I'm making everything on screen relative to the ground, where the ground starts,
-    // what size the ground tile is and how much it repeats. Because apparently as long
-    // as everything makes sense relative to everything else, all you have to do is put
-    // the camera in the right spot, and you can kind of get it to look the way you want..
+    // Width of ground tile
+    public static final int GROUND_DIM = 32;
 
-    public static final int GROUND_DIM = 32; // Width of ground tile
-    public static final int OFFSET = 0 * GROUND_DIM; // Extra padding tiles, since this is so imprecise
-    public static final int GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2) - OFFSET,  // Origin X point, off-screen to the left
-            GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2) - OFFSET, // Origin Y point, off-screen below
-            GROUND_HEIGHT = 1, // Rows of ground tile
-            GROUND_WIDTH = 26, // Columns of ground tile
+    public static final int 
+            // Origin X point, off-screen to the left
+            GROUND_ORIGIN_X = (-1 * MyGdxGame.SCREEN_WIDTH / 2),
+            // Origin Y point, off-screen below.
+            GROUND_ORIGIN_Y = (-1 * MyGdxGame.SCREEN_HEIGHT / 2),
+            // Rows of ground tile.
+            GROUND_HEIGHT = 1,
+            // Columns of ground tile.
+            GROUND_WIDTH = 26,
+            // Height of room in tiles.
             ROOM_HEIGHT = 7;
 
     // Opposites of the Origins (GROUND_START_X is GROUND ORIGIN_X; GROUND_END_Y is GROUND_ORIGIN_Y)
-    public static final int GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM), // Where ground stops horizontally
-            GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM); // Where ground begins vertically
+    public static final int
+            // Where ground stops horizontally
+            GROUND_END_X = GROUND_ORIGIN_X + (GROUND_WIDTH * GROUND_DIM),
+            // Where ground begins vertically
+            GROUND_START_Y = GROUND_ORIGIN_Y + (GROUND_HEIGHT * GROUND_DIM);
 
     public static final int PLATFORM_START_X = GROUND_ORIGIN_X + (7 * GROUND_DIM);
     
@@ -64,18 +62,21 @@ public class FirstMap extends GameMap {
     public FirstMap(Texture spriteSheet, SeeteufelScreen.MapTiles tiles) {
         
         this.rockSprite = new Sprite(tiles.rockTex);
-        this.rockSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM), GROUND_WIDTH * GROUND_DIM, GROUND_DIM);
+        this.rockSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y + (ROOM_HEIGHT * GROUND_DIM),
+                GROUND_WIDTH * GROUND_DIM, GROUND_DIM);
         this.rockSprite.setU2(GROUND_WIDTH);
         this.wallSprite = new Sprite(tiles.wallTex);
         this.smallMazeSprite = new Sprite(tiles.smallMazeTex);
-        this.smallMazeSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y, GROUND_WIDTH * GROUND_DIM, ROOM_HEIGHT * GROUND_DIM);
+        this.smallMazeSprite.setBounds(GROUND_ORIGIN_X, GROUND_START_Y,
+                GROUND_WIDTH * GROUND_DIM, ROOM_HEIGHT * GROUND_DIM);
         this.smallMazeSprite.setU2(GROUND_WIDTH);
         this.smallMazeSprite.setV2(ROOM_HEIGHT);
         this.pillarSprite = new Sprite(tiles.pillarTex);
         this.pillarSprite.setSize(32, 36 * 6);
         this.pillarSprite.setV2(ROOM_HEIGHT);
         
-        this.greyBlockRegion = new TextureRegion(tiles.greyBlockTex, 0, 0, GROUND_DIM, GROUND_DIM); // This could be a sprite but diagonalLeft/Right need to be updated..
+        // This could be a sprite but diagonalLeft/Right need to be updated..
+        this.greyBlockRegion = new TextureRegion(tiles.greyBlockTex, 0, 0, GROUND_DIM, GROUND_DIM);
         this.pedistalRegion = new TextureRegion(spriteSheet, 165, 0, 55, 17);
         this.grateRegion = new TextureRegion(spriteSheet, 22, 102, 23, 23);
         this.waterfall = new TextureRegion[5];
@@ -87,26 +88,36 @@ public class FirstMap extends GameMap {
         
         // Obstacles.
         this.obstacles = new Rectangle[] {
-            new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT), // Ground
-            new Rectangle(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, GROUND_DIM * 5, GROUND_DIM), // Platform I
-            new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM), // Platform II
-            new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + 2 * GROUND_DIM, this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()), // Goal
-            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (7 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ), // Ceiling
-            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT), // Left boundary
-            new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT) // Right boundary
+            // Ground
+            new Rectangle(GROUND_ORIGIN_X, GROUND_ORIGIN_Y, GROUND_DIM * GROUND_WIDTH, GROUND_DIM * GROUND_HEIGHT),
+            // Platform I
+            new Rectangle(PLATFORM_START_X - GROUND_DIM, GROUND_START_Y, GROUND_DIM * 5, GROUND_DIM),
+            // Platform II
+            new Rectangle(PLATFORM_START_X, GROUND_START_Y + GROUND_DIM, GROUND_DIM * 3, GROUND_DIM),
+            // Goal
+            new Rectangle(PLATFORM_START_X + 20, GROUND_START_Y + 2 * GROUND_DIM,
+                    this.pedistalRegion.getRegionWidth(), (int)this.pedistalRegion.getRegionHeight()),
+            // Ceiling
+            new Rectangle(GROUND_ORIGIN_X, GROUND_START_Y + (7 * GROUND_DIM), GROUND_DIM * GROUND_WIDTH, GROUND_DIM ),
+            // Left boundary
+            new Rectangle(GROUND_ORIGIN_X - GROUND_DIM, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT),
+            // Right boundary
+            new Rectangle(GROUND_END_X, GROUND_START_Y - GROUND_DIM, GROUND_DIM, GROUND_DIM * ROOM_HEIGHT)
         };
         this.returnObstacles = new GenericEntity(Arrays.asList(this.obstacles));
         
-        List<StonePillar> temp = new LinkedList<StonePillar>();        
+
+        this.stonePillars = new StonePillar[10];
         for (int i = 0; i < 2; i++) {
-            temp.add(new StonePillar(spriteSheet, tiles, GROUND_ORIGIN_X + (2*i+1) * (GROUND_DIM/2) - (StonePillar.PILLAR_BASE_W / 2), GROUND_START_Y, 7*GROUND_DIM));
+            this.stonePillars[i] = new StonePillar(spriteSheet, tiles,
+                    GROUND_ORIGIN_X + (2*i+1) * (GROUND_DIM/2) - (StonePillar.PILLAR_BASE_W / 2),
+                    GROUND_START_Y, 7*GROUND_DIM);
         }
         for (int i = 0; i < 8; i++) {
-            temp.add(new StonePillar(spriteSheet, tiles, PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i), GROUND_START_Y, 7*GROUND_DIM));
+            this.stonePillars[i + 2] = new StonePillar(spriteSheet, tiles,
+                    PLATFORM_START_X + (int)(GROUND_DIM * 8.5) - (StonePillar.PILLAR_BASE_W / 2) + (GROUND_DIM * i),
+                    GROUND_START_Y, 7*GROUND_DIM);
         }
-        this.updatables = temp.toArray(new StonePillar[temp.size()]);
-        temp.clear();
-        
     }
     
     @Override
@@ -151,10 +162,10 @@ public class FirstMap extends GameMap {
         renderer.drawRegion(this.waterfall[animationFrame], PLATFORM_START_X - (int)(4.5 * GROUND_DIM) + 8, GROUND_START_Y);
         renderer.drawRegion(this.waterfall[animationFrame], PLATFORM_START_X + (int)(6 * GROUND_DIM) + 8, GROUND_START_Y);
         
-        for (StonePillar pillar: this.updatables) {
+        for (StonePillar pillar: this.stonePillars) {
             pillar.renderBody(renderer);
         }
-        for (StonePillar pillar: this.updatables) {
+        for (StonePillar pillar: this.stonePillars) {
             pillar.renderBases(renderer);
         }
         

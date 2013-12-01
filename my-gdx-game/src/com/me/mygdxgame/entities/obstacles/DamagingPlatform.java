@@ -38,7 +38,8 @@ public class DamagingPlatform implements Damageable {
     protected static final int RUBBLE_LIFE = 500;
     Collection<Damageable> targets;
     
-    public DamagingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, int x, int y, Collection<Damageable> targets) {
+    public DamagingPlatform(Texture spriteSheet, SeeteufelScreen.MapTiles tiles, 
+            int x, int y, Collection<Damageable> targets) {
         this.spriteSheet = spriteSheet;
         this.platform = new TextureRegion(tiles.rockTex, PLATFORM_X, PLATFORM_Y, PLATFORM_H, PLATFORM_W);
         this.status = EntityState.Running;
@@ -106,19 +107,19 @@ public class DamagingPlatform implements Damageable {
     }
     
     public void explode() {
-        // Since rubble stops when it hits an obstacle, this rectangle acts as a trap to stop the rubble after a certain point.
         Damageable[] targets = new Damageable[this.targets.size()];
         targets = this.targets.toArray(targets);
+        GameEntity obstacles[] = new GameEntity[0];
         this.rubble = new Rubble [] {
-                new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0),
-                        new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        POWER, new GameEntity [0], targets, 1),
+                new FatRubble(this.spriteSheet, new Vector3(this.x-5, this.y + 5, 0), 
+                        new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0), 
+                        POWER, obstacles, targets, 1),
                 new SmallRubble(this.spriteSheet, new Vector3(this.x+10, this.y + 15, 0),
                         new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        POWER, new GameEntity [0], targets, 1),
+                        POWER, obstacles, targets, 1),
                 new TallRubble(this.spriteSheet, new Vector3(this.x+0, this.y + 10, 0),
                         new Vector3((75 + ((float)Math.random() * 100)) * (float)Math.signum(Math.random() - 0.5), (float)Math.random() * 300, 0),
-                        POWER, new GameEntity [0], targets, 1),
+                        POWER, obstacles, targets, 1),
         };
     }
 

@@ -43,7 +43,8 @@ public class GeminiShotCheat extends GameCheat {
     
     @Override
     public List<Integer> getSequence() {
-        return Arrays.asList(new Integer []{ Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT });
+        return Arrays.asList(new Integer []{ Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, 
+                Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT, Keys.LEFT, Keys.RIGHT });
     }
 
     @Override

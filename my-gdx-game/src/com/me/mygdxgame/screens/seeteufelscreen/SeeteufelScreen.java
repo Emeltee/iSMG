@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -97,8 +97,10 @@ public class SeeteufelScreen implements GameScreen {
     private static final int MAP2_WATER_WIDTH = SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM;
     private static final int MAP3_WATER_BASE_X = MAP2_PIXEL_HEIGHT - 500;
     private static final int MAP3_CAM_Y = 1700;
-    private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
-    private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
+    private static final float MAP3_CAM_MIN_X = SecondMap.GROUND_ORIGIN_X - 
+            (SecondMap.ARENA_WIDTH * SecondMap.GROUND_DIM) - SecondMap.GROUND_DIM + MyGdxGame.SCREEN_WIDTH / 2.0f;
+    private static final float MAP3_CAM_MAX_X = SecondMap.GROUND_ORIGIN_X + 
+            (SecondMap.GROUND_WIDTH * SecondMap.GROUND_DIM) + SecondMap.GROUND_DIM - MyGdxGame.SCREEN_WIDTH / 2.0f;
     private static final float SFX_VOLUME = 0.5f;
     private static final float MAP2_PLATFORM_DESTRUCTION_DELAY = 0.3f;
     
@@ -132,7 +134,8 @@ public class SeeteufelScreen implements GameScreen {
     private Music music1;
     private Music music2;
     
-    // Containers for managing entities generically. Keep a pointer to any entities that need specialized mgmt
+    // Containers for managing entities generically. Keep a pointer to any
+    // entities that need specialized management.
     private LinkedList<GameEntity> entities = new LinkedList<GameEntity> ();
     private LinkedList<GameEntity> toRemove = new LinkedList<GameEntity> ();
     private LinkedList<GameEntity[]> toAdd = new LinkedList<GameEntity[]> ();
@@ -333,7 +336,7 @@ public class SeeteufelScreen implements GameScreen {
 
     @Override
     public void render(float deltaTime, int difficulty, PerspectiveCamera perspCam, OrthographicCamera orthoCam) {   
-                
+
         // Determine if paused.
         if (!Gdx.input.isKeyPressed(PAUSE_KEY)) {
             this.pauseButtonTrigger = true;
@@ -673,7 +676,8 @@ public class SeeteufelScreen implements GameScreen {
         int maxTileX = SecondMap.GROUND_WIDTH - 1;
         Platform destructableTile = null;
         for (currentTileX = SecondMap.GROUND_WIDTH / 2; currentTileX < maxTileX; currentTileX++) {
-            destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
+            destructableTile = new Platform(this.t_tiles1, this.mapTiles, currentTileX * SecondMap.GROUND_DIM, 
+                    (int) (currentTileY * SecondMap.GROUND_DIM * SeeteufelScreen.MAP2_STAIR_STEP_HEIGHT));
             this.obstacles.add(destructableTile);
             this.entities.add(destructableTile);
             this.room2InitialStairs.add(destructableTile);
@@ -774,13 +778,15 @@ public class SeeteufelScreen implements GameScreen {
         // Also, leave the last MAP2_STAIR_IGNORE_LAST_TARGETS alone.
         // Destroying them has little effect on difficulty, and the
         // door goes there on the last flight.
-        targets[0] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+        targets[0] = Math.max(1, (int) (Math.random() * 
+                currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
 
         // Second target, random platform that isn't first target or the
         // first block of a staircase. Also, don't destroy both 8 and 9,
         // as this results in an overly tricky jump.
         do {
-            targets[1] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+            targets[1] = Math.max(1, (int) (Math.random() * 
+                    currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
         }
         while (targets[1] == targets[0] ||
                 (targets[0] == 8 && targets[1] == 9) ||
@@ -789,7 +795,8 @@ public class SeeteufelScreen implements GameScreen {
         // Third target. Random platform that isn't first or second
         // target, isn't step 0, and isn't adjacent to both 0 and 1.
         do {
-            targets[2] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+            targets[2] = Math.max(1, (int) (Math.random() * 
+                    currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
         }
         while (targets[2] == targets[1] ||
                 targets[2] == targets[0] ||
@@ -801,7 +808,8 @@ public class SeeteufelScreen implements GameScreen {
         // only if you are in the upper area of the shaft.
         if (isUpperArea) {
             do {
-                targets[3] = Math.max(1, (int) (Math.random() * currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
+                targets[3] = Math.max(1, (int) (Math.random() * 
+                        currentTargets.length - SeeteufelScreen.MAP2_STAIR_IGNORE_LAST_TARGETS));
             }
             while (targets[3] == targets[0] ||
                     targets[3] == targets[1] ||
@@ -964,7 +972,8 @@ public class SeeteufelScreen implements GameScreen {
                         this.seeFront.attack(currentTargets[x]);
                     }
                     
-                    // If Seeteufel has nothing left to target, move remaining platforms to waiting list to be destroyed.
+                    // If Seeteufel has nothing left to target, move remaining
+                    // platforms to waiting list to be destroyed.
                     if (this.seeteufelTargetLevels.isEmpty()) {
                         while (!this.removedSeeteufelTargets.isEmpty()) {
                             this.room2PlatformsToDestroy.addAll(this.removedSeeteufelTargets.removeFirst());
@@ -1445,7 +1454,8 @@ public class SeeteufelScreen implements GameScreen {
         this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, 0);
         font.setScale(1);
         TextBounds bounds = font.getBounds(WIN_MESSAGE);
-        this.hudRenderer.drawText(font, "Press Enter to play again.", -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
+        this.hudRenderer.drawText(font, "Press Enter to play again.", 
+                -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
         
         showUnlockedCheat(this.unlockedCheat);
     }

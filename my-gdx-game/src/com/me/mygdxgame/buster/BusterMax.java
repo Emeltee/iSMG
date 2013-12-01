@@ -2,6 +2,7 @@ package com.me.mygdxgame.buster;
 
 import com.me.mygdxgame.utilities.BusterPart;
 
+
 public class BusterMax implements BusterPart {
 
     @Override
