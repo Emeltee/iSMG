@@ -96,7 +96,8 @@ public abstract class Rubble implements GameEntity, Damager {
             this.position.add(this.velocity.cpy().scl(deltaTime));
             
             // Adjust velocity. Y goes down, x moves towards 0.
-            this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY * deltaTime, this.velocity.y - Rubble.GRAVITY * deltaTime);
+            this.velocity.y = Math.max(Rubble.MIN_Y_VELOCITY * 
+                    deltaTime, this.velocity.y - Rubble.GRAVITY * deltaTime);
             if (Math.abs(this.velocity.x) < Rubble.MIN_X_VELOCITY * deltaTime) {
                 this.velocity.x = 0;
             } else {
@@ -142,7 +143,8 @@ public abstract class Rubble implements GameEntity, Damager {
     @Override
     public void draw(Renderer renderer) {
         if (this.state == EntityState.Running){            
-            renderer.drawRegion(this.rubble, (int)this.position.x, (int)this.position.y, Color.WHITE, this.scale, this.scale, 0);
+            renderer.drawRegion(this.rubble, (int)this.position.x, 
+                    (int)this.position.y, Color.WHITE, this.scale, this.scale, 0);
         }
     }
 

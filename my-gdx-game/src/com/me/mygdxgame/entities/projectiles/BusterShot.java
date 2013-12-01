@@ -138,7 +138,8 @@ public class BusterShot implements GameEntity, Damager {
     public void draw(Renderer renderer) {
         
         if (this.state == EntityState.Running) {
-            renderer.drawRegion(bullet, this.position.x, this.position.y, this.shotColor, this.shotScale, this.shotScale, (int) (300.0f * this.animationTimer));
+            renderer.drawRegion(bullet, this.position.x, this.position.y, this.shotColor, 
+                    this.shotScale, this.shotScale, (int) (300.0f * this.animationTimer));
         }
     }
 

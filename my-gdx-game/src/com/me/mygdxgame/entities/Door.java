@@ -49,8 +49,8 @@ public class Door implements GameEntity {
     }
     
     @Override
-    public void update(float deltaTime) {        
-        // Umm . . . ?
+    public void update(float deltaTime) {
+        // Nothing.
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Door implements GameEntity {
 
     @Override
     public EntityState getState() {
-        // This never gets destroyed..
+        // This never gets destroyed.
         return EntityState.Running;
      }
 

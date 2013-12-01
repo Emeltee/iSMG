@@ -57,7 +57,8 @@ public class Rocket implements GameEntity, Damager {
     // Entities to be created by rocket
     private Explosion[] explosions;
   
-    public Rocket(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, int power, int knockback, GameEntity [] obstacles, Damageable[] targets) {
+    public Rocket(Texture spriteSheet, Sound explosion, Vector3 position, Vector3 velocity, 
+            int power, int knockback, GameEntity [] obstacles, Damageable[] targets) {
         this.spriteSheet = spriteSheet;
         this.explosion = explosion;
         this.position.set(position);
@@ -124,7 +125,8 @@ public class Rocket implements GameEntity, Damager {
     @Override
     public void draw(Renderer renderer) {
         if (this.state == EntityState.Running){
-            renderer.drawRegion(rocket, this.position.x, this.position.y, ROCKET_TINT, 1, 1, (int) (300.0f * this.animationTimer));
+            renderer.drawRegion(rocket, this.position.x, this.position.y, 
+                    ROCKET_TINT, 1, 1, (int) (300.0f * this.animationTimer));
         }
     }
 
@@ -158,10 +160,14 @@ public class Rocket implements GameEntity, Damager {
         
         // Create explosions.
         this.explosions = new Explosion[4];
-        this.explosions[0] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y+12, this.position.z));
-        this.explosions[1] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y+12, this.position.z));
-        this.explosions[2] = new Explosion(this.spriteSheet, new Vector3(this.position.x+12, this.position.y-12, this.position.z));
-        this.explosions[3] = new Explosion(this.spriteSheet, new Vector3(this.position.x-12, this.position.y-12, this.position.z));
+        this.explosions[0] = new Explosion(this.spriteSheet, 
+                new Vector3(this.position.x+12, this.position.y+12, this.position.z));
+        this.explosions[1] = new Explosion(this.spriteSheet, 
+                new Vector3(this.position.x-12, this.position.y+12, this.position.z));
+        this.explosions[2] = new Explosion(this.spriteSheet, 
+                new Vector3(this.position.x+12, this.position.y-12, this.position.z));
+        this.explosions[3] = new Explosion(this.spriteSheet, 
+                new Vector3(this.position.x-12, this.position.y-12, this.position.z));
         
         // Play sound.
         this.explosion.stop();

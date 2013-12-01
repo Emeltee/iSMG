@@ -14,12 +14,6 @@ import com.me.mygdxgame.utilities.GameEntity;
 import com.me.mygdxgame.utilities.Renderer;
 
 public class WatchNadia implements Damageable {
-
-    /* WATCH NADIA */
-    /*public static final int WATCH_NADIA_X = 165;
-    public static final int WATCH_NADIA_Y = 165;
-    public static final int WATCH_NADIA_W = 32;
-    public static final int WATCH_NADIA_H = 32;*/
     
     private Sprite watchNadia;
     private static final int MAX_HEALTH = 1;
@@ -75,7 +69,7 @@ public class WatchNadia implements Damageable {
 
     @Override
     public void update(float deltaTime) {
-        
+        // Nothing.
     }
 
     @Override

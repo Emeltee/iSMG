@@ -80,7 +80,9 @@ public class Refractor implements GameEntity {
             
             // This centers the text above wherever the refractor is.
             // TODO Maybe make this a fixed coord, but I like it this way.
-            renderer.drawText(this.font, Refractor.MESG, this.hitbox.x - (int)(Refractor.MESG.length() / 2 * 8), this.hitbox.y + REFRACTOR_H + 32);           
+            renderer.drawText(this.font, Refractor.MESG, 
+                    this.hitbox.x - (int)(Refractor.MESG.length() / 2 * 8), 
+                    this.hitbox.y + REFRACTOR_H + 32);           
         }
     }
 

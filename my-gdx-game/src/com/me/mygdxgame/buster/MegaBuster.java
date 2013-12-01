@@ -147,7 +147,8 @@ public class MegaBuster {
         }
     }
     
-    public BusterShot makeShot(Vector3 shotOrigin, ShotDirection dir, Collection<GameEntity> obstacles, Collection<Damageable> targets) {
+    public BusterShot makeShot(Vector3 shotOrigin, ShotDirection dir, 
+            Collection<GameEntity> obstacles, Collection<Damageable> targets) {
         this.energyTimer = 1 / (float)this.energyStat();
 //        this.shootSound.stop();
         this.shootSound.play(SFX_VOLUME);

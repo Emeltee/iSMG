@@ -49,7 +49,8 @@ public class KevlarOmegaArmorCheat extends GameCheat {
 
 	@Override
 	public List<Integer> getSequence() {
-		return Arrays.asList(new Integer[] { Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN });
+		return Arrays.asList(new Integer[] { Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN, 
+		        Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN, Keys.RIGHT, Keys.DOWN });
 	}
 
 	@Override
