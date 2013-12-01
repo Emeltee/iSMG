@@ -11,7 +11,7 @@ import com.me.mygdxgame.utilities.GameEntity;
 
 /**
  * A variety of {@link BusterShot} with slightly altered visuals. Otherwise,
- * they are functionally identical.
+ * it is functionally identical.
  */
 public class LemonShot extends BusterShot {
 

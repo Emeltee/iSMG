@@ -35,18 +35,17 @@ import com.me.mygdxgame.utilities.SpecialComboListener;
  * behavior. May be controlled with the arrow keys or WASD and the space bar.
  * <p>
  * Entity can be moved left or right and may jump if at rest on an obstacle. If
- * not on an obstacle, entity will fall downwards until it landing on one
- * obstacle. Jump height varies based on the how long the jump button (up, W) is
- * held after the initial upward thrust. A {@link Damager} projectile may be
- * created with the space bar.
+ * not on an obstacle, entity will fall downwards until it landing on one. Jump
+ * height varies based on the how long the jump button (up, W) is held after the
+ * initial upward thrust. A {@link Damager} projectile may be created with the
+ * space bar.
  * <p>
- * A number of behaviors can be altered vis setters, including the type of
- * projectile fired, jump height, and {@link ArmorJacket} used to modify damage.
- * Class also makes light use of {@link SpecialComboListener} for one type of
- * projectile.
+ * Some behaviors can be altered via setters, including the type of projectile
+ * fired, jump height, and {@link ArmorJacket} used to modify damage. Class also
+ * makes light use of {@link SpecialComboListener} for one type of projectile.
  * <p>
- * In general, this class has acted as a test bed for a number of different
- * features, and so may be rather messy at this point.
+ * This class has acted as a test bed for a number of different features, and so
+ * may be rather messy at this point.
  */
 public class MegaPlayer implements GameEntity, Damageable {
 

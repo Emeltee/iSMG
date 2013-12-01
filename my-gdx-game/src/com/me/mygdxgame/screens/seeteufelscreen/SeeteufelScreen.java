@@ -65,7 +65,7 @@ import com.me.mygdxgame.utilities.Renderer;
  * The first stage is simply for buildup, and for introducing the player to the
  * {@link GameEntity} they control if needed ({@link MegaPlayer}). Involves a
  * small room containing a {@link Door} and a {@link Refractor}. The Door begins
- * closed, but opens upon collecting the Refractor. Touching the door and
+ * closed, but opens upon collecting the Refractor. Touching the Door and
  * pressing down moves to the second area.
  * 
  * The second area involves climbing upwards on a series of {@link Platform}s

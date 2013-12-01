@@ -107,7 +107,7 @@ public class Refractor implements GameEntity {
     
     /**
      * Call to "take" this entity. A brief message will be displayed, and after
-     * some time the entity will be destroyed.
+     * some time the entity will set its state to {@link EntityState#Destroyed}.
      */
     public void onTake() {
         // Originally this was going to have more logic, but it makes more sense

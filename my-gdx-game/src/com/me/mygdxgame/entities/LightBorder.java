@@ -9,7 +9,7 @@ import com.me.mygdxgame.utilities.Updatable;
 
 /**
  * Cosmetic {@link Updatable}. A thin horizontal border that may be tiled to
- * will any width.
+ * fill any width.
  */
 public class LightBorder implements Updatable {
 
