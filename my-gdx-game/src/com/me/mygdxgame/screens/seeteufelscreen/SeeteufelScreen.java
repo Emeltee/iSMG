@@ -84,7 +84,6 @@ import com.me.mygdxgame.utilities.Renderer;
  */
 public class SeeteufelScreen implements GameScreen {
     
-    // Edge constants, for use only in 2D
     private static final int SCREEN_TOP = MyGdxGame.SCREEN_HEIGHT / 2;
     private static final int SCREEN_BOTTOM = -MyGdxGame.SCREEN_HEIGHT / 2;
     private static final int SCREEN_LEFT = -MyGdxGame.SCREEN_WIDTH / 2;
@@ -513,16 +512,9 @@ public class SeeteufelScreen implements GameScreen {
         this.room1Exit = new Door(this.t_tiles1, this.doorOpen, this.doorClose,
                 FirstMap.GROUND_END_X - (int) (FirstMap.GROUND_DIM * 1.5),
                 FirstMap.GROUND_START_Y);
-        /* this.bonus = new WatchNadia(this.mapTiles.bonusTex, FirstMap.PLATFORM_START_X - FirstMap.GROUND_DIM,
-                FirstMap.GROUND_START_Y); */
         
         // Setup cheatcode engine
         this.cheatEngine = new GameCheatListener(10, this.itemGet);
-//        InputMultiplexer newDefaultProcessor = new InputMultiplexer();
-//        System.out.println("Player's combo engine is:"  + this.player.getComboListener());
-//        System.out.println("Default input processor is:"  + Gdx.input.getInputProcessor());
-//        newDefaultProcessor.addProcessor(this.player.getComboListener());        
-//        newDefaultProcessor.addProcessor(Gdx.input.getInputProcessor());
         this.defaultProcessor = this.player.getComboListener();
         
         this.cheatEngine.addCheat(new BusterMaxCheat(this.player));
@@ -534,9 +526,7 @@ public class SeeteufelScreen implements GameScreen {
         // Set up first map.
         this.entities.add(this.refractor);
         this.entities.add(this.room1Exit);
-        // this.entities.add(this.bonus);
         this.obstacles.add(this.map1.getObstacles());
-        // this.playerTargets.add(this.bonus);
         
         this.bypassedSeeteufel = false;
         this.reachedArenaBeforeWater = false;        
@@ -1481,7 +1471,7 @@ public class SeeteufelScreen implements GameScreen {
         final String [] CREDITS = { "Press Enter to play again.",
 				"",
 				"Created by:",
-				"Emeltee, Pitch, and Canticleer Blues",
+				"Emeltee, Pitch and Canticleer Blues",
 				"",
 				"Resources used from Sky Pirate Arcade",
 				"Music by Dash Myoku" };
