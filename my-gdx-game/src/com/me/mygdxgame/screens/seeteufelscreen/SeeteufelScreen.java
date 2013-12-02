@@ -1481,7 +1481,7 @@ public class SeeteufelScreen implements GameScreen {
         final String [] CREDITS = { "Press Enter to play again.",
 				"",
 				"Created by:",
-				"Emeltee, Pitch and Canticleer Blues",
+				"Emeltee, Pitch, and Canticleer Blues",
 				"",
 				"Resources used from Sky Pirate Arcade",
 				"Music by Dash Myoku" };
