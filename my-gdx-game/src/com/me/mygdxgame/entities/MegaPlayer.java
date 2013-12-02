@@ -840,7 +840,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         // Apply gravity.
         if (this.isInAir) {
             
-            if (this.isUnderwater && velocity.y < 0) {
+            if (this.isUnderwater) {
                 this.velocity.y = Math.max(this.velocity.y - (MegaPlayer.DECELERATION * this.appliedVerticalDelta),
                         -MegaPlayer.MAX_UNDERWATER_FALL_SPEED * this.appliedVerticalDelta);
             } else {
