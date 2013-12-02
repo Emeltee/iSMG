@@ -125,7 +125,7 @@ public class SeeteufelScreen implements GameScreen {
     private static final float SFX_VOLUME = 0.5f;
     private static final float MAP2_PLATFORM_DESTRUCTION_DELAY = 0.3f;
     
-    private static final String WIN_MESSAGE = "Press Enter to try again.";
+    private static final String WIN_MESSAGE = "Thank you for playing!";
     
     private static final int PAUSE_KEY = Keys.SHIFT_LEFT;
     private static final int FPS_KEY = Keys.BACKSLASH;
@@ -438,7 +438,7 @@ public class SeeteufelScreen implements GameScreen {
             this.hudRenderer.drawText(this.font, fpsString, cheatTextX, cheatTextY);
             cheatTextY -= cheatTextHeight;
         }
-        if (this.isPaused) {
+        if (this.isPaused) {        	
             // Draw text indicating all active cheats.
             for (GameCheat cheat : this.cheatEngine.getAllCheats()) {
                 if (cheat.isEnabled()) {
@@ -469,7 +469,7 @@ public class SeeteufelScreen implements GameScreen {
     @Override
     public void initialize() {
         // Reset values.
-        this.currentMap = 1;
+    	this.currentMap = 1;        
         this.obstacles.clear();
         this.playerTargets.clear();
         this.seeteufelTargets.clear();
@@ -539,7 +539,7 @@ public class SeeteufelScreen implements GameScreen {
         // this.playerTargets.add(this.bonus);
         
         this.bypassedSeeteufel = false;
-        this.reachedArenaBeforeWater = false;
+        this.reachedArenaBeforeWater = false;        
     }
 
     @Override
@@ -1475,8 +1475,26 @@ public class SeeteufelScreen implements GameScreen {
         this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, 0);
         font.setScale(1);
         TextBounds bounds = font.getBounds(WIN_MESSAGE);
-        this.hudRenderer.drawText(font, "Press Enter to play again.", 
+        this.hudRenderer.drawText(font, WIN_MESSAGE, 
                 -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
+        
+        final String [] CREDITS = { "Press Enter to play again.",
+				"",
+				"Created by:",
+				"Emeltee, Pitch and Canticleer Blues",
+				"",
+				"Resources used from Sky Pirate Arcade",
+				"Music by Dash Myoku" };
+
+		for (int i = 1; i<=CREDITS.length; i++) {
+			String current  = CREDITS[i-1];
+			TextBounds temp = font.getBounds(current);
+			this.hudRenderer.drawText(font,  current, -temp.width / 2.0f, 
+					-this.missionComplete.getRegionHeight() - (i+1.0f) * temp.height);
+			
+		}
+        
+        
         
         showUnlockedCheat(this.unlockedCheat);
     }
