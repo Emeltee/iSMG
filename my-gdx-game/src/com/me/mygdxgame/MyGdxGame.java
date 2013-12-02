@@ -21,6 +21,7 @@ import com.me.mygdxgame.utilities.GameState;
  * TODO sprites for common entities such as particles should maybe be pulled out
  *      into their own sprite sheet, to remain in memory even as screens switch.
  * TODO Real plugin system for MegaPlayer armor/weapons.
+ * TODO Splashable interface for creation of water particles?
  */
 public class MyGdxGame implements ApplicationListener 
 {
