@@ -144,6 +144,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         public Sound hurtSound = null;
         public Sound geminiSound = null;
         public Sound hadoukenSound = null;
+        public Sound explodeSound = null;
         
         private boolean isLoaded = false;
         
@@ -157,6 +158,7 @@ public class MegaPlayer implements GameEntity, Damageable {
                 this.geminiSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-gemini-shot.ogg"));
                 this.shotMissSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-buster-miss1.ogg"));
                 this.hadoukenSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-hadouken.ogg"));
+                this.explodeSound = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-grenade-explode1.ogg"));
                 
                 this.isLoaded = true;
             }
@@ -349,7 +351,8 @@ public class MegaPlayer implements GameEntity, Damageable {
             shotDir = ShotDirection.RIGHT;
         }        
         this.tempShot = new Hadouken(this.spritesheet, this.resources.shotMissSound,
-                this.shotOrigin, 300, shotDir, 1, 1, this.obstacles, this.targets);            
+        		this.resources.explodeSound, this.shotOrigin, 300, shotDir, 1, 1, 
+        		this.obstacles, this.targets);            
         this.createdEntities.offer(this.tempShot);    	
     }
     
