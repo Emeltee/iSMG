@@ -1461,26 +1461,34 @@ public class SeeteufelScreen implements GameScreen {
         // Clear screen.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         
+        float baseY = 2*this.missionComplete.getRegionHeight();
+        
         // Congratulations.
-        this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, 0);
+        this.hudRenderer.drawRegion(this.missionComplete, -this.missionComplete.getRegionWidth() / 2.0f, baseY);
         font.setScale(1);
         TextBounds bounds = font.getBounds(WIN_MESSAGE);
         this.hudRenderer.drawText(font, WIN_MESSAGE, 
-                -bounds.width / 2.0f, -this.missionComplete.getRegionHeight() / 2.0f);
+                -bounds.width / 2.0f, baseY-this.missionComplete.getRegionHeight() / 2.0f);
         
         final String [] CREDITS = { "Press Enter to play again.",
 				"",
 				"Created by:",
 				"Emeltee, Pitch and Canticleer Blues",
 				"",
-				"Resources used from Sky Pirate Arcade",
+				"Based on original concept \"Seeteufel\" by MegaMan Legends Station",
+				"",
+				"Special Thanks:",
+				"Dashe, Raijin, Inclover, General Specific, Trege", 
+				"Buster Cannon, Rockxas, Rockman Striker and Hirovoid",
+				"",
+				"Uses Resources from Sky Pirate Arcade",
 				"Music by Dash Myoku" };
 
 		for (int i = 1; i<=CREDITS.length; i++) {
 			String current  = CREDITS[i-1];
 			TextBounds temp = font.getBounds(current);
 			this.hudRenderer.drawText(font,  current, -temp.width / 2.0f, 
-					-this.missionComplete.getRegionHeight() - (i+1.0f) * temp.height);
+					baseY - this.missionComplete.getRegionHeight() - (i+1.0f) * temp.height);
 			
 		}
         
