@@ -58,12 +58,14 @@ public class MegaPlayer implements GameEntity, Damageable {
     private static final int HITBOX_OFFSET_Y = 5;
     private static final float MAX_FLINCH_TIME = 0.3f;
     private static final float FLINCH_ANIMATION_THRESHOLD = 0.3f;
-    public static final float MAX_SPEED = 210.0f;
-    private static final float MAX_FALL_SPEED = 630.0f;
-    private static final float MAX_UNDERWATER_FALL_SPEED = 315.0f;
+    public static final float MAX_SPEED = 250.0f;
+    private static final float MAX_JUMP_SPEED = 300.0f;
+    private static final float MAX_FALL_SPEED = 600.0f;
+    private static final float MAX_UNDERWATER_FALL_SPEED = 250.0f;
     private static final float MAX_JUMP_THRUST_TIME = 0.225f;
-    private static final float ACCELERATION = 80.0f;
-    private static final float DECELERATION = 60.0f;
+    private static final float ACCELERATION =  1900.0f;
+    private static final float DECELERATION = 1300.0f;
+    private static final float GRAVITY = 1600.0f;
     private static final float RUN_FRAMERATE = 0.175f;
     private static final short MAX_RUN_FRAMES = 4;
     private static final float SHOT_OFFSET_Y = 16;
@@ -457,9 +459,6 @@ public class MegaPlayer implements GameEntity, Damageable {
     		this.hadoukenTimer = HADOUKEN_STARTUP_DELAY;    	
     	
     	}
-
-    	// Set value used for scaling jump thrust and gravity to default value.
-    	this.appliedVerticalDelta = deltaTime;
     	
         // If not flinched, apply user controls. If flinched, just reduce flinch timer.
         if (this.flinchTimer == 0) {    
@@ -475,14 +474,17 @@ public class MegaPlayer implements GameEntity, Damageable {
             this.flinchTimer = Math.max(this.flinchTimer - deltaTime, 0);
         }
         
+        // Set value used for scaling jump thrust and gravity to default value.
+        this.appliedVerticalDelta = deltaTime;
+        
         // Move according to velocity, and check for obstacle collisions.
         // Vertical movement not affected by water.
-        this.position.y += this.velocity.y;
+        this.position.y += Math.min(this.velocity.y * deltaTime, HITBOX_HEIGHT);
         this.checkCollisionsY();
         if (this.isUnderwater) {
-            this.position.x += this.velocity.x / MegaPlayer.WATER_MOVEMENT_FACTOR;
+            this.position.x += this.velocity.x * deltaTime / MegaPlayer.WATER_MOVEMENT_FACTOR;
         } else {
-            this.position.x += this.velocity.x;
+            this.position.x += Math.min(this.velocity.x * deltaTime, HITBOX_WIDTH);
         }
         this.checkCollionsX();
 
@@ -755,15 +757,15 @@ public class MegaPlayer implements GameEntity, Damageable {
         // Acceleration based on key states.
         if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
             this.isFacingRight = false;
-            this.velocity.x = Math.max(this.velocity.x
-                    - (MegaPlayer.ACCELERATION * deltaTime),
-                    -MegaPlayer.MAX_SPEED * deltaTime);
+            this.velocity.x = Math.max(
+                    this.velocity.x - (MegaPlayer.ACCELERATION * deltaTime),
+                    -MegaPlayer.MAX_SPEED);
         }
         if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
             this.isFacingRight = true;
-            this.velocity.x = Math.min(this.velocity.x
-                    + (MegaPlayer.ACCELERATION * deltaTime),
-                    MegaPlayer.MAX_SPEED * deltaTime);
+            this.velocity.x = Math.min(
+                    this.velocity.x + (MegaPlayer.ACCELERATION * deltaTime),
+                    MegaPlayer.MAX_SPEED);
         }
         
         // Jumping.
@@ -794,15 +796,16 @@ public class MegaPlayer implements GameEntity, Damageable {
             float jumpThrustTimeLimit = this.computeJumpThrustLimit();
             if (this.jumpThrustTimer < jumpThrustTimeLimit) {
                 this.appliedVerticalDelta = Math.min(Math.abs(this.jumpThrustTimer - jumpThrustTimeLimit), deltaTime);
-                this.velocity.y = Math.max(this.velocity.y
-                        + (MegaPlayer.ACCELERATION * this.appliedVerticalDelta),
-                        MegaPlayer.MAX_SPEED * this.appliedVerticalDelta);
+                this.velocity.y = MegaPlayer.MAX_JUMP_SPEED;
                 this.jumpThrustTimer += deltaTime;
             } else {
                 this.appliedVerticalDelta = 0;
                 this.isJumping = false;
                 this.jumpThrustTimer = 0;
             }
+        }
+        else {
+            this.appliedVerticalDelta = deltaTime;
         }
         
         // Shooting.
@@ -839,13 +842,14 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Apply gravity.
         if (this.isInAir) {
-            
             if (this.isUnderwater) {
-                this.velocity.y = Math.max(this.velocity.y - (MegaPlayer.DECELERATION * this.appliedVerticalDelta),
-                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED * this.appliedVerticalDelta);
+                this.velocity.y = Math.max(
+                        this.velocity.y - (MegaPlayer.GRAVITY * this.appliedVerticalDelta),
+                        -MegaPlayer.MAX_UNDERWATER_FALL_SPEED);
             } else {
-                this.velocity.y = Math.max(this.velocity.y - (MegaPlayer.DECELERATION * this.appliedVerticalDelta),
-                        -MegaPlayer.MAX_FALL_SPEED * this.appliedVerticalDelta);
+                this.velocity.y = Math.max(
+                        this.velocity.y - (MegaPlayer.GRAVITY * this.appliedVerticalDelta),
+                        -MegaPlayer.MAX_FALL_SPEED);
             }
         }
     }
