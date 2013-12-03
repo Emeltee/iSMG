@@ -1539,9 +1539,12 @@ public class SeeteufelScreen implements GameScreen {
     	GameCheat tempBusterMax = new BusterMaxCheat(player),
     			  tempGeminiShot = new GeminiShotCheat(player),
     			  tempJumpSprings = new JumpSpringsCheat(player),
-    			  tempKevlarOmega = new KevlarOmegaArmorCheat(player);
+    			  tempKevlarOmega = new KevlarOmegaArmorCheat(player),
+    			  tempHadouken = new HadoukenCheat(player);
     	
-    	if (this.cheatEngine.getEnabledCheats().size() == this.cheatEngine.getAllCheats().size()) {
+    	if (this.cheatEngine.getEnabledCheats().size() == this.cheatEngine.getAllCheats().size()
+    	    || (this.cheatEngine.getEnabledCheats().size() == this.cheatEngine.getAllCheats().size() - 1
+    	        && !this.cheatEngine.hasEnabledCheat(tempHadouken))) {
     		// All cheats unlocked, show cheat code for GeminiBuster.
     		return tempGeminiShot;
     	} else if (this.bypassedSeeteufel &&
