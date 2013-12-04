@@ -198,7 +198,7 @@ public class SeeteufelScreen implements GameScreen {
     private boolean isPaused = false;
     private boolean pauseButtonTrigger = false;
     private boolean bypassedSeeteufel = false;
-    private boolean reachedArenaBeforeWater = false;
+    private boolean reachedArenaBeforeCamera = false;
     private float map2Y = MAP2_INITIAL_CAM_Y;
     private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
     private float cameraShake = 0;
@@ -529,7 +529,7 @@ public class SeeteufelScreen implements GameScreen {
         this.obstacles.add(this.map1.getObstacles());
         
         this.bypassedSeeteufel = false;
-        this.reachedArenaBeforeWater = false;        
+        this.reachedArenaBeforeCamera = false;        
     }
 
     @Override
@@ -1071,7 +1071,7 @@ public class SeeteufelScreen implements GameScreen {
             // If player reaches top before the camera (not the water; minor distinction),
             // set a flag to unlock a cheat code.
             if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
-                this.reachedArenaBeforeWater = true;
+                this.reachedArenaBeforeCamera = true;
             }
         }
         
@@ -1530,7 +1530,7 @@ public class SeeteufelScreen implements GameScreen {
     }
     
     private GameCheat getUnlockedCheat() {
-    	// Give up the JumpSprings cheat if player reaches third area before water stops rising.
+    	// Give up the JumpSprings cheat if player reaches third area before camera stops rising.
     	// BusterMax if they think to use the jump springs to bypass the Seeteufel.
     	// Armor if they finished with more than 2/3 health.
     	// GeminiShot code if everything else is enabled.
@@ -1557,7 +1557,7 @@ public class SeeteufelScreen implements GameScreen {
     			    && !this.cheatEngine.hasEnabledCheat(tempKevlarOmega)) {
     		// Won with with 2/3 health and MegaBuster, show KevlarOmega cheat.
     		return tempKevlarOmega;
-    	} else if (this.reachedArenaBeforeWater && 
+    	} else if (this.reachedArenaBeforeCamera && 
     			   !this.cheatEngine.hasEnabledCheat(tempJumpSprings)) {
     		// Reached top of shaft before the camera, show Jump Springs Cheat
     		return tempJumpSprings;
