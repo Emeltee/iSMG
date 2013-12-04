@@ -6,7 +6,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 public class Main {
     public static void main(String[] args) {
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-        cfg.title = "my-gdx-game";
+        cfg.title = "blues-bros-bbq";
         cfg.useGL20 = true;
         cfg.width = MyGdxGame.SCREEN_WIDTH;
         cfg.height = MyGdxGame.SCREEN_HEIGHT;
