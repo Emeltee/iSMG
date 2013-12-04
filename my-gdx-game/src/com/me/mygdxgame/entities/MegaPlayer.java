@@ -51,8 +51,8 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     private static final int MAX_HEALTH = 100;
     public static final int HITBOX_WIDTH = 28;
-    // One more than the standard tile size (32 pixels).
-    public static final int HITBOX_HEIGHT = 33;
+    // One less than the standard tile size (32 pixels).
+    public static final int HITBOX_HEIGHT = 31;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
@@ -482,27 +482,55 @@ public class MegaPlayer implements GameEntity, Damageable {
         this.appliedVerticalDelta = deltaTime;
         
         // Move according to velocity, and check for obstacle collisions.
-        // Vertical movement not affected by water.
+        // Vertical movement not affected by water. If movement amount is larger
+        // than the hitbox, break movement up into multiple smaller movements
+        // for accurate collision detection.
         float totalMovement = this.velocity.y * deltaTime;
-        do {
-            this.position.y += Math.min(totalMovement, HITBOX_HEIGHT);
-            this.checkCollisionsY();
-            totalMovement -= HITBOX_HEIGHT;
-        }
-        while (totalMovement > 0.0f);
-        
-        totalMovement = this.velocity.x * deltaTime;
-        do {
-            if (this.isUnderwater) {
-                this.position.x += Math.min(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, HITBOX_WIDTH);
-                totalMovement -= HITBOX_WIDTH;
-            } else {
-                this.position.x += Math.min(totalMovement, HITBOX_WIDTH);
-                totalMovement -= HITBOX_WIDTH;
+        if (totalMovement > 0) {
+            do {
+                this.position.y += Math.min(totalMovement, HITBOX_HEIGHT);
+                totalMovement -= HITBOX_HEIGHT;
+                this.checkCollisionsY();
             }
-            this.checkCollionsX();
+            while (totalMovement > 0.0f); 
         }
-        while (totalMovement > 0.0f);
+        else {
+            do {
+                this.position.y += Math.max(totalMovement, -HITBOX_HEIGHT);
+                totalMovement += HITBOX_HEIGHT;
+                this.checkCollisionsY();
+            }
+            while (totalMovement < 0.0f); 
+        }
+        
+        // Horizontal movement. Break into multiple smaller movements as needed.
+        totalMovement = this.velocity.x * deltaTime;
+        if (totalMovement > 0) {
+            do {
+                if (this.isUnderwater) {
+                    this.position.x += Math.min(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, HITBOX_WIDTH);
+                    totalMovement -= HITBOX_WIDTH;
+                } else {
+                    this.position.x += Math.min(totalMovement, HITBOX_WIDTH);
+                    totalMovement -= HITBOX_WIDTH;
+                }
+                this.checkCollionsX();
+            }
+            while (totalMovement > 0.0f);
+        }
+        else {
+            do {
+                if (this.isUnderwater) {
+                    this.position.x += Math.max(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, -HITBOX_WIDTH);
+                    totalMovement += HITBOX_WIDTH;
+                } else {
+                    this.position.x += Math.max(totalMovement, -HITBOX_WIDTH);
+                    totalMovement += HITBOX_WIDTH;
+                }
+                this.checkCollionsX();
+            }
+            while (totalMovement < 0.0f);
+        }
 
         // Apply constant forces.
         this.handlePhysics(deltaTime);
