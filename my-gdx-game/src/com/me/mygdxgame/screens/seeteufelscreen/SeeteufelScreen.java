@@ -10,6 +10,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Music.OnCompletionListener;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -199,6 +200,8 @@ public class SeeteufelScreen implements GameScreen {
     private boolean pauseButtonTrigger = false;
     private boolean bypassedSeeteufel = false;
     private boolean reachedArenaBeforeCamera = false;
+    private boolean isMusicPaused = false;
+    private Music currentMusic = null;
     private float map2Y = MAP2_INITIAL_CAM_Y;
     private float map2WaterY = MAP2_INITIAL_CAM_Y - MAP2_WATER_Y_OFFSET;
     private float cameraShake = 0;
@@ -284,8 +287,8 @@ public class SeeteufelScreen implements GameScreen {
         this.splash = Gdx.audio.newSound(Gdx.files.internal("sound/splash.ogg"));
         this.seeSplash = Gdx.audio.newSound(Gdx.files.internal("sound/see_crash.ogg"));
         this.bombShoot = Gdx.audio.newSound(Gdx.files.internal("sound/bomb_fire.ogg"));
-        this.music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_1.ogg"));
-        this.music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_2.ogg"));
+        this.music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_Intro.ogg"));
+        this.music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_Loop.ogg"));
         this.doorOpen = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
         this.doorClose = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg"));
         this.itemGet = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
@@ -366,10 +369,19 @@ public class SeeteufelScreen implements GameScreen {
             this.pauseButtonTrigger = false;
             
             // Toggle the Cheat Listener whenever paused state changes
+            // Also, pause and restart music as needed.
             if (this.isPaused) { 
                 Gdx.input.setInputProcessor(this.cheatEngine);
+                if (this.currentMusic.isPlaying()) {
+                    this.currentMusic.pause();
+                    this.isMusicPaused = true;
+                }
             } else {
                 Gdx.input.setInputProcessor(this.defaultProcessor);
+                if (this.isMusicPaused) {
+                    this.currentMusic.play();
+                    this.isMusicPaused = false;
+                }
             }
         }
         
@@ -489,6 +501,17 @@ public class SeeteufelScreen implements GameScreen {
         this.map3ExitBridgeFallTimer = 0;
         this.music1.stop();
         this.music2.stop();
+        
+        // Set the intro music callback, which starts the main body of the music.
+        this.music1.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(Music music) {
+                SeeteufelScreen.this.music2.play();
+                SeeteufelScreen.this.music2.setLooping(true);
+                SeeteufelScreen.this.currentMusic = SeeteufelScreen.this.music2;
+            }});
+        this.currentMusic = this.music1;
+        this.isMusicPaused = false;
         
         for (GameEntity e : this.entities) {
             e.destroy();
@@ -860,15 +883,6 @@ public class SeeteufelScreen implements GameScreen {
         // Activate flooding once player moves beyond a certain x.
         int targetWaterfalHeight = SeeteufelScreen.MAP2_PIXEL_HEIGHT - (int)this.map2WaterY + MAP2_WATERFALL_OFFSET;
         if (this.isMap2Flooding) {
-            if (!this.music1.isPlaying()) {
-                // Check if intro music was simply paused.
-                if (this.music1.getPosition() != 0) {
-                    this.music1.play();
-                }
-                else if (!this.music2.isPlaying()) {
-                    this.music2.play();
-                }
-            }
             // Raise water only after waterfall has reached bottom.
             if (this.firstWaterfallFell) {
                 if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
@@ -893,6 +907,7 @@ public class SeeteufelScreen implements GameScreen {
             // Activate chase sequence.
             this.isMap2Flooding = true;
             this.music1.play();
+            this.currentMusic = this.music1;
             this.seeSplash.play(SFX_VOLUME);
             this.cameraShake = SeeteufelScreen.CAMERA_SHAKE;
             this.playerHealth.setInDanger(true);
@@ -1230,17 +1245,6 @@ public class SeeteufelScreen implements GameScreen {
         }
         else if (map3CamPos.x > MAP3_CAM_MAX_X) {
             map3CamPos.x = MAP3_CAM_MAX_X;
-        }
-        
-        // Keep the music playing.
-        if (!this.music1.isPlaying() && this.seeSide.getState() != EntityState.Destroyed) {
-            // Check if intro music was simply paused.
-            if (this.music1.getPosition() != 0) {
-                this.music1.play();
-            }
-            else if (!this.music2.isPlaying()) {
-                this.music2.play();
-            }
         }
         
         // If water has not yet reached the top of the shaft, keep raising it.
