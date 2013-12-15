@@ -485,7 +485,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         // than the hitbox, break movement up into multiple smaller movements
         // for accurate collision detection.
         float totalMovement = this.velocity.y * deltaTime;
-        float movementStep = HITBOX_HEIGHT;
+        float movementStep = HITBOX_HEIGHT / 2.0f;
         if (totalMovement > 0) {
             do {
                 this.position.y += Math.min(totalMovement, movementStep);
@@ -505,7 +505,7 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         // Horizontal movement. Break into multiple smaller movements as needed.
         totalMovement = this.velocity.x * deltaTime;
-        movementStep = HITBOX_WIDTH;
+        movementStep = HITBOX_WIDTH / 2.0f;
         if (totalMovement > 0) {
             do {
                 if (this.isUnderwater) {
