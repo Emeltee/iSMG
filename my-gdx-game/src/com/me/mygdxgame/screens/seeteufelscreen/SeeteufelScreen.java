@@ -501,6 +501,7 @@ public class SeeteufelScreen implements GameScreen {
         this.map3ExitBridgeFallTimer = 0;
         this.music1.stop();
         this.music2.stop();
+        this.seeFront = null;
         
         // Set the intro music callback, which starts the main body of the music.
         this.music1.setOnCompletionListener(new OnCompletionListener() {
