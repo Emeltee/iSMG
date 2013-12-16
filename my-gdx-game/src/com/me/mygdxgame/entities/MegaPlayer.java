@@ -51,8 +51,7 @@ public class MegaPlayer implements GameEntity, Damageable {
 
     private static final int MAX_HEALTH = 100;
     public static final int HITBOX_WIDTH = 28;
-    // One less than the standard tile size (32 pixels).
-    public static final int HITBOX_HEIGHT = 31;
+    public static final int HITBOX_HEIGHT = 32;
     private static final int SPRITE_WIDTH = 38;
     private static final int SPRITE_HEIGHT = 45;
     private static final int HITBOX_OFFSET_X = 5;
@@ -486,48 +485,50 @@ public class MegaPlayer implements GameEntity, Damageable {
         // than the hitbox, break movement up into multiple smaller movements
         // for accurate collision detection.
         float totalMovement = this.velocity.y * deltaTime;
+        float movementStep = HITBOX_HEIGHT / 2.0f;
         if (totalMovement > 0) {
             do {
-                this.position.y += Math.min(totalMovement, HITBOX_HEIGHT);
-                totalMovement -= HITBOX_HEIGHT;
-                this.checkCollisionsY();
+                this.position.y += Math.min(totalMovement, movementStep);
+                totalMovement -= movementStep;
+                if (this.checkCollisionsY()) break;
             }
             while (totalMovement > 0.0f); 
         }
         else {
             do {
-                this.position.y += Math.max(totalMovement, -HITBOX_HEIGHT);
-                totalMovement += HITBOX_HEIGHT;
-                this.checkCollisionsY();
+                this.position.y += Math.max(totalMovement, -movementStep);
+                totalMovement += movementStep;
+                if (this.checkCollisionsY()) break;
             }
             while (totalMovement < 0.0f); 
         }
         
         // Horizontal movement. Break into multiple smaller movements as needed.
         totalMovement = this.velocity.x * deltaTime;
+        movementStep = HITBOX_WIDTH / 2.0f;
         if (totalMovement > 0) {
             do {
                 if (this.isUnderwater) {
-                    this.position.x += Math.min(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, HITBOX_WIDTH);
-                    totalMovement -= HITBOX_WIDTH;
+                    this.position.x += Math.min(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, movementStep);
+                    totalMovement -= movementStep;
                 } else {
-                    this.position.x += Math.min(totalMovement, HITBOX_WIDTH);
-                    totalMovement -= HITBOX_WIDTH;
+                    this.position.x += Math.min(totalMovement, movementStep);
+                    totalMovement -= movementStep;
                 }
-                this.checkCollionsX();
+                if (this.checkCollionsX()) break;
             }
             while (totalMovement > 0.0f);
         }
         else {
             do {
                 if (this.isUnderwater) {
-                    this.position.x += Math.max(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, -HITBOX_WIDTH);
-                    totalMovement += HITBOX_WIDTH;
+                    this.position.x += Math.max(totalMovement / MegaPlayer.WATER_MOVEMENT_FACTOR, -movementStep);
+                    totalMovement += movementStep;
                 } else {
-                    this.position.x += Math.max(totalMovement, -HITBOX_WIDTH);
-                    totalMovement += HITBOX_WIDTH;
+                    this.position.x += Math.max(totalMovement, -movementStep);
+                    totalMovement += movementStep;
                 }
-                this.checkCollionsX();
+                if (this.checkCollionsX()) break;
             }
             while (totalMovement < 0.0f);
         }
@@ -685,10 +686,12 @@ public class MegaPlayer implements GameEntity, Damageable {
     }
     
     /**
-     * Check for collisions with obstacles in obstacles[] on the y axis.
-     * Alters position as appropriate.
+     * Check for collisions with obstacles in obstacles[] on the y axis. Alters
+     * position as appropriate.
+     * 
+     * @return True is a collision is detected, false otherwise.
      */
-    private void checkCollisionsY() {
+    private boolean checkCollisionsY() {
         // Check collisions with obstacles on y. Move box down by one to ensure you
         // detect collisions with the floor you may be standing on. Increase height
         // by 1 to compensate for this for ceiling collisions.
@@ -698,7 +701,8 @@ public class MegaPlayer implements GameEntity, Damageable {
         
         float obstacleTop = 0;
         float hitBoxTop = this.hitBox.y + this.hitBox.height;
-        boolean floorCollision = false;
+        
+        boolean collided = false;
         
         // Brute force it. We've got a deadline here.
         for (GameEntity entity : this.obstacles) {
@@ -711,51 +715,62 @@ public class MegaPlayer implements GameEntity, Damageable {
                         
                         // Play landing sound if in the air.
                         if (this.isInAir) {
+                            this.resources.landSound.stop();
                             this.resources.landSound.play(SFX_VOLUME);
                         }
                         
                         // Set position to top of obstacle. Set y velocity to 0. Reset air flag.
                         this.position.y = obstacle.y + obstacle.height;
+                        this.hitBox.y = this.position.y - 1;
+                        hitBoxTop = this.hitBox.y + this.hitBox.height;
                         this.velocity.y = 0;
                         this.isInAir = false;
-                        floorCollision = true;
-                        return;
+                        collided = true;
                     }
                     // Check if it's a ceiling collision.
                     else if(hitBoxTop < obstacleTop && hitBoxTop > obstacle.y)
                     {
                         // Set position to bottom of obstacle. Set y velocity to 0. Reset jump values.
                         this.position.y = obstacle.y - this.hitBox.height - 1;
+                        this.hitBox.y = this.position.y - 1;
+                        hitBoxTop = this.hitBox.y + this.hitBox.height;
                         this.velocity.y = 0;
                         this.isJumping = false;
                         this.jumpThrustTimer = 0;
                         this.isInAir = true;
-                        return;
+                        collided = true;
                     }
                 }
             }       
         }
 
         // If there were no y collisions, assume you're in the air.
-        if (!floorCollision) {
+        if (!collided) {
             this.isInAir = true;
         }
         
-        // Revert hitbox height.
+        // Revert hitbox height and position.
         this.hitBox.height = MegaPlayer.HITBOX_HEIGHT;
+        this.hitBox.y = this.position.y;
+        
+        return collided;
     }
     
     /**
-     * Check for collisions with obstacles in obstacles[] on the x axis.
-     * Alters position as appropriate.
+     * Check for collisions with obstacles in obstacles[] on the x axis. Alters
+     * position as appropriate.
+     * 
+     * @return True is a collision is detected, false otherwise.
      */
-    private void checkCollionsX() {
+    private boolean checkCollionsX() {
         // Check collisions with obstacles on x.
         this.hitBox.x = this.position.x;
         this.hitBox.y = this.position.y;
         
         float obstacleRightEdge = 0;
         float hitBoxRightEdge = this.hitBox.x + MegaPlayer.HITBOX_WIDTH;
+        
+        boolean collided = false;
         
         // O(n) like a charlatan.
         for (GameEntity entity : this.obstacles) {
@@ -769,26 +784,30 @@ public class MegaPlayer implements GameEntity, Damageable {
                         // Set position to obstacle's right edge. Drop velocity to 0 if you were moving left.
                         this.position.x = obstacleRightEdge;
                         this.hitBox.x = this.position.x;
+                        hitBoxRightEdge = this.hitBox.x + MegaPlayer.HITBOX_WIDTH;
                         if(this.velocity.x < 0)
                         {
                             this.velocity.x = 0;
                         }
-                        return;
+                        collided = true;
                     }
                     // Collision on left side of obstacle.
                     else if (hitBoxRightEdge > obstacle.x && this.hitBox.x < obstacle.x) {
                         // Set position to obstacle's left edge. Drop velocity to 0 if you were moving right.
                         this.position.x = obstacle.x - this.hitBox.width;
                         this.hitBox.x = this.position.x;
+                        hitBoxRightEdge = this.hitBox.x + MegaPlayer.HITBOX_WIDTH;
                         if(this.velocity.x > 0)
                         {
                             this.velocity.x = 0;
                         }
-                        return;
+                        collided = true;
                     }
                 }
             }
         }
+        
+        return collided;
     }
     
     /**

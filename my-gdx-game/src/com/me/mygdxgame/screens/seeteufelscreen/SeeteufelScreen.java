@@ -501,6 +501,7 @@ public class SeeteufelScreen implements GameScreen {
         this.map3ExitBridgeFallTimer = 0;
         this.music1.stop();
         this.music2.stop();
+        this.seeFront = null;
         
         // Set the intro music callback, which starts the main body of the music.
         this.music1.setOnCompletionListener(new OnCompletionListener() {
@@ -1079,8 +1080,8 @@ public class SeeteufelScreen implements GameScreen {
         
         // Exit the room when player reaches the arena. Do setup for room 3.
         if (!this.player.getIsInAir() &&
-                playerPos.y >= (SeeteufelScreen.MAP2_HEIGHT + 0.5)* SecondMap.GROUND_DIM &&
-                playerPos.x <= 0) {
+                playerPos.y >= (SeeteufelScreen.MAP2_HEIGHT + 0.5) * SecondMap.GROUND_DIM &&
+                playerPos.x <= SecondMap.GROUND_DIM) {
             this.currentMap = 3;
             this.setupMap3();
             // If player reaches top before the camera (not the water; minor distinction),
