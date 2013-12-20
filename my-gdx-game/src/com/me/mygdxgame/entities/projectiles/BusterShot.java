@@ -100,6 +100,7 @@ public class BusterShot implements GameEntity, Damager {
             this.distanceTraveled += toTravel;
             if (this.distanceTraveled >= this.range) {
                 this.state = EntityState.Destroyed;
+                this.missSound.stop();
                 this.missSound.play();
                 return;
             }
