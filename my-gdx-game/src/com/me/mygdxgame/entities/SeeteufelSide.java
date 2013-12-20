@@ -39,6 +39,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final int BASE_WIDTH = 72;
     
     private static final int MAX_HEALTH = 130;
+    private static final int HEALTH_THRESHOLD_1 = MAX_HEALTH / 3 * 2;
+    private static final int HEALTH_THRESHOLD_2 = MAX_HEALTH / 3;
     private static final float FRONT_ARM_FRAMERATE = 0.2f;
     private static final float SIDE_ARM_FRAMERATE = 0.425f;
     private static final int OBSTACLE_HITBOX_WIDTH = 140;
@@ -93,6 +95,7 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private boolean shootLemons = true;
     private float destroyedTargetY = 0;
     private LinkedList<Explosion> explosions = new LinkedList<Explosion>();
+    private boolean shootLemonLine = true;
     
     private float attackDelayTimer = 0;
     private float cielingAttackDelayTimer = 0;
@@ -239,15 +242,17 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     }
                     
                     // Decide on lemon or bomb attack based on health and random chance.
-                    if (this.health < MAX_HEALTH / 3) {
+                    if (this.health < HEALTH_THRESHOLD_2) {
                         // Below 1/3 health, swap between bombs and lemons with a 20% chance.
                         if (Math.random() <= 0.2) {
                             this.shootLemons = !this.shootLemons;
                         }
                     }
-                    else if(this.health < (MAX_HEALTH / 3) * 2) {
-                        // Below 2/3 health, switch from lemons to bombs.
+                    else if (this.health < HEALTH_THRESHOLD_1) {
+                        // Below 2/3 health, switch from lemons to bombs and
+                        // turn lemon lines off for the rest of the fight.
                         this.shootLemons = false;
+                        this.shootLemonLine = false;
                     }
                     
                     if (this.shootLemons) {
@@ -260,7 +265,10 @@ public class SeeteufelSide implements GameEntity, Damageable {
                         // shot count is determined by the distribution of
                         // values in the SHOT_QUANTITY array.
                         int shotHeight = SHOT_HEIGHTS[(int) (Math.random() * SHOT_HEIGHTS.length)];
-                        int numShots = SHOT_QUANTITY[(int) (Math.random() * SHOT_QUANTITY.length)];
+                        int numShots = 1;
+                        if (this.shootLemonLine) {
+                            numShots = SHOT_QUANTITY[(int) (Math.random() * SHOT_QUANTITY.length)];
+                        }
                         Vector3 shotPos = new Vector3(this.position.x, this.position.y + shotHeight, 0);
                         LemonShot newShot;
                         for (int i = 0; i < numShots; i++) {
