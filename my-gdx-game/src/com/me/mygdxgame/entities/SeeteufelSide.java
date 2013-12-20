@@ -56,6 +56,8 @@ public class SeeteufelSide implements GameEntity, Damageable {
     private static final float SINK_EXPLOSION_DELAY = 0.2f;
     private static final int[] SHOT_HEIGHTS = new int[] {60, 60, 60, 60, 
         60 + MegaPlayer.HITBOX_HEIGHT, 60 + MegaPlayer.HITBOX_HEIGHT * 2};
+    private static final int[] SHOT_QUANTITY = 
+            new int[] {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 5};
     private static final int BASE_SHOT_SPEED = 300;
     private static final int BASE_SHOT_POWER = 5;
     private static final float BASE_SHOT_RANGE = 1000;
@@ -250,15 +252,27 @@ public class SeeteufelSide implements GameEntity, Damageable {
                     
                     if (this.shootLemons) {
                         // Shoot lemon at one of three random heights.
-                        // Get random value up to 3, and wrap 4 back to 0.
-                        // This way, lower height gets chosen more often.
+                        // Selection of height is biased toward lower values,
+                        // based on the contents of SHOT_HEIGHTS.
+                        // Between one and MAX_SHOT_BURST will be shot at once,
+                        // in a horizontal line. This complicates jumping over
+                        // them somewhat. Likewise, the probability of a given
+                        // shot count is determined by the distribution of
+                        // values in the SHOT_QUANTITY array.
                         int shotHeight = SHOT_HEIGHTS[(int) (Math.random() * SHOT_HEIGHTS.length)];
+                        int numShots = SHOT_QUANTITY[(int) (Math.random() * SHOT_QUANTITY.length)];
                         Vector3 shotPos = new Vector3(this.position.x, this.position.y + shotHeight, 0);
-                        this.createdEntities.offer(new LemonShot(spritesheet,
-                                this.otherSounds.shotMissSound, shotPos,
-                                BASE_SHOT_SPEED, ShotDirection.LEFT,
-                                BASE_SHOT_POWER, BASE_SHOT_RANGE, this.obstacles,
-                                this.targets));
+                        LemonShot newShot;
+                        for (int i = 0; i < numShots; i++) {
+                            newShot = new LemonShot(
+                                    spritesheet,
+                                    this.otherSounds.shotMissSound, shotPos,
+                                    BASE_SHOT_SPEED, ShotDirection.LEFT,
+                                    BASE_SHOT_POWER, BASE_SHOT_RANGE, this.obstacles,
+                                    this.targets);
+                            this.createdEntities.offer(newShot);
+                            shotPos.x += newShot.getWidth();
+                        }
                     }
                     else {
                      // Shoot bomb with random trajectory.
