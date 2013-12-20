@@ -1084,10 +1084,13 @@ public class SeeteufelScreen implements GameScreen {
                 playerPos.x <= SecondMap.GROUND_DIM) {
             this.currentMap = 3;
             this.setupMap3();
-            // If player reaches top before the camera (not the water; minor distinction),
-            // set a flag to unlock a cheat code.
-            if (this.map2Y < SeeteufelScreen.MAP2_CAM_MAX_Y) {
+            
+            // If player reaches top before the second-to-last staircase gets
+            // destroyed, set flag to unlock jump springs.
+            if (this.seeteufelTargetLevels.isEmpty() && 
+                    this.room2PlatformsToDestroy.size() >= SecondMap.GROUND_WIDTH - MAP2_STAIR_FLIGHT_X_OFFSET) {
                 this.reachedArenaBeforeCamera = true;
+                System.out.println(this.room2PlatformsToDestroy.size());
             }
         }
         
