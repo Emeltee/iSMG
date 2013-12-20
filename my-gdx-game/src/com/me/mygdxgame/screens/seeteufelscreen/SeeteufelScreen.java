@@ -1090,7 +1090,6 @@ public class SeeteufelScreen implements GameScreen {
             if (this.seeteufelTargetLevels.isEmpty() && 
                     this.room2PlatformsToDestroy.size() >= SecondMap.GROUND_WIDTH - MAP2_STAIR_FLIGHT_X_OFFSET) {
                 this.reachedArenaBeforeCamera = true;
-                System.out.println(this.room2PlatformsToDestroy.size());
             }
         }
         
