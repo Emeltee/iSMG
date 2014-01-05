@@ -287,8 +287,8 @@ public class SeeteufelScreen implements GameScreen {
         this.splash = Gdx.audio.newSound(Gdx.files.internal("sound/splash.ogg"));
         this.seeSplash = Gdx.audio.newSound(Gdx.files.internal("sound/see_crash.ogg"));
         this.bombShoot = Gdx.audio.newSound(Gdx.files.internal("sound/bomb_fire.ogg"));
-        this.music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_Intro.ogg"));
-        this.music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_Loop.ogg"));
+        this.music1 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_intro.ogg"));
+        this.music2 = Gdx.audio.newMusic(Gdx.files.internal("sound/Seeteufel_the_Mighty_loop.ogg"));
         this.doorOpen = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-open1.ogg"));
         this.doorClose = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-ruindoor-close1.ogg"));
         this.itemGet = Gdx.audio.newSound(Gdx.files.internal("sound/sfx-item-get.ogg"));
