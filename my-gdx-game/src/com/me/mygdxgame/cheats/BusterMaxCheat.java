@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.Input.Keys;
-import com.me.mygdxgame.buster.BusterMax;
+import com.me.mygdxgame.buster.parts.BusterMax;
 import com.me.mygdxgame.entities.MegaPlayer;
 import com.me.mygdxgame.utilities.GameCheat;
 
