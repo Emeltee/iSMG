@@ -1,37 +1,32 @@
-package com.me.mygdxgame.buster;
+package com.me.mygdxgame.buster.parts;
 
 import com.me.mygdxgame.utilities.BusterPart;
 
-/** 
- * Buster MAX stats:
- * All: MAX
- */
-
-public class BusterMax implements BusterPart {
+public class TurboChargerAlpha implements BusterPart {
 
     @Override
     public String getPartName() {
-        return "Buster Max";
+        return "Turbo Charger Alpha";
     }
 
     @Override
     public int getAttack() {
-        return 5;
+        return 0;
     }
 
     @Override
     public int getEnergy() {
-        return 5;
+        return 2;
     }
 
     @Override
     public int getRange() {
-        return 5;
+        return 0;
     }
 
     @Override
     public int getRapid() {
-        return 5;
+        return 0;
     }
 
 }
